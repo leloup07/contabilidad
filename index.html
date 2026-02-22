@@ -137,6 +137,44 @@ const DEFAULT_EMITIDAS_2025 = [
   { id: "e2025-10", num: "10/2025", fecha: "2025-12-17", cliente: "Maximiliano Vergara (Bitrise)", nif: "Chile-F62258086", desc: "Asesoramiento jurídico 50% iguala dic (no sujeto art.69)", base: 375, tipoIva: 0, iva: 0, total: 375, trimestre: "Q4", doc: "docs/emitidas/2025/Factura_10_2025.pdf" },
   { id: "e2025-11", num: "11/2025", fecha: "2025-12-30", cliente: "Maximiliano Vergara (Bitrise)", nif: "Chile-F62258086", desc: "2º 50% dic + 1er 50% ene 2026 (no sujeto art.69)", base: 1000, tipoIva: 0, iva: 0, total: 1000, trimestre: "Q4", doc: "docs/emitidas/2025/Factura_11_2025.pdf" },
 ];
+const DEFAULT_RECIBIDAS_2022 = [
+  { id:"r2022-1", fecha:"2022-05-04", prov:"Durán Compliance", desc:"Diseño SGCP Col·legi Procuradors (FRA 22/016)", base:853.13, tipoIva:21, iva:179.16, total:904.32, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_016.pdf" },
+  { id:"r2022-2", fecha:"2022-05-26", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/020)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_020.pdf" },
+  { id:"r2022-3", fecha:"2022-06-28", prov:"Durán Compliance", desc:"Diseño SGCP Col·legi Procuradors 4ª (FRA 22/025)", base:853.13, tipoIva:21, iva:179.16, total:904.32, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_025.pdf" },
+  { id:"r2022-4", fecha:"2022-06-28", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/026)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_026.pdf" },
+  { id:"r2022-5", fecha:"2022-07-27", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/031)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q3", doc:"docs/recibidas/2022/Duran_22_031.pdf" },
+  { id:"r2022-6", fecha:"2022-08-31", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/036)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q3", doc:"docs/recibidas/2022/Duran_22_036.pdf" },
+  { id:"r2022-7", fecha:"2022-04-01", prov:"Soluciones Web On Line", desc:"Hosting Moodle abr 2022 (G-469349)", base:58.29, tipoIva:21, iva:12.24, total:70.53, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G469349.pdf" },
+  { id:"r2022-8", fecha:"2022-05-03", prov:"Soluciones Web On Line", desc:"Hosting Moodle may 2022 (G-476016)", base:58.29, tipoIva:21, iva:12.24, total:70.53, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G476016.pdf" },
+  { id:"r2022-9", fecha:"2022-05-04", prov:"Soluciones Web On Line", desc:"Renovación dominio eleve-edu.com (G-476357)", base:9.85, tipoIva:21, iva:2.07, total:11.92, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G476357.pdf" },
+  { id:"r2022-10", fecha:"2022-08-22", prov:"GoDaddy", desc:"Microsoft 365 Profesional Empresarial", base:179.88, tipoIva:21, iva:37.77, total:217.65, cat:"Software", trimestre:"Q3", doc:"docs/recibidas/2022/GoDaddy_2296339340.pdf" },
+  { id:"r2022-11", fecha:"2022-08-30", prov:"GoDaddy", desc:"Correo Microsoft 365 x2 (renovación)", base:119.76, tipoIva:21, iva:25.15, total:144.91, cat:"Software", trimestre:"Q3", doc:"docs/recibidas/2022/GoDaddy_2304287304.pdf" },
+  { id:"r2022-12", fecha:"2022-09-28", prov:"Apple Retail Spain", desc:"iPad Pro 12,9\" 256GB Wi-Fi", base:1078.67, tipoIva:21, iva:226.52, total:1305.19, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Apple_iPad_Pro.pdf" },
+  { id:"r2022-13", fecha:"2022-09-28", prov:"Apple Retail Spain", desc:"Apple Pencil 2ª generación", base:111.57, tipoIva:21, iva:23.43, total:135.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Apple_Pencil.pdf" },
+  { id:"r2022-14", fecha:"2022-08-31", prov:"Intecat iStore", desc:"EarPods Lightning (BMF/2834)", base:15.70, tipoIva:21, iva:3.30, total:19.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Intecat_BMF2834.pdf" },
+  { id:"r2022-15", fecha:"2022-07-13", prov:"Movistar", desc:"Fusión Selección Plus (28 May-27 Jun)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_jul2022.pdf" },
+  { id:"r2022-16", fecha:"2022-08-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Jun-27 Jul)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_ago2022.pdf" },
+  { id:"r2022-17", fecha:"2022-09-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Jul-27 Ago)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_sep2022.pdf" },
+  { id:"r2022-18", fecha:"2022-10-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Ago-27 Sep)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2022/Movistar_oct2022.pdf" },
+  { id:"r2022-19", fecha:"2022-11-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Sep-27 Oct)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2022/Movistar_nov2022.pdf" },
+  { id:"r2022-20", fecha:"2022-12-02", prov:"CryptoPlaza", desc:"Founders Digital Membership dic", base:20.66, tipoIva:21, iva:4.34, total:25.00, cat:"Suscripciones", trimestre:"Q4", doc:"docs/recibidas/2022/SkyMedia_202212.pdf" },
+  { id:"r2022-21", fecha:"2022-12-22", prov:"Twist/RunRun", desc:"Asesoramiento marca Proyecto Leap", base:595.00, tipoIva:21, iva:124.95, total:719.95, cat:"Marketing", trimestre:"Q4", doc:"docs/recibidas/2022/RunRun_2022_150.pdf" },
+  { id:"r2022-22", fecha:"2022-11-19", prov:"SRA UK", desc:"Practising Certificate 2022-23 (£316)", base:365.00, tipoIva:0, iva:0, total:365.00, cat:"Profesional int.", trimestre:"Q4", doc:"docs/recibidas/2022/SRA_UK_2022.pdf" },
+  { id:"r2022-23", fecha:"2022-02-25", prov:"Santiago Hernández", desc:"Servicios jurídicos (Fra 01)", base:200, tipoIva:21, iva:42, total:242, cat:"Servicios prof.", trimestre:"Q1", doc:"docs/recibidas/2022/SHernandez_01.pdf" },
+];
+const DEFAULT_RECIBIDAS_2023 = [
+  { id:"r2023-1", fecha:"2023-03-13", prov:"Vueling", desc:"BCN-ALC-BCN 13/03/23", base:158.60, tipoIva:10, iva:18.64, total:204.98, cat:"Viajes", trimestre:"Q1", doc:"docs/recibidas/2023/Vueling_BCN_ALC_BCN.pdf" },
+  { id:"r2023-2", fecha:"2023-04-15", prov:"Vueling", desc:"ALC-BCN 22/04/23", base:98.76, tipoIva:10, iva:9.88, total:142.99, cat:"Viajes", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_ALC_BCN.pdf" },
+  { id:"r2023-3", fecha:"2023-04-15", prov:"Vueling", desc:"BCN-ORY 19/04/23", base:17.57, tipoIva:0, iva:0, total:59.99, cat:"Viajes int.", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_BCN_ORY.pdf" },
+  { id:"r2023-4", fecha:"2023-04-15", prov:"Vueling", desc:"CDG-ALC 20/04/23", base:118.63, tipoIva:0, iva:0, total:169.99, cat:"Viajes int.", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_CDG_ALC.pdf" },
+  { id:"r2023-5", fecha:"2023-05-09", prov:"Marcial Pons", desc:"Libro Finanzas Descentralizadas", base:17.26, tipoIva:4, iva:0.69, total:17.95, cat:"Libros", trimestre:"Q2", doc:"docs/recibidas/2023/MarcialPons_libro.pdf" },
+  { id:"r2023-6", fecha:"2023-08-14", prov:"Intecat iStore", desc:"Apple Watch Ultra 49mm (BMF/6091)", base:722.31, tipoIva:21, iva:151.69, total:874.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6091.pdf" },
+  { id:"r2023-7", fecha:"2023-08-29", prov:"Intecat iStore", desc:"Apple Watch S8 45mm (BMF/6206)", base:310.74, tipoIva:21, iva:65.26, total:376.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6206.pdf" },
+  { id:"r2023-8", fecha:"2023-09-14", prov:"RunRun Digital", desc:"Asesoramiento marca (F230028)", base:1530.00, tipoIva:21, iva:321.30, total:1851.30, cat:"Marketing", trimestre:"Q3", doc:"docs/recibidas/2023/RunRun_F230028.pdf" },
+  { id:"r2023-9", fecha:"2023-11-17", prov:"Renfe", desc:"Billete tren", base:63.06, tipoIva:21, iva:13.24, total:76.30, cat:"Viajes", trimestre:"Q4", doc:"docs/recibidas/2023/Renfe_VJ7U.pdf" },
+  { id:"r2023-10", fecha:"2023-11-29", prov:"GBA (USA)", desc:"Professional Membership ($299)", base:274.00, tipoIva:0, iva:0, total:274.00, cat:"Profesional int.", trimestre:"Q4", doc:"docs/recibidas/2023/GBA_membership.pdf" },
+  { id:"r2023-11", fecha:"2023-12-13", prov:"Movistar", desc:"Telecom (28 Oct-27 Nov)", base:130.00, tipoIva:21, iva:27.30, total:157.30, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2023/Movistar_dic2023.pdf" },
+];
 const DEFAULT_RECIBIDAS_2024 = [
   { id: "r2024-1", fecha: "2024-01-13", prov: "Movistar", desc: "Telecom (28 Nov-27 Dic)", base: 185.33, tipoIva: 21, iva: 38.92, total: 224.25, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2024/Movistar_ene_2024.pdf" },
   { id: "r2024-2", fecha: "2024-02-13", prov: "Movistar", desc: "Telecom (28 Dic-27 Ene)", base: 153.43, tipoIva: 21, iva: 32.22, total: 185.65, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2024/Movistar_feb_2024.pdf" },
@@ -497,7 +535,7 @@ function App() {
 
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
-  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
+  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2022:DEFAULT_RECIBIDAS_2022,recibidas_2023:DEFAULT_RECIBIDAS_2023,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
   const [store, setStore] = useState(()=>{
     const s={};
     YEARS.forEach(y=>{
