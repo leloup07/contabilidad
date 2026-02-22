@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gobierno Contable — Aznar Legal & Compliance</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',-apple-system,sans-serif;background:#f0f2f5;color:#1a202c}
+::-webkit-scrollbar{height:6px;width:6px}
+::-webkit-scrollbar-thumb{background:#cbd5e0;border-radius:3px}
+table{border-collapse:collapse;width:100%}
+input{font-family:inherit}
+button{font-family:inherit}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useCallback,useEffect} = React;
+
+
+const LOGO = "data:image/jpeg;base64,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";
+
+const CO = { name: "Aznar Legal y Compliance, S.L.P.", cif: "B67038695", dom: "c/ Enric Morera 21, Esc B. 3º 1ª, 08870 Sitges" };
+
+const FACTURAS = {
+  2023: [
+    { n: "1/2023", fecha: "2023-01-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor Knowledge Hub Q1", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "2/2023", fecha: "2023-04-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor Knowledge Hub Q2", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "3/2023", fecha: "2023-06-15", cliente: "ICAB", cif: "Q0863003-J", concepto: "Clase Master Compliance ICAB", base: 300, iva: 21, cuota: 63, total: 363 },
+    { n: "4/2023", fecha: "2023-07-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor Knowledge Hub Q3", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "5/2023", fecha: "2023-10-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor Knowledge Hub Q4", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "6/2023", fecha: "2023-10-20", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "7/2023", fecha: "2023-11-15", cliente: "ICAB", cif: "Q0863003-J", concepto: "Clase Master Compliance ICAB (2a)", base: 300, iva: 21, cuota: 63, total: 363 },
+  ],
+  2024: [
+    { n: "1/2024", fecha: "2024-01-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor (ene-abr)", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "2/2024", fecha: "2024-05-15", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM 3a Ed.", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "3/2024", fecha: "2024-06-15", cliente: "ICAB", cif: "Q0863003-J", concepto: "Clase Master Compliance ICAB", base: 300, iva: 21, cuota: 63, total: 363 },
+    { n: "4/2024", fecha: "2024-07-15", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Honorarios IE-Elecnor (may-ago)", base: 4650, iva: 21, cuota: 976.50, total: 5626.50 },
+    { n: "5/2024", fecha: "2024-08-15", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM 3a Ed. (2a)", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "6/2024", fecha: "2024-09-15", cliente: "ASCOM", cif: "G-87034120", concepto: "Seminario Alta Dirección", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "7/2024", fecha: "2024-10-15", cliente: "ICAB", cif: "Q0863003-J", concepto: "Clase RSC Master Compliance ICAB", base: 300, iva: 21, cuota: 63, total: 363 },
+  ],
+  2025: [
+    { n: "1/2025", fecha: "2025-02-26", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM 4a Ed. Sesion 16", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "2/2025", fecha: "2025-03-27", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM 2025. Sesion 6: RSC", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "3/2025", fecha: "2025-04-04", cliente: "Blockchain Intelligence", cif: "B05490057", concepto: "Clase tokenizacion mobiliaria", base: 225, iva: 0, cuota: 0, total: 225, tipoIVA: "N/A" },
+    { n: "4/2025", fecha: "2025-05-14", cliente: "IEF", cif: "G-59190850", concepto: "Curso CESCOM 2025. Sesion 18", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "5/2025", fecha: "2025-06-23", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Direccion IE-Elecnor Hub (ene-abr 25)", base: 3000, iva: 21, cuota: 630, total: 3630 },
+    { n: "6/2025", fecha: "2025-09-26", cliente: "ASCOM", cif: "G-87034120", concepto: "Seminario Alta Direccion 2024", base: 300, iva: 0, cuota: 0, total: 300, tipoIVA: "exento" },
+    { n: "7/2025", fecha: "2025-10-20", cliente: "ICAB", cif: "Q0863003-J", concepto: "Clase RSC Master Compliance ICAB", base: 300, iva: 21, cuota: 63, total: 363 },
+    { n: "8/2025", fecha: "2025-10-20", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Direccion IE-Elecnor Hub (may-ago 25)", base: 3000, iva: 21, cuota: 630, total: 3630 },
+    { n: "9/2025", fecha: "2025-12-11", cliente: "Fundación Instituto de Empresa", cif: "G-81711459", concepto: "Direccion IE-Elecnor Hub (sep-dic 25)", base: 3000, iva: 21, cuota: 630, total: 3630 },
+    { n: "10/2025", fecha: "2025-12-17", cliente: "Maximiliano Vergara (Salzburgo)", cif: "Pasaporte Chile", concepto: "Asesoramiento juridico Bitrise (50% dic)", base: 375, iva: 0, cuota: 0, total: 375, tipoIVA: "no sujeto art.69" },
+    { n: "11/2025", fecha: "2025-12-30", cliente: "Maximiliano Vergara (Austria)", cif: "Pasaporte Chile", concepto: "Asesoramiento juridico Bitrise (50% dic+ene)", base: 1000, iva: 0, cuota: 0, total: 1000, tipoIVA: "no sujeto art.69" },
+  ],
+};
+
+const IVA = {
+  2024: [
+    { t: "1T", base_rep: 4650, cuota_rep: 976.50, base_sop: 2100, cuota_sop: 441, resultado: 535.50, acum_prev: 12701.85, compensado: 535.50, estado: "presentado" },
+    { t: "2T", base_rep: 0, cuota_rep: 0, base_sop: 1830, cuota_sop: 384.30, resultado: -384.30, acum_prev: 12166.35, compensado: 0, estado: "presentado" },
+    { t: "3T", base_rep: 4650, cuota_rep: 976.50, base_sop: 850, cuota_sop: 178.50, resultado: 798, acum_prev: 12550.65, compensado: 798, estado: "presentado" },
+    { t: "4T", base_rep: 0, cuota_rep: 0, base_sop: 467, cuota_sop: 98.07, resultado: -98.07, acum_prev: 11752.65, compensado: 0, estado: "presentado" },
+  ],
+  2025: [
+    { t: "1T", base_rep: 825, cuota_rep: 0, base_sop: 636.67, cuota_sop: 133.70, resultado: -133.70, acum_prev: 1566.78, compensado: 0, estado: "presentado" },
+    { t: "2T", base_rep: 825, cuota_rep: 0, base_sop: 1338.37, cuota_sop: 171.48, resultado: -171.48, acum_prev: 1700.48, compensado: 0, estado: "presentado" },
+    { t: "3T", base_rep: 3000, cuota_rep: 630, base_sop: 636.67, cuota_sop: 133.70, resultado: 496.30, acum_prev: 1871.96, compensado: 496.30, estado: "presentado" },
+    { t: "4T", base_rep: 7675, cuota_rep: 1323, base_sop: 10775.06, cuota_sop: 2245.13, resultado: -922.13, acum_prev: 1375.66, compensado: 0, estado: "presentado", rectif: true },
+  ],
+};
+
+const IVA_390 = {
+  2025: { devengado_base: 12125, devengado_cuota: 1953, deducible_base: 13386.77, deducible_cuota: 2684.01, resultado: -731.01, a_compensar: 731.01, vol_operaciones: 12125 },
+};
+
+const PYG = {
+  2023: { ingresos: 23539.20, gastos_prof: 10303.01, transportes: 127.61, bancos: 50, suministros: 1181.95, otros: 1897.31, compras: 3418.53, amort: 480.81 },
+  2024: { ingresos: 9300, gastos_prof: 5543.21, transportes: 0, bancos: 50, suministros: 1445.94, otros: 0, compras: 0, amort: 480.81 },
+  2025: { ingresos: 12100, gastos_prof: 0, transportes: 0, bancos: 0, suministros: 0, otros: 0, compras: 0, amort: 480.81 },
+};
+
+const ALERTAS = [
+  { tipo: "urgente", msg: "Credito IVA historico caducado - solicitar devolucion via rectificativa", accion: "Presentar rectificativa 4T 2024" },
+  { tipo: "urgente", msg: "Requerimiento AEAT Modelo 111 1T 2025 - contestado 26/09/2025", accion: "Verificar resolucion" },
+  { tipo: "info", msg: "Pago a cuenta IS (Mod. 010): 90 EUR ingresado 16/05/2025", accion: null },
+  { tipo: "pendiente", msg: "390 IVA 2025 presentado 28/01/2026 - A compensar 731,01 EUR", accion: null },
+];
+
+const c = {
+  bg: "#f0f2f5", surface: "#ffffff", card: "#ffffff", border: "#e2e8f0",
+  a1: "#2d6a4f", a2: "#40916c", a3: "#e67e22", a4: "#e74c3c", a5: "#2c3e50", a6: "#8e44ad",
+  t1: "#1a202c", t2: "#4a5568", t3: "#a0aec0",
+  pos: "#27ae60", neg: "#e74c3c", warn: "#f39c12",
+  hdr: "#1a3a2a",
+};
+
+const fmt = (n) => n == null ? "—" : new Intl.NumberFormat("es-ES", {minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
+const fmtE = (n) => "€" + fmt(n);
+
+const Badge = ({text,color=c.a1}) => React.createElement("span",{style:{display:"inline-block",padding:"2px 8px",borderRadius:4,fontSize:11,fontWeight:600,background:color+"15",color,border:"1px solid "+color+"30"}},text);
+
+const Card = ({children,title,icon,accent,style={}}) => React.createElement("div",{style:{background:c.card,border:"1px solid "+c.border,borderRadius:10,borderTop:accent?"3px solid "+accent:undefined,boxShadow:"0 1px 3px rgba(0,0,0,0.06)",...style}},
+  title && React.createElement("div",{style:{padding:"14px 18px 10px",borderBottom:"1px solid "+c.border,display:"flex",alignItems:"center",gap:8}},
+    icon && React.createElement("span",{style:{fontSize:16}},icon),
+    React.createElement("span",{style:{fontSize:14,fontWeight:600,color:c.t1}},title)),
+  React.createElement("div",{style:{padding:"14px 18px"}},children));
+
+const Stat = ({icon,label,value,sub,color=c.a1}) => React.createElement(Card,{accent:color},
+  React.createElement("div",{style:{fontSize:11,color:c.t3,textTransform:"uppercase",letterSpacing:"0.05em",fontWeight:600,marginBottom:4}},icon+" "+label),
+  React.createElement("div",{style:{fontSize:22,fontWeight:700,color:c.t1,fontFamily:"monospace"}},value),
+  sub && React.createElement("div",{style:{fontSize:11,color:c.t2,marginTop:2}},sub));
+
+const TABS = [
+  {id:"resumen",icon:"📊",label:"Resumen"},
+  {id:"facturas",icon:"🧾",label:"Facturas"},
+  {id:"iva",icon:"📋",label:"IVA"},
+  {id:"pyg",icon:"📈",label:"PyG"},
+  {id:"is",icon:"🏛️",label:"IS"},
+  {id:"calendario",icon:"📅",label:"Calendario"},
+];
+
+function TabResumen({year}) {
+  const fras = FACTURAS[year]||[];
+  const totalIng = fras.reduce((s,f)=>s+f.base,0);
+  const totalIVARep = fras.reduce((s,f)=>s+f.cuota,0);
+  const iva = IVA[year]||[];
+  const totalSop = iva.reduce((s,t)=>s+t.cuota_sop,0);
+  const pyg = PYG[year]||{};
+  const totalG = (pyg.gastos_prof||0)+(pyg.transportes||0)+(pyg.bancos||0)+(pyg.suministros||0)+(pyg.otros||0)+(pyg.compras||0)+(pyg.amort||0);
+  const res = (pyg.ingresos||totalIng)-totalG;
+
+  return React.createElement("div",null,
+    year===2025 && ALERTAS.length>0 && React.createElement(Card,{accent:c.a4,style:{marginBottom:16}},
+      React.createElement("div",{style:{fontSize:14,fontWeight:600,color:c.t1,marginBottom:10}},"⚠️ Alertas"),
+      ALERTAS.map((a,i)=>React.createElement("div",{key:i,style:{display:"flex",gap:10,padding:"6px 0",borderBottom:i<ALERTAS.length-1?"1px solid "+c.border:"none",alignItems:"center"}},
+        React.createElement(Badge,{text:a.tipo,color:a.tipo==="urgente"?c.neg:a.tipo==="pendiente"?c.warn:c.a1}),
+        React.createElement("span",{style:{fontSize:12,color:c.t2,flex:1}},a.msg),
+        a.accion && React.createElement("span",{style:{fontSize:11,color:c.a1,fontWeight:600}},a.accion)))),
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12,marginBottom:20}},
+      React.createElement(Stat,{icon:"📈",label:"Ingresos",value:fmtE(totalIng),sub:fras.length+" facturas",color:c.pos}),
+      React.createElement(Stat,{icon:"📉",label:"Gastos",value:fmtE(totalG),color:c.neg}),
+      React.createElement(Stat,{icon:"💰",label:"Resultado",value:fmtE(res),sub:res<0?"Pérdida":"Beneficio",color:res>=0?c.pos:c.neg}),
+      React.createElement(Stat,{icon:"🧾",label:"IVA Rep.",value:fmtE(totalIVARep),color:c.a1}),
+      React.createElement(Stat,{icon:"📋",label:"IVA Sop.",value:fmtE(totalSop),color:c.a5})),
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
+      React.createElement(Card,{title:"Últimas facturas",icon:"🧾",accent:c.a1},
+        fras.slice(-5).reverse().map((f,i)=>React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid "+c.border,fontSize:12}},
+          React.createElement("span",{style:{color:c.t2}},f.n+" — "+f.cliente.substring(0,25)),
+          React.createElement("span",{style:{fontFamily:"monospace",fontWeight:600,color:c.t1}},fmtE(f.total))))),
+      React.createElement(Card,{title:"Liquidaciones IVA",icon:"📋",accent:c.a2},
+        iva.map((t,i)=>React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid "+c.border,fontSize:12,alignItems:"center"}},
+          React.createElement("span",{style:{fontWeight:600,color:c.t1}},t.t),
+          React.createElement("span",{style:{fontFamily:"monospace",color:t.resultado>=0?c.pos:c.neg}},fmtE(t.resultado)),
+          React.createElement(Badge,{text:t.estado,color:c.pos}),
+          t.rectif && React.createElement(Badge,{text:"RECT",color:c.a3}))))));
+}
+
+function TabFacturas({year}) {
+  const fras = FACTURAS[year]||[];
+  const [filter,setFilter] = useState("");
+  const filtered = fras.filter(f=>!filter||f.cliente.toLowerCase().includes(filter.toLowerCase())||f.concepto.toLowerCase().includes(filter.toLowerCase()));
+  const tB = filtered.reduce((s,f)=>s+f.base,0);
+  const tI = filtered.reduce((s,f)=>s+f.cuota,0);
+
+  return React.createElement(Card,null,
+    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:14,alignItems:"center"}},
+      React.createElement("div",{style:{fontSize:13,color:c.t2}},fras.length+" facturas · Base: "+fmtE(tB)+" · IVA: "+fmtE(tI)),
+      React.createElement("input",{placeholder:"🔍 Buscar...",value:filter,onChange:e=>setFilter(e.target.value),style:{border:"1px solid "+c.border,borderRadius:6,padding:"6px 12px",fontSize:12,color:c.t1,outline:"none",width:220}})),
+    React.createElement("table",{style:{fontSize:12}},
+      React.createElement("thead",null,React.createElement("tr",{style:{borderBottom:"2px solid "+c.border}},
+        ["Nº","Fecha","Cliente","Concepto","Base","IVA","Total","Tipo"].map(h=>React.createElement("th",{key:h,style:{padding:"8px 6px",textAlign:"left",color:c.t3,fontSize:10,fontWeight:600,textTransform:"uppercase"}},h)))),
+      React.createElement("tbody",null,filtered.map((f,i)=>React.createElement("tr",{key:i,style:{borderBottom:"1px solid "+c.border}},
+        React.createElement("td",{style:{padding:"8px 6px",fontWeight:600,color:c.a1}},f.n),
+        React.createElement("td",{style:{padding:"8px 6px",fontFamily:"monospace",fontSize:11,color:c.t2}},f.fecha),
+        React.createElement("td",{style:{padding:"8px 6px",color:c.t1,maxWidth:150,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},f.cliente),
+        React.createElement("td",{style:{padding:"8px 6px",color:c.t2,maxWidth:200,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},f.concepto),
+        React.createElement("td",{style:{padding:"8px 6px",fontFamily:"monospace",textAlign:"right",fontWeight:600}},fmt(f.base)),
+        React.createElement("td",{style:{padding:"8px 6px",fontFamily:"monospace",textAlign:"right",color:f.cuota>0?c.t1:c.t3}},f.cuota>0?fmt(f.cuota):"—"),
+        React.createElement("td",{style:{padding:"8px 6px",fontFamily:"monospace",textAlign:"right",fontWeight:700,color:c.a1}},fmt(f.total)),
+        React.createElement("td",{style:{padding:"8px 6px"}},React.createElement(Badge,{text:f.tipoIVA||f.iva+"%",color:f.cuota>0?c.a1:c.t3})))))));
+}
+
+function TabIVA({year}) {
+  const iva = IVA[year]||[];
+  const r390 = IVA_390[year];
+  if(!iva.length) return React.createElement(Card,null,React.createElement("div",{style:{textAlign:"center",padding:40,color:c.t3}},"No hay datos IVA para "+year));
+  return React.createElement("div",null,
+    React.createElement("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:16}},
+      iva.map((t,i)=>React.createElement(Card,{key:i,accent:t.resultado>=0?c.pos:c.neg},
+        React.createElement("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}},
+          React.createElement("span",{style:{fontSize:14,fontWeight:700}},t.t),
+          React.createElement(Badge,{text:t.estado,color:c.pos}),
+          t.rectif&&React.createElement(Badge,{text:"RECT",color:c.a3})),
+        React.createElement("div",{style:{fontSize:11,color:c.t3}},"Devengado"),
+        React.createElement("div",{style:{fontSize:15,fontFamily:"monospace",fontWeight:600,color:c.pos,marginBottom:6}},fmtE(t.cuota_rep)),
+        React.createElement("div",{style:{fontSize:11,color:c.t3}},"Soportado"),
+        React.createElement("div",{style:{fontSize:15,fontFamily:"monospace",fontWeight:600,color:c.neg,marginBottom:6}},fmtE(t.cuota_sop)),
+        React.createElement("div",{style:{borderTop:"1px solid "+c.border,paddingTop:8}},
+          React.createElement("div",{style:{fontSize:18,fontFamily:"monospace",fontWeight:700,color:t.resultado>=0?c.pos:c.neg}},fmtE(t.resultado)))))),
+    r390 && React.createElement(Card,{title:"Modelo 390 — Resumen anual "+year,icon:"📄",accent:c.a1},
+      [["Total devengado (base)",fmtE(r390.devengado_base)],["Total devengado (cuota)",fmtE(r390.devengado_cuota)],
+       ["Total deducible (base)",fmtE(r390.deducible_base)],["Total deducible (cuota)",fmtE(r390.deducible_cuota)],
+       ["Resultado régimen general",fmtE(r390.resultado)],["A compensar",fmtE(r390.a_compensar)],
+       ["Vol. operaciones (art.121)",fmtE(r390.vol_operaciones)]].map(([l,v],i)=>
+        React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid "+c.border,fontSize:13}},
+          React.createElement("span",{style:{color:c.t2}},l),
+          React.createElement("span",{style:{fontFamily:"monospace",fontWeight:600}},v)))));
+}
+
+function TabPyG({year}) {
+  const p=PYG[year];
+  if(!p) return React.createElement(Card,null,"No hay datos");
+  const g=p.gastos_prof+p.transportes+p.bancos+p.suministros+p.otros+p.compras+p.amort;
+  const r=p.ingresos-g;
+  const lines=[
+    {l:"Prestaciones de servicios (705)",v:p.ingresos},
+    {l:"Compras (600)",v:-p.compras},{l:"Servicios profesionales (623)",v:-p.gastos_prof},
+    {l:"Transportes (624)",v:-p.transportes},{l:"Servicios bancarios (626)",v:-p.bancos},
+    {l:"Suministros (628)",v:-p.suministros},{l:"Otros servicios (629)",v:-p.otros},
+    {l:"Amortizaciones (681)",v:-p.amort}].filter(x=>x.v!==0);
+  return React.createElement(Card,{title:"Cuenta de Pérdidas y Ganancias — "+year,icon:"📈",accent:c.a1},
+    lines.map((x,i)=>React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"8px 0",borderBottom:"1px solid "+c.border}},
+      React.createElement("span",{style:{fontSize:13,color:c.t2}},x.l),
+      React.createElement("span",{style:{fontSize:13,fontFamily:"monospace",fontWeight:600,color:x.v>=0?c.pos:c.neg}},fmtE(x.v)))),
+    React.createElement("div",{style:{display:"flex",justifyContent:"space-between",padding:"12px 0",marginTop:4,borderTop:"2px solid "+c.a1}},
+      React.createElement("span",{style:{fontSize:15,fontWeight:700}},"RESULTADO DEL EJERCICIO"),
+      React.createElement("span",{style:{fontSize:18,fontWeight:700,fontFamily:"monospace",color:r>=0?c.pos:c.neg}},fmtE(r))));
+}
+
+function TabIS() {
+  const bins=[{ej:"2020",orig:2417.47,comp:0,pend:2417.47},{ej:"2024",orig:1638.49,comp:0,pend:1638.49}];
+  return React.createElement("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
+    React.createElement(Card,{title:"Modelo 200 — 2024",icon:"📄",accent:c.a1},
+      [["Resultado contable",-1638.49],["Base imponible previa",-1638.49],["Compensación BINs",0],["Base imponible",0],["Tipo","25%"],["Cuota a ingresar",0]].map(([l,v],i)=>
+        React.createElement("div",{key:i,style:{display:"flex",justifyContent:"space-between",padding:"7px 0",borderBottom:"1px solid "+c.border,fontSize:13}},
+          React.createElement("span",{style:{color:c.t2}},l),
+          React.createElement("span",{style:{fontFamily:"monospace",fontWeight:600,color:typeof v==="number"?(v>=0?c.t1:c.neg):c.t1}},typeof v==="number"?fmtE(v):v)))),
+    React.createElement(Card,{title:"BINs pendientes",icon:"📉",accent:c.warn},
+      React.createElement("table",{style:{fontSize:12}},
+        React.createElement("thead",null,React.createElement("tr",{style:{borderBottom:"2px solid "+c.border}},
+          ["Ejercicio","Original","Pendiente"].map(h=>React.createElement("th",{key:h,style:{padding:"6px",textAlign:"right",fontSize:10,color:c.t3,fontWeight:600}},h)))),
+        React.createElement("tbody",null,
+          bins.map((b,i)=>React.createElement("tr",{key:i,style:{borderBottom:"1px solid "+c.border}},
+            React.createElement("td",{style:{padding:"6px",textAlign:"right",fontWeight:600}},b.ej),
+            React.createElement("td",{style:{padding:"6px",textAlign:"right",fontFamily:"monospace",color:c.neg}},fmt(b.orig)),
+            React.createElement("td",{style:{padding:"6px",textAlign:"right",fontFamily:"monospace",fontWeight:600,color:c.warn}},fmt(b.pend)))),
+          React.createElement("tr",{style:{background:"#fffbf0"}},
+            React.createElement("td",{style:{padding:"8px 6px",fontWeight:700}},"TOTAL"),
+            React.createElement("td",{style:{padding:"8px 6px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:c.neg}},fmt(4055.96)),
+            React.createElement("td",{style:{padding:"8px 6px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:c.warn}},fmt(4055.96)))))));
+}
+
+function TabCalendario() {
+  const cal=[
+    {f:"2025-01-30",mod:"303",desc:"IVA 4T 2024",est:"presentado"},
+    {f:"2025-01-30",mod:"390",desc:"Resumen anual IVA 2024",est:"presentado"},
+    {f:"2025-04-19",mod:"303",desc:"IVA 1T 2025",est:"presentado"},
+    {f:"2025-05-16",mod:"010",desc:"Pago a cuenta IS (90 EUR)",est:"presentado"},
+    {f:"2025-07-18",mod:"303",desc:"IVA 2T 2025",est:"presentado"},
+    {f:"2025-07-25",mod:"200",desc:"Impuesto Sociedades 2024",est:"presentado"},
+    {f:"2025-09-26",mod:"REQ",desc:"Contestación requerimiento 111 1T",est:"contestado"},
+    {f:"2025-10-18",mod:"303",desc:"IVA 3T 2025",est:"presentado"},
+    {f:"2026-01-28",mod:"303",desc:"IVA 4T 2025 (rectificativa)",est:"presentado"},
+    {f:"2026-01-28",mod:"390",desc:"Resumen anual IVA 2025",est:"presentado"},
+    {f:"2026-04-20",mod:"303",desc:"IVA 1T 2026",est:"pendiente"},
+    {f:"2026-06-30",mod:"CCAA",desc:"Aprobación CCAA 2025",est:"pendiente"},
+    {f:"2026-07-25",mod:"200",desc:"Impuesto Sociedades 2025",est:"pendiente"},
+  ];
+  return React.createElement(Card,{title:"Calendario fiscal",icon:"📅"},
+    cal.map((e,i)=>React.createElement("div",{key:i,style:{display:"grid",gridTemplateColumns:"100px 60px 1fr 90px",padding:"10px 0",borderBottom:"1px solid "+c.border,alignItems:"center"}},
+      React.createElement("span",{style:{fontFamily:"monospace",fontSize:12,color:c.t2}},e.f),
+      React.createElement(Badge,{text:e.mod,color:e.mod==="303"?c.a1:e.mod==="200"?c.a5:e.mod==="REQ"?c.a4:c.a6}),
+      React.createElement("span",{style:{fontSize:13,color:c.t1}},e.desc),
+      React.createElement(Badge,{text:e.est,color:e.est==="presentado"||e.est==="contestado"?c.pos:c.warn}))));
+}
+
+function App() {
+  const [tab,setTab] = useState("resumen");
+  const [year,setYear] = useState(2025);
+  const renderTab = () => {
+    switch(tab) {
+      case "resumen": return React.createElement(TabResumen,{year});
+      case "facturas": return React.createElement(TabFacturas,{year});
+      case "iva": return React.createElement(TabIVA,{year});
+      case "pyg": return React.createElement(TabPyG,{year});
+      case "is": return React.createElement(TabIS);
+      case "calendario": return React.createElement(TabCalendario);
+      default: return React.createElement(TabResumen,{year});
+    }
+  };
+  return React.createElement("div",{style:{minHeight:"100vh",background:c.bg}},
+    React.createElement("div",{style:{background:c.hdr,padding:"16px 24px",display:"flex",justifyContent:"space-between",alignItems:"center"}},
+      React.createElement("div",{style:{display:"flex",alignItems:"center",gap:16}},
+        React.createElement("img",{src:LOGO,alt:"Logo",style:{height:44,borderRadius:4}}),
+        React.createElement("div",null,
+          React.createElement("div",{style:{fontSize:18,fontWeight:700,color:"#fff"}},"Gobierno Contable"),
+          React.createElement("div",{style:{fontSize:11,color:"#8fbc8f"}},CO.cif+" · "+CO.dom))),
+      React.createElement("div",{style:{display:"flex",gap:6}},
+        [2023,2024,2025].map(y=>React.createElement("button",{key:y,onClick:()=>setYear(y),style:{padding:"6px 14px",borderRadius:6,fontSize:13,fontWeight:600,cursor:"pointer",border:"none",background:year===y?"#fff":"rgba(255,255,255,0.12)",color:year===y?c.hdr:"rgba(255,255,255,0.7)"}},y)))),
+    React.createElement("div",{style:{background:"#fff",borderBottom:"1px solid "+c.border,padding:"0 20px",display:"flex",gap:0,overflowX:"auto"}},
+      TABS.map(t=>React.createElement("button",{key:t.id,onClick:()=>setTab(t.id),style:{background:"none",border:"none",cursor:"pointer",padding:"11px 14px",fontSize:12,fontWeight:500,color:tab===t.id?c.a1:c.t3,borderBottom:tab===t.id?"2px solid "+c.a1:"2px solid transparent",display:"flex",alignItems:"center",gap:5,whiteSpace:"nowrap"}},React.createElement("span",{style:{fontSize:13}},t.icon),t.label))),
+    React.createElement("div",{style:{padding:"20px 24px",maxWidth:1100,margin:"0 auto"}},renderTab()),
+    React.createElement("div",{style:{textAlign:"center",padding:16,fontSize:10,color:c.t3}},"Gobierno Contable v2.0 — "+CO.name+" — Actualizado 22/02/2026"));
+}
+
+ReactDOM.render(React.createElement(App),document.getElementById("root"));
+</script></body></html>
