@@ -164,7 +164,7 @@ const CAT_CUENTA = {
 // Equipos: >300€ base → 217 (activo amortizable), ≤300€ → 629 (gasto directo)
 const AMORT_RATE = 0.25; // 25% anual equipos informáticos
 
-function generarAsientos(emitidas, recibidas, year) {
+function generarAsientos(emitidas, recibidas, year, allRecibidas) {
   const asientos = [];
   let n = 1;
   // ─── Facturas emitidas ───
@@ -185,19 +185,20 @@ function generarAsientos(emitidas, recibidas, year) {
     apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
     asientos.push({n:n++,fecha:r.fecha,tipo:"FR",concepto:`${r.prov} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
-  // ─── Amortizaciones ───
-  const activos = recibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
-  if(activos.length>0) {
+  // ─── Amortizaciones (incluye activos de años anteriores que siguen vivos) ───
+  const todosActivos = allRecibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
+  if(todosActivos.length>0) {
     const trimestres = ["Q1","Q2","Q3","Q4"];
     const fechasTrim = [`${year}-03-31`,`${year}-06-30`,`${year}-09-30`,`${year}-12-31`];
     trimestres.forEach((q,qi) => {
       let cuotaTrim = 0;
-      activos.forEach(a => {
+      todosActivos.forEach(a => {
         const yAdq = parseInt(a.fecha.split("-")[0]);
         const mAdq = parseInt(a.fecha.split("-")[1]);
+        // Solo si aún no está totalmente amortizado (4 años al 25%)
+        if(year - yAdq > 4) return;
         if(yAdq > year) return;
         if(yAdq === year && mAdq > (qi+1)*3) return;
-        // Meses en este trimestre que el activo estuvo en uso
         const inicioTrim = qi*3+1;
         const finTrim = (qi+1)*3;
         let meses = 0;
@@ -262,7 +263,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "4.0";
+const APP_VERSION = "4.1";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -419,25 +420,31 @@ function App() {
   const [search, setSearch] = useState("");
   const [libroView, setLibroView] = useState(null);
 
-  // ─── PERSISTENT DATA ───
-  const [emitidas2023, setEmitidas2023] = useState(()=>loadData("emitidas_2023", []));
-  const [emitidas2024, setEmitidas2024] = useState(()=>loadData("emitidas_2024", DEFAULT_EMITIDAS_2024));
-  const [emitidas2025, setEmitidas2025] = useState(()=>loadData("emitidas_2025", DEFAULT_EMITIDAS_2025));
-  const [recibidas2023, setRecibidas2023] = useState(()=>loadData("recibidas_2023", []));
-  const [recibidas2024, setRecibidas2024] = useState(()=>loadData("recibidas_2024", DEFAULT_RECIBIDAS_2024));
-  const [recibidas2025, setRecibidas2025] = useState(()=>loadData("recibidas_2025", DEFAULT_RECIBIDAS_2025));
+  // ─── PERSISTENT DATA (all years) ───
+  const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const defaults = {emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
+  const [store, setStore] = useState(()=>{
+    const s={};
+    YEARS.forEach(y=>{
+      s[`emitidas_${y}`]=loadData(`emitidas_${y}`,defaults[`emitidas_${y}`]||[]);
+      s[`recibidas_${y}`]=loadData(`recibidas_${y}`,defaults[`recibidas_${y}`]||[]);
+    });
+    return s;
+  });
+  const updateStore = useCallback((key,val)=>{
+    setStore(prev=>{const n={...prev,[key]:val};saveData(key,val);return n;});
+  },[]);
 
-  useEffect(()=>saveData("emitidas_2023",emitidas2023),[emitidas2023]);
-  useEffect(()=>saveData("emitidas_2024",emitidas2024),[emitidas2024]);
-  useEffect(()=>saveData("emitidas_2025",emitidas2025),[emitidas2025]);
-  useEffect(()=>saveData("recibidas_2023",recibidas2023),[recibidas2023]);
-  useEffect(()=>saveData("recibidas_2024",recibidas2024),[recibidas2024]);
-  useEffect(()=>saveData("recibidas_2025",recibidas2025),[recibidas2025]);
-
-  const emitidas = year===2023?emitidas2023:year===2024?emitidas2024:emitidas2025;
-  const setEmitidas = year===2023?setEmitidas2023:year===2024?setEmitidas2024:setEmitidas2025;
-  const recibidas = year===2023?recibidas2023:year===2024?recibidas2024:recibidas2025;
-  const setRecibidas = year===2023?setRecibidas2023:year===2024?setRecibidas2024:setRecibidas2025;
+  const emitidas = store[`emitidas_${year}`]||[];
+  const setEmitidas = useCallback(fn=>{
+    const key=`emitidas_${year}`;
+    setStore(prev=>{const cur=prev[key]||[];const nv=typeof fn==="function"?fn(cur):fn;saveData(key,nv);return {...prev,[key]:nv};});
+  },[year]);
+  const recibidas = store[`recibidas_${year}`]||[];
+  const setRecibidas = useCallback(fn=>{
+    const key=`recibidas_${year}`;
+    setStore(prev=>{const cur=prev[key]||[];const nv=typeof fn==="function"?fn(cur):fn;saveData(key,nv);return {...prev,[key]:nv};});
+  },[year]);
 
   // ─── MODALS ───
   const [modalEmitida, setModalEmitida] = useState(null); // null=closed, {}=new, {data}=edit
@@ -671,7 +678,8 @@ function App() {
     </div>;
 
     if(section==="libros") {
-      const asientos = generarAsientos(emitidas, recibidas, year);
+      const allRecibidas = YEARS.flatMap(y=>store[`recibidas_${y}`]||[]);
+      const asientos = generarAsientos(emitidas, recibidas, year, allRecibidas);
       const mayor = generarMayor(asientos);
       const balance = generarBalance(mayor);
       const pyg = generarPyG(mayor);
@@ -906,8 +914,8 @@ function App() {
             <button onClick={()=>setSideOpen(!sideOpen)} style={{background:"none",border:"1px solid #D5DCE4",color:"#7A8DA0",cursor:"pointer",width:32,height:32,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15}}>☰</button>
             <span style={{color:"#2E6B3A",fontSize:16,fontWeight:700}}>{sections[section]}</span>
           </div>
-          <div style={{display:"flex",gap:4}}>
-            {[2023,2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");setLibroView(null);}} style={{padding:"6px 16px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
+          <div style={{display:"flex",gap:4,flexWrap:"wrap"}}>
+            {[2017,2018,2019,2020,2021,2022,2023,2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");setLibroView(null);}} style={{padding:"6px 12px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
           </div>
         </div>
         <div style={{flex:1,overflow:"auto",padding:24}}>{renderSection()}</div>
