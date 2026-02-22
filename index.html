@@ -142,7 +142,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "3.0";
+const APP_VERSION = "3.3";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -450,21 +450,71 @@ function App() {
       ]} data={filteredRecibidas} onEdit={item=>setModalRecibida(item)} onDelete={item=>setConfirmDelete({type:"recibida",item})}/>
     </div>;
 
+    const ivaDocsMap = {
+      2024: {
+        Q2: [{label:"Borrador IVA 2T",doc:"docs/fiscal/IVA_2T2024.xlsx"}],
+        Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/IVA_Q3_2024.pdf"}],
+        Q4: [{label:"Modelo 303 — 4T",doc:"docs/fiscal/IVA_Q4_2024.pdf"}],
+        anual: [{label:"Modelo 390 — Resumen anual",doc:"docs/fiscal/IVA_resumen_anual_2024.pdf"}],
+      },
+      2025: {},
+      2023: {},
+    };
+    const ivaDocs = ivaDocsMap[year]||{};
+    const DocLink = ({d}) => <a href={d.doc} target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:4,color:"#2980B9",textDecoration:"none",fontSize:11,padding:"3px 8px",background:"#EAF2F8",borderRadius:4,border:"1px solid #AED6F1"}}>📄 {d.label}</a>;
+
     if(section==="iva") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Modelo 303 — Liquidación trimestral IVA {year}</div>
-      <DataTable columns={[
-        {label:"Trimestre",key:"q",bold:true},
-        {label:"Base Emitidas",align:"right",mono:true,render:r=>fmt(r.bE)},
-        {label:"IVA Repercutido",align:"right",mono:true,color:"#3D7A4A",render:r=>fmt(r.iR)},
-        {label:"Base Recibidas",align:"right",mono:true,render:r=>fmt(r.bR)},
-        {label:"IVA Soportado",align:"right",mono:true,color:"#2980B9",render:r=>fmt(r.iS)},
-        {label:"Resultado",align:"right",mono:true,bold:true,render:r=>{const v=r.iR-r.iS;return <span style={{color:v>=0?"#C0392B":"#27AE60"}}>{fmt(v)}</span>;}},
-      ]} data={[...qd,{q:"TOTAL",bE:tIB,iR:tIR,bR:tGB,iS:tGI,id:"total"}]}/>
-      <div style={{marginTop:18,background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
+      {qd.map((q,i)=><div key={i} style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:12}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>{q.q}</span>
+          <span style={{fontSize:14,fontFamily:"monospace",fontWeight:700,color:q.iR-q.iS>=0?"#C0392B":"#27AE60"}}>{fmt(q.iR-q.iS)}</span>
+        </div>
+        <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50",marginBottom:8}}>
+          <span>Base emitidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bE)}</b></span>
+          <span>IVA repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(q.iR)}</b></span>
+          <span>Base recibidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bR)}</b></span>
+          <span>IVA soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(q.iS)}</b></span>
+        </div>
+        {(ivaDocs[q.q]||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
+          {ivaDocs[q.q].map((d,j)=><DocLink key={j} d={d}/>)}
+        </div>}
+        {!ivaDocs[q.q]&&<div style={{fontSize:11,color:"#ccc",marginTop:4,fontStyle:"italic"}}>Sin declaración presentada</div>}
+      </div>)}
+      <div style={{background:"#fff",borderRadius:10,padding:18,border:"2px solid #3D7A4A",marginBottom:12}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>TOTAL {year}</span>
+          <span style={{fontSize:16,fontFamily:"monospace",fontWeight:700,color:ivaNet>=0?"#C0392B":"#27AE60"}}>{fmt(ivaNet)}</span>
+        </div>
+        <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50"}}>
+          <span>Total repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(tIR)}</b></span>
+          <span>Total soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(tGI)}</b></span>
+        </div>
+        {(ivaDocs.anual||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>
+          {ivaDocs.anual.map((d,j)=><DocLink key={j} d={d}/>)}
+        </div>}
+      </div>
+      <div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
         <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:8,fontWeight:700}}>Notas IVA</div>
         <div style={{fontSize:12,color:"#2C3E50",lineHeight:1.8}}>• Crédito IVA acumulado ~11.597€<br/>• Exentas art.20.9/20.1.10º<br/>• Art.69 (Vergara): no sujetas<br/>• USA (Gamma, Logically): inversión sujeto pasivo 12-13<br/>• Faltan meses Movistar</div>
       </div>
     </div>;
+
+    const isDocsMap = {
+      2024: [
+        {label:"Justificante pago a cuenta IS",doc:"docs/fiscal/Justificante_pago_a_cuenta_IS_22024.pdf"},
+        {label:"Liquidación pago a cuenta IS",doc:"docs/fiscal/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
+        {label:"Pago Mod.010 — 248,22€",doc:"docs/fiscal/082615305105DC5LNA45CZ.pdf"},
+      ],
+      2025: [
+        {label:"Requerimiento AEAT",doc:"docs/fiscal/Requerimiento_2025.pdf"},
+        {label:"Recibo contestación requerimiento",doc:"docs/fiscal/Eecibo_contestacio_n_requerimiento.pdf"},
+        {label:"174545437Z26",doc:"docs/fiscal/174545437Z26.pdf"},
+        {label:"174545437Z",doc:"docs/fiscal/174545437Z.pdf"},
+      ],
+      2023: [],
+    };
+    const isDocs = isDocsMap[year]||[];
 
     if(section==="is") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Impuesto sobre Sociedades — Estimación {year}</div>
@@ -482,6 +532,12 @@ function App() {
           <span style={{fontSize:12,fontFamily:"monospace",color:r.c||"#2C3E50",fontWeight:r.b?700:400}}>{r.v!=null?fmt(Math.abs(r.v)):""}</span>
         </div>)}
       </div>
+      {isDocs.length>0&&<div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginTop:16}}>
+        <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Documentos IS / AEAT — {year}</div>
+        <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+          {isDocs.map((d,j)=><DocLink key={j} d={d}/>)}
+        </div>
+      </div>}
     </div>;
 
     if(section==="alertas") return <div>
