@@ -138,11 +138,131 @@ const getQ = fecha => { const m=parseInt(fecha.split("-")[1]); if(m<=3) return "
 const genId = () => "id-"+Date.now()+"-"+Math.random().toString(36).substr(2,5);
 const calcIva = (base,tipo) => Math.round(base*tipo/100*100)/100;
 
+// ═══════════════════════════════════
+// ═══  MOTOR CONTABLE PGC  ═════════
+// ═══════════════════════════════════
+const PGC = {
+  "100":"Capital social","112":"Reserva legal","129":"Resultado del ejercicio",
+  "206":"Aplicaciones informáticas","217":"Equipos proc. información",
+  "280":"AA inmov. intangible","281":"AA inmov. material",
+  "430":"Clientes","410":"Acreedores prest. servicios",
+  "472":"HP IVA soportado","477":"HP IVA repercutido",
+  "4700":"HP deudora IVA","4750":"HP acreedora IVA","4752":"HP acreedora IS",
+  "572":"Bancos c/c",
+  "623":"Servicios prof. independientes","625":"Primas de seguros",
+  "627":"Publicidad y RRPP","628":"Suministros",
+  "629":"Otros servicios","631":"Otros tributos",
+  "680":"Amort. inmov. intangible","681":"Amort. inmov. material",
+  "705":"Prestaciones de servicios",
+};
+const ctaName = c => PGC[c] ? `${c} ${PGC[c]}` : c;
+
+const CAT_CUENTA = {
+  "Telecom":"628","Software":"629","Software int.":"629","Suscripciones":"629",
+  "Libros":"629","Transporte":"629","Restauración":"627","Vinculada":"623","Otros":"629",
+};
+// Equipos: >300€ base → 217 (activo amortizable), ≤300€ → 629 (gasto directo)
+const AMORT_RATE = 0.25; // 25% anual equipos informáticos
+
+function generarAsientos(emitidas, recibidas, year) {
+  const asientos = [];
+  let n = 1;
+  // ─── Facturas emitidas ───
+  [...emitidas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(e => {
+    const apuntes = [];
+    apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:e.total,haber:0});
+    apuntes.push({cuenta:"705",nombre:ctaName("705"),debe:0,haber:e.base});
+    if(e.iva>0) apuntes.push({cuenta:"477",nombre:ctaName("477"),debe:0,haber:e.iva});
+    asientos.push({n:n++,fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
+  });
+  // ─── Facturas recibidas ───
+  [...recibidas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(r => {
+    const apuntes = [];
+    const esActivo = r.cat==="Equipos" && r.base>300;
+    const ctaGasto = esActivo ? "217" : (CAT_CUENTA[r.cat]||"629");
+    apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
+    if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
+    apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
+    asientos.push({n:n++,fecha:r.fecha,tipo:"FR",concepto:`${r.prov} — ${r.desc}`,ref:r.id,apuntes,esActivo});
+  });
+  // ─── Amortizaciones ───
+  const activos = recibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
+  if(activos.length>0) {
+    const trimestres = ["Q1","Q2","Q3","Q4"];
+    const fechasTrim = [`${year}-03-31`,`${year}-06-30`,`${year}-09-30`,`${year}-12-31`];
+    trimestres.forEach((q,qi) => {
+      let cuotaTrim = 0;
+      activos.forEach(a => {
+        const yAdq = parseInt(a.fecha.split("-")[0]);
+        const mAdq = parseInt(a.fecha.split("-")[1]);
+        if(yAdq > year) return;
+        if(yAdq === year && mAdq > (qi+1)*3) return;
+        // Meses en este trimestre que el activo estuvo en uso
+        const inicioTrim = qi*3+1;
+        const finTrim = (qi+1)*3;
+        let meses = 0;
+        for(let m=inicioTrim;m<=finTrim;m++) {
+          if(yAdq < year || (yAdq===year && mAdq<=m)) meses++;
+        }
+        cuotaTrim += (a.base * AMORT_RATE / 12) * meses;
+      });
+      if(cuotaTrim > 0) {
+        cuotaTrim = Math.round(cuotaTrim*100)/100;
+        asientos.push({n:n++,fecha:fechasTrim[qi],tipo:"AM",concepto:`Amortización EPI ${q} ${year}`,apuntes:[
+          {cuenta:"681",nombre:ctaName("681"),debe:cuotaTrim,haber:0},
+          {cuenta:"281",nombre:ctaName("281"),debe:0,haber:cuotaTrim},
+        ]});
+      }
+    });
+  }
+  return asientos;
+}
+
+function generarMayor(asientos) {
+  const cuentas = {};
+  asientos.forEach(a => {
+    a.apuntes.forEach(ap => {
+      if(!cuentas[ap.cuenta]) cuentas[ap.cuenta] = {cuenta:ap.cuenta,nombre:ap.nombre,debe:0,haber:0,movs:[]};
+      cuentas[ap.cuenta].debe += ap.debe;
+      cuentas[ap.cuenta].haber += ap.haber;
+      cuentas[ap.cuenta].movs.push({fecha:a.fecha,concepto:a.concepto,debe:ap.debe,haber:ap.haber});
+    });
+  });
+  return Object.values(cuentas).sort((a,b)=>a.cuenta.localeCompare(b.cuenta)).map(c=>({...c,saldo:c.debe-c.haber}));
+}
+
+function generarBalance(mayor) {
+  // Activo: cuentas grupo 2 (inmov.), 4 deudoras (430,472,4700), 5 (tesorería) con saldo deudor
+  // Pasivo: cuentas grupo 1 (fondos propios), 4 acreedoras (410,477,4750,4752) con saldo acreedor
+  const activo = mayor.filter(m => {
+    const g = m.cuenta.charAt(0);
+    if(g==="2") return true; // Inmovilizado (incluye 281 con saldo negativo = amort acum)
+    if(m.cuenta==="430"||m.cuenta==="472"||m.cuenta==="4700") return m.saldo>0;
+    if(g==="5") return m.saldo>0;
+    return false;
+  });
+  const pasivo = mayor.filter(m => {
+    const g = m.cuenta.charAt(0);
+    if(g==="1") return true;
+    if(m.cuenta==="410"||m.cuenta==="477"||m.cuenta==="4750"||m.cuenta==="4752") return m.saldo<0;
+    return false;
+  });
+  return {activo,pasivo,tActivo:activo.reduce((s,m)=>s+m.saldo,0),tPasivo:pasivo.reduce((s,m)=>s+Math.abs(m.saldo),0)};
+}
+
+function generarPyG(mayor) {
+  const ingresos = mayor.filter(m=>m.cuenta.startsWith("7"));
+  const gastos = mayor.filter(m=>m.cuenta.startsWith("6"));
+  const tIngresos = ingresos.reduce((s,m)=>s+m.haber-m.debe,0);
+  const tGastos = gastos.reduce((s,m)=>s+m.debe-m.haber,0);
+  return {ingresos,gastos,tIngresos,tGastos,resultado:tIngresos-tGastos};
+}
+
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "3.4";
+const APP_VERSION = "4.0";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -297,6 +417,7 @@ function App() {
   const [year, setYear] = useState(2025);
   const [sideOpen, setSideOpen] = useState(true);
   const [search, setSearch] = useState("");
+  const [libroView, setLibroView] = useState(null);
 
   // ─── PERSISTENT DATA ───
   const [emitidas2023, setEmitidas2023] = useState(()=>loadData("emitidas_2023", []));
@@ -549,80 +670,165 @@ function App() {
       </div>)}
     </div>;
 
-    const librosData = {
-      2025: [
-        {tipo:"Libro Diario",desc:`${emitidas.length+recibidas.length} asientos`,estado:"En progreso",st:"warning"},
-        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"En progreso",st:"warning"},
-        {tipo:"Facturas Emitidas",desc:`${emitidas.length} facturas`,estado:"Actualizado",st:"success",nav:"emitidas"},
-        {tipo:"Facturas Recibidas",desc:`${recibidas.length} facturas`,estado:"Alertas",st:"warning",nav:"recibidas"},
-        {tipo:"Libro de Actas",desc:"CCAA, nombramientos",estado:"Pendiente",st:"info"},
-        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
-        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Preparación",st:"warning"},
-        {tipo:"Modelo 200",desc:"IS 2025",estado:"Pendiente",st:"info",nav:"is"},
-      ],
-      2024: [
-        {tipo:"Libro Diario",desc:`${(year===2024?emitidas:emitidas2024).length+(year===2024?recibidas:recibidas2024).length} asientos`,estado:"En progreso",st:"warning"},
-        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"En progreso",st:"warning"},
-        {tipo:"Facturas Emitidas",desc:`${(year===2024?emitidas:emitidas2024).length} facturas`,estado:"Actualizado",st:"success",nav:"emitidas"},
-        {tipo:"Facturas Recibidas",desc:`${(year===2024?recibidas:recibidas2024).length} facturas`,estado:"Alertas",st:"warning",nav:"recibidas"},
-        {tipo:"Libro de Actas",desc:"CCAA, nombramientos",estado:"Pendiente",st:"info"},
-        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
-        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Preparación",st:"warning"},
-        {tipo:"Modelo 200",desc:"IS 2024",estado:"Pendiente",st:"info",nav:"is"},
-      ],
-      2023: [
-        {tipo:"Libro Diario",desc:"Diario contable 2023",estado:"Completo",st:"success",doc:"docs/corporativo/DIARIO_2023.xlsx"},
-        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"Completo",st:"success"},
-        {tipo:"Facturas Emitidas",desc:"Ver facturas",estado:"Completo",st:"success",nav:"emitidas"},
-        {tipo:"Facturas Recibidas",desc:"Ver facturas",estado:"Completo",st:"success",nav:"recibidas"},
-        {tipo:"Libro de Actas",desc:"CCAA aprobadas",estado:"Depositado",st:"success"},
-        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
-        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Aprobadas",st:"success"},
-        {tipo:"Modelo 200",desc:"IS 2023",estado:"Presentado",st:"success",nav:"is"},
-      ],
-    };
-    const ccaaDocs = [
-      {year:2022,label:"Certificado aprobación CCAA 2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
-      {year:2021,label:"Certificado aprobación CCAA 2021",doc:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf"},
-      {year:2020,label:"Certificación CCAA 2020",doc:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf"},
-      {year:2019,label:"Certificación CCAA 2019",doc:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"},
-    ];
-    const balanceDocs = [
-      {label:"Balance 2022",doc:"docs/corporativo/BCE_2022.pdf"},
-      {label:"Balance detallado 2022",doc:"docs/corporativo/BCE_202214.pdf"},
-      {label:"PyG 2022",doc:"docs/corporativo/PG_2022.pdf"},
-      {label:"Balance y PyG histórico (Excel)",doc:"docs/corporativo/BSPyG.xlsx"},
-    ];
-    const otrosDocs = [
-      {label:"Escritura constitución SLP (2021)",doc:"docs/corporativo/2021BTC0523.pdf"},
-      {label:"Certificado firma electrónica",doc:"docs/corporativo/CertFirmaEPDF.pdf"},
-      {label:"Diario contable 2023 (Excel)",doc:"docs/corporativo/DIARIO_2023.xlsx"},
-    ];
+    if(section==="libros") {
+      const asientos = generarAsientos(emitidas, recibidas, year);
+      const mayor = generarMayor(asientos);
+      const balance = generarBalance(mayor);
+      const pyg = generarPyG(mayor);
 
-    if(section==="libros") return <div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Libros contables — {year}</div>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12,marginBottom:20}}>
-        {(librosData[year]||[]).map((b,i)=><div key={i} onClick={()=>{if(b.nav)setSection(b.nav);if(b.doc)window.open(b.doc,"_blank")}} style={{background:"#fff",borderRadius:10,padding:16,border:"1px solid #E4E9F0",cursor:b.nav||b.doc?"pointer":"default",transition:"all 0.15s"}} onMouseEnter={e=>{if(b.nav||b.doc){e.currentTarget.style.borderColor="#3D7A4A";e.currentTarget.style.boxShadow="0 2px 8px rgba(61,122,74,0.1)"}}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#E4E9F0";e.currentTarget.style.boxShadow="none"}}>
-          <div style={{fontSize:13,fontWeight:700,color:"#2C3E50",marginBottom:4}}>{b.tipo}</div>
-          <div style={{fontSize:11,color:"#7A8DA0",marginBottom:8}}>{b.desc}</div>
-          <Badge type={b.st}>{b.estado}</Badge>
-          {b.doc&&<span style={{marginLeft:6,fontSize:12}}>📄</span>}
-          {b.nav&&<span style={{marginLeft:6,fontSize:10,color:"#2980B9"}}>→ ver</span>}
-        </div>)}
-      </div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Cuentas anuales — CCAA depositadas</div>
-      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-        {ccaaDocs.map((d,i)=><DocLink key={i} d={d}/>)}
-      </div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Balance y Pérdidas y Ganancias</div>
-      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-        {balanceDocs.map((d,i)=><DocLink key={i} d={d}/>)}
-      </div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Otros documentos corporativos</div>
-      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
-        {otrosDocs.map((d,i)=><DocLink key={i} d={d}/>)}
-      </div>
-    </div>;
+      const ccaaDoc = {2022:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf",2021:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf",2020:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf",2019:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"};
+      const yearDocs = {
+        2023:[{label:"Diario 2023 (Excel)",doc:"docs/corporativo/DIARIO_2023.xlsx"}],
+        2022:[{label:"Balance 2022",doc:"docs/corporativo/BCE_2022.pdf"},{label:"PyG 2022",doc:"docs/corporativo/PG_2022.pdf"},{label:"CCAA 2022",doc:ccaaDoc[2022]}],
+      };
+      const SectionTitle = ({children}) => <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,marginTop:20,fontWeight:700}}>{children}</div>;
+
+      const tabs = [{id:"diario",label:"Libro Diario"},{id:"mayor",label:"Libro Mayor"},{id:"balance",label:"Balance"},{id:"pyg",label:"PyG"},{id:"docs",label:"Documentos"}];
+
+      return <div>
+        <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
+          {tabs.map(t=><button key={t.id} onClick={()=>setLibroView(libroView===t.id?null:t.id)} style={{padding:"6px 14px",borderRadius:6,border:libroView===t.id?"2px solid #3D7A4A":"1px solid #D5DCE4",background:libroView===t.id?"#3D7A4A":"#fff",color:libroView===t.id?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:600}}>
+            {t.label}
+          </button>)}
+        </div>
+
+        {(!libroView||libroView==="diario")&&<div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <SectionTitle>Libro diario — {year} ({asientos.length} asientos)</SectionTitle>
+            <button className="btn btn-sm btn-export" onClick={()=>{
+              const rows=[];asientos.forEach(a=>{a.apuntes.forEach((ap,j)=>{rows.push({n:j===0?a.n:"",fecha:j===0?a.fecha:"",tipo:j===0?a.tipo:"",concepto:j===0?a.concepto:"",cuenta:ap.nombre,debe:ap.debe||"",haber:ap.haber||""});});});
+              exportCSV(rows,`libro_diario_${year}.csv`,[{label:"Nº",key:"n"},{label:"Fecha",key:"fecha"},{label:"Tipo",key:"tipo"},{label:"Concepto",key:"concepto"},{label:"Cuenta",key:"cuenta"},{label:"Debe",key:"debe"},{label:"Haber",key:"haber"}]);
+            }}>↓ CSV</button>
+          </div>
+          <div style={{overflowX:"auto",overflowY:"auto",maxHeight:500,borderRadius:8,border:"1px solid #E4E9F0",background:"#fff"}}>
+            <table style={{width:"100%",borderCollapse:"collapse",fontSize:11,fontFamily:"system-ui"}}>
+              <thead><tr>
+                {["Nº","Fecha","Tipo","Concepto","Cuenta","Debe","Haber"].map((h,i)=><th key={i} style={{padding:"8px 10px",textAlign:i>=5?"right":"left",color:"#7A8DA0",fontSize:9,textTransform:"uppercase",letterSpacing:0.5,borderBottom:"2px solid #3D7A4A",background:"#FAFBFC",position:"sticky",top:0,whiteSpace:"nowrap",fontWeight:700}}>{h}</th>)}
+              </tr></thead>
+              <tbody>{asientos.flatMap((a,ai)=>a.apuntes.map((ap,j)=><tr key={`${ai}-${j}`} style={{background:j===0&&a.tipo==="AM"?"#FEF9E7":"transparent"}}>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontWeight:j===0?600:400,color:"#2C3E50",fontSize:10}}>{j===0?a.n:""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",whiteSpace:"nowrap",fontSize:10,color:"#7A8DA0"}}>{j===0?fmtDate(a.fecha):""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5"}}>{j===0?<Badge type={a.tipo==="FE"?"success":a.tipo==="FR"?"warning":"info"}>{a.tipo}</Badge>:""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontSize:10,color:j===0?"#2C3E50":"#999",paddingLeft:j>0?30:10}}>{j===0?a.concepto:""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontSize:10,color:"#2C3E50",fontWeight:500}}>{ap.nombre}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",textAlign:"right",fontFamily:"monospace",fontSize:10,color:ap.debe?"#2C3E50":"#ccc"}}>{ap.debe?fmt(ap.debe):""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",textAlign:"right",fontFamily:"monospace",fontSize:10,color:ap.haber?"#2C3E50":"#ccc"}}>{ap.haber?fmt(ap.haber):""}</td>
+              </tr>))}</tbody>
+              <tfoot><tr style={{background:"#FAFBFC"}}>
+                <td colSpan={5} style={{padding:"8px 10px",fontWeight:700,fontSize:11,borderTop:"2px solid #3D7A4A"}}>TOTALES</td>
+                <td style={{padding:"8px 10px",textAlign:"right",fontFamily:"monospace",fontWeight:700,fontSize:11,borderTop:"2px solid #3D7A4A"}}>{fmt(asientos.reduce((s,a)=>s+a.apuntes.reduce((s2,ap)=>s2+ap.debe,0),0))}</td>
+                <td style={{padding:"8px 10px",textAlign:"right",fontFamily:"monospace",fontWeight:700,fontSize:11,borderTop:"2px solid #3D7A4A"}}>{fmt(asientos.reduce((s,a)=>s+a.apuntes.reduce((s2,ap)=>s2+ap.haber,0),0))}</td>
+              </tr></tfoot>
+            </table>
+          </div>
+        </div>}
+
+        {libroView==="mayor"&&<div>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <SectionTitle>Libro mayor — {year} ({mayor.length} cuentas)</SectionTitle>
+            <button className="btn btn-sm btn-export" onClick={()=>exportCSV(mayor,`libro_mayor_${year}.csv`,[{label:"Cuenta",key:"nombre"},{label:"Debe",key:"debe"},{label:"Haber",key:"haber"},{label:"Saldo",key:"saldo"}])}>↓ CSV</button>
+          </div>
+          {mayor.map((m,i)=><div key={i} style={{background:"#fff",borderRadius:8,border:"1px solid #E4E9F0",marginBottom:10,overflow:"hidden"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 16px",background:"#FAFBFC",borderBottom:"1px solid #E4E9F0",cursor:"pointer"}} onClick={()=>{const el=document.getElementById(`mayor-${i}`);if(el)el.style.display=el.style.display==="none"?"block":"none"}}>
+              <div style={{display:"flex",gap:12,alignItems:"center"}}>
+                <span style={{fontSize:12,fontWeight:700,color:"#2E6B3A",fontFamily:"monospace"}}>{m.cuenta}</span>
+                <span style={{fontSize:12,color:"#2C3E50"}}>{PGC[m.cuenta]||""}</span>
+                <span style={{fontSize:10,color:"#999"}}>({m.movs.length} movs.)</span>
+              </div>
+              <div style={{display:"flex",gap:16,fontSize:11,fontFamily:"monospace"}}>
+                <span>D: {fmt(m.debe)}</span>
+                <span>H: {fmt(m.haber)}</span>
+                <span style={{fontWeight:700,color:m.saldo>=0?"#2E6B3A":"#C0392B"}}>Saldo: {fmt(Math.abs(m.saldo))} {m.saldo>=0?"D":"H"}</span>
+              </div>
+            </div>
+            <div id={`mayor-${i}`} style={{display:"none"}}>
+              <table style={{width:"100%",borderCollapse:"collapse",fontSize:10}}>
+                <thead><tr>{["Fecha","Concepto","Debe","Haber","Saldo"].map((h,j)=><th key={j} style={{padding:"6px 10px",textAlign:j>=2?"right":"left",color:"#7A8DA0",fontSize:9,borderBottom:"1px solid #E4E9F0",background:"#FAFBFC"}}>{h}</th>)}</tr></thead>
+                <tbody>{(()=>{let s=0;return m.movs.map((mv,j)=>{s+=mv.debe-mv.haber;return <tr key={j}><td style={{padding:"4px 10px",borderBottom:"1px solid #F5F5F5"}}>{fmtDate(mv.fecha)}</td><td style={{padding:"4px 10px",borderBottom:"1px solid #F5F5F5",color:"#7A8DA0"}}>{mv.concepto}</td><td style={{padding:"4px 10px",borderBottom:"1px solid #F5F5F5",textAlign:"right",fontFamily:"monospace"}}>{mv.debe?fmt(mv.debe):""}</td><td style={{padding:"4px 10px",borderBottom:"1px solid #F5F5F5",textAlign:"right",fontFamily:"monospace"}}>{mv.haber?fmt(mv.haber):""}</td><td style={{padding:"4px 10px",borderBottom:"1px solid #F5F5F5",textAlign:"right",fontFamily:"monospace",fontWeight:600,color:s>=0?"#2E6B3A":"#C0392B"}}>{fmt(Math.abs(s))} {s>=0?"D":"H"}</td></tr>})})()}</tbody>
+              </table>
+            </div>
+          </div>)}
+        </div>}
+
+        {libroView==="balance"&&<div>
+          <SectionTitle>Balance de situación — {year}</SectionTitle>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            <div style={{flex:1,minWidth:300,background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#2E6B3A",marginBottom:12,borderBottom:"2px solid #2E6B3A",paddingBottom:6}}>ACTIVO</div>
+              {balance.activo.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:12,borderBottom:"1px solid #F0F2F5"}}>
+                <span style={{color:m.cuenta.startsWith("2")?"#2C3E50":"#7A8DA0"}}><span style={{fontFamily:"monospace",marginRight:6,fontSize:10}}>{m.cuenta}</span>{PGC[m.cuenta]||""}</span>
+                <span style={{fontFamily:"monospace",color:m.saldo>=0?"#2E6B3A":"#C0392B"}}>{fmt(m.saldo)}</span>
+              </div>)}
+              <div style={{display:"flex",justifyContent:"space-between",padding:"10px 0",fontSize:14,fontWeight:700,borderTop:"2px solid #2E6B3A",marginTop:6}}>
+                <span>TOTAL ACTIVO</span><span style={{fontFamily:"monospace",color:"#2E6B3A"}}>{fmt(balance.tActivo)}</span>
+              </div>
+            </div>
+            <div style={{flex:1,minWidth:300,background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
+              <div style={{fontSize:13,fontWeight:700,color:"#2980B9",marginBottom:12,borderBottom:"2px solid #2980B9",paddingBottom:6}}>PATRIMONIO NETO Y PASIVO</div>
+              {balance.pasivo.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:12,borderBottom:"1px solid #F0F2F5"}}>
+                <span style={{color:"#7A8DA0"}}><span style={{fontFamily:"monospace",marginRight:6,fontSize:10}}>{m.cuenta}</span>{PGC[m.cuenta]||""}</span>
+                <span style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(Math.abs(m.saldo))}</span>
+              </div>)}
+              <div style={{display:"flex",justifyContent:"space-between",padding:"5px 0",fontSize:12,borderBottom:"1px solid #F0F2F5",fontStyle:"italic"}}>
+                <span style={{color:"#7A8DA0"}}>Resultado del ejercicio</span>
+                <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(pyg.resultado)}</span>
+              </div>
+              <div style={{display:"flex",justifyContent:"space-between",padding:"10px 0",fontSize:14,fontWeight:700,borderTop:"2px solid #2980B9",marginTop:6}}>
+                <span>TOTAL PN + PASIVO</span><span style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(balance.tPasivo+pyg.resultado)}</span>
+              </div>
+            </div>
+          </div>
+        </div>}
+
+        {libroView==="pyg"&&<div>
+          <SectionTitle>Cuenta de pérdidas y ganancias — {year}</SectionTitle>
+          <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
+            <div style={{padding:"10px 20px",background:"#EAFAF1",fontWeight:700,fontSize:12,color:"#2E6B3A",borderBottom:"1px solid #A9DFBF"}}>A) INGRESOS DE EXPLOTACIÓN</div>
+            {pyg.ingresos.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 20px 6px 36px",fontSize:12,borderBottom:"1px solid #F0F2F5"}}>
+              <span style={{color:"#7A8DA0"}}><span style={{fontFamily:"monospace",marginRight:6,fontSize:10}}>{m.cuenta}</span>{PGC[m.cuenta]||""}</span>
+              <span style={{fontFamily:"monospace"}}>{fmt(m.haber-m.debe)}</span>
+            </div>)}
+            <div style={{display:"flex",justifyContent:"space-between",padding:"8px 20px",fontWeight:700,fontSize:12,borderBottom:"2px solid #E4E9F0",background:"#FAFBFC"}}>
+              <span>Total ingresos explotación</span><span style={{fontFamily:"monospace",color:"#2E6B3A"}}>{fmt(pyg.tIngresos)}</span>
+            </div>
+            <div style={{padding:"10px 20px",background:"#FDEDEC",fontWeight:700,fontSize:12,color:"#C0392B",borderBottom:"1px solid #F5B7B1"}}>B) GASTOS DE EXPLOTACIÓN</div>
+            {pyg.gastos.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 20px 6px 36px",fontSize:12,borderBottom:"1px solid #F0F2F5"}}>
+              <span style={{color:"#7A8DA0"}}><span style={{fontFamily:"monospace",marginRight:6,fontSize:10}}>{m.cuenta}</span>{PGC[m.cuenta]||""}</span>
+              <span style={{fontFamily:"monospace"}}>{fmt(m.debe-m.haber)}</span>
+            </div>)}
+            <div style={{display:"flex",justifyContent:"space-between",padding:"8px 20px",fontWeight:700,fontSize:12,borderBottom:"2px solid #E4E9F0",background:"#FAFBFC"}}>
+              <span>Total gastos explotación</span><span style={{fontFamily:"monospace",color:"#C0392B"}}>{fmt(pyg.tGastos)}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"14px 20px",fontWeight:700,fontSize:15,background:"#FAFBFC"}}>
+              <span>A.1) RESULTADO DE EXPLOTACIÓN</span>
+              <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(pyg.resultado)}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",fontSize:12,background:"#fff",borderTop:"1px solid #E4E9F0"}}>
+              <span style={{color:"#7A8DA0"}}>IS estimado (25%)</span>
+              <span style={{fontFamily:"monospace"}}>{fmt(pyg.resultado>0?pyg.resultado*0.25:0)}</span>
+            </div>
+            <div style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",fontWeight:700,fontSize:13,background:"#FAFBFC",borderTop:"1px solid #E4E9F0"}}>
+              <span>RESULTADO DESPUÉS DE IMPUESTOS</span>
+              <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(pyg.resultado>0?pyg.resultado*0.75:pyg.resultado)}</span>
+            </div>
+          </div>
+        </div>}
+
+        {libroView==="docs"&&<div>
+          <SectionTitle>Documentos contables y corporativos — {year}</SectionTitle>
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
+            {(yearDocs[year]||[]).map((d,i)=><DocLink key={i} d={d}/>)}
+            {ccaaDoc[year]&&<DocLink d={{label:`CCAA ${year}`,doc:ccaaDoc[year]}}/>}
+            <DocLink d={{label:"Balance y PyG histórico",doc:"docs/corporativo/BSPyG.xlsx"}}/>
+            <DocLink d={{label:"Escritura constitución",doc:"docs/corporativo/2021BTC0523.pdf"}}/>
+            <DocLink d={{label:"Certificado firma",doc:"docs/corporativo/CertFirmaEPDF.pdf"}}/>
+          </div>
+          {year<=2022&&<div style={{fontSize:11,color:"#7A8DA0",fontStyle:"italic"}}>Ejercicio cerrado — CCAA aprobadas y depositadas</div>}
+          {year===2023&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio cerrado — CCAA pendientes de depósito</div>}
+          {year>=2024&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio en curso — contabilidad viva</div>}
+        </div>}
+      </div>;
+    }
 
     if(section==="docs") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Documentos fiscales y corporativos</div>
@@ -680,9 +886,9 @@ function App() {
           <div style={{marginTop:6,fontSize:11,color:"#7A8DA0",fontFamily:"monospace",letterSpacing:0.5}}>NIF: B67038695</div>
         </div>
         <div style={{padding:"10px 6px",flex:1,display:"flex",flexDirection:"column",gap:1}}>
-          <NavItem icon="◈" label="Dashboard" active={section==="dashboard"} onClick={()=>{setSection("dashboard");setSearch("");}}/>
-          <NavItem icon="↗" label="Facturas Emitidas" active={section==="emitidas"} onClick={()=>{setSection("emitidas");setSearch("");}} badge={emitidas.length}/>
-          <NavItem icon="↙" label="Facturas Recibidas" active={section==="recibidas"} onClick={()=>{setSection("recibidas");setSearch("");}} badge={recibidas.length}/>
+          <NavItem icon="◈" label="Dashboard" active={section==="dashboard"} onClick={()=>{setSection("dashboard");setSearch("");setLibroView(null);}}/>
+          <NavItem icon="↗" label="Facturas Emitidas" active={section==="emitidas"} onClick={()=>{setSection("emitidas");setSearch("");setLibroView(null);}} badge={emitidas.length}/>
+          <NavItem icon="↙" label="Facturas Recibidas" active={section==="recibidas"} onClick={()=>{setSection("recibidas");setSearch("");setLibroView(null);}} badge={recibidas.length}/>
           <div style={{height:1,background:"#E4E9F0",margin:"6px 16px"}}/>
           <NavItem icon="%" label="IVA / Mod. 303" active={section==="iva"} onClick={()=>setSection("iva")}/>
           <NavItem icon="§" label="Impuesto Sociedades" active={section==="is"} onClick={()=>setSection("is")}/>
@@ -691,7 +897,7 @@ function App() {
           <NavItem icon="📚" label="Libros y Actas" active={section==="libros"} onClick={()=>setSection("libros")}/>
           <NavItem icon="🗂" label="Docs Fiscales" active={section==="docs"} onClick={()=>setSection("docs")}/>
         </div>
-        <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v2.0 · Claude AI</div>
+        <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v4.0 · Motor PGC</div>
       </div>}
       {/* MAIN */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden"}}>
@@ -701,7 +907,7 @@ function App() {
             <span style={{color:"#2E6B3A",fontSize:16,fontWeight:700}}>{sections[section]}</span>
           </div>
           <div style={{display:"flex",gap:4}}>
-            {[2023,2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");}} style={{padding:"6px 16px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
+            {[2023,2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");setLibroView(null);}} style={{padding:"6px 16px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
           </div>
         </div>
         <div style={{flex:1,overflow:"auto",padding:24}}>{renderSection()}</div>
