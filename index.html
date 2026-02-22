@@ -587,7 +587,7 @@ function App() {
   const maxC=catS[0]?.[1]||1;
   const cc=["#3D7A4A","#2980B9","#27AE60","#E67E22","#8E44AD","#C0392B","#16A085","#D4AC0D"];
 
-  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps",docs:"Documentos Fiscales"};
+  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps"};
 
   // ─── FILTER ───
   const filteredEmitidas = emitidas.filter(e => !search || [e.num,e.cliente,e.desc,e.nif].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
@@ -865,6 +865,15 @@ function App() {
     </div>;
 
     const isDocsMap = {
+      2022: [
+        {label:"Modelo 200 — IS 2022",doc:"docs/fiscal/2022/IS2022.pdf"},
+        {label:"Aprobación CCAA 2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
+        {label:"Balance 2022",doc:"docs/corporativo/BCE_2022.pdf"},
+        {label:"PyG 2022",doc:"docs/corporativo/PG_2022.pdf"},
+      ],
+      2023: [
+        {label:"Diario contable 2023",doc:"docs/corporativo/DIARIO_2023.xlsx"},
+      ],
       2024: [
         {label:"Justificante pago a cuenta IS",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
         {label:"Liquidación pago a cuenta IS",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
@@ -876,7 +885,6 @@ function App() {
         {label:"174545437Z26",doc:"docs/fiscal/2025/174545437Z26.pdf"},
         {label:"174545437Z",doc:"docs/fiscal/2025/174545437Z.pdf"},
       ],
-      2023: [],
     };
     const isDocs = isDocsMap[year]||[];
 
@@ -1069,59 +1077,12 @@ function App() {
           </div>
           {year<=2022&&<div style={{fontSize:11,color:"#7A8DA0",fontStyle:"italic"}}>Ejercicio cerrado — CCAA aprobadas y depositadas</div>}
           {year===2023&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio cerrado — CCAA pendientes de depósito</div>}
-          {year>=2024&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio en curso — contabilidad viva</div>}
+          {(year===2024||year===2025)&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio cerrado — pendiente de formular CCAA</div>}
+          {year>=2026&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio en curso — contabilidad viva</div>}
         </div>}
       </div>;
     }
 
-    if(section==="docs") return <div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Documentos fiscales y corporativos</div>
-      <DataTable maxH={480} columns={[
-        {label:"Tipo",key:"tipo",bold:true},
-        {label:"Archivo",render:r=>r.doc?<a href={r.doc} target="_blank" rel="noopener" style={{color:"#2980B9",fontSize:11,textDecoration:"none"}}>{r.archivo} 📄</a>:<span style={{color:"#999",fontSize:11}}>{r.archivo}</span>},
-        {label:"Descripción",key:"desc"},
-        {label:"Periodo",key:"periodo",nowrap:true},
-      ]} data={[
-        {id:"d1",tipo:"IVA 303",archivo:"IVA_Q3_2024.pdf",desc:"Modelo 303 3T 2024",periodo:"Q3 2024",doc:"docs/fiscal/2024/IVA_Q3_2024.pdf"},
-        {id:"d2",tipo:"IVA 303",archivo:"IVA_Q4_2024.pdf",desc:"Modelo 303 4T 2024",periodo:"Q4 2024",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"},
-        {id:"d3",tipo:"IVA 390",archivo:"IVA_resumen_anual_2024.pdf",desc:"Resumen anual IVA",periodo:"2024",doc:"docs/fiscal/2024/IVA_resumen_anual_2024.pdf"},
-        {id:"d4",tipo:"IVA",archivo:"IVA_2T2024.xlsx",desc:"Borrador IVA 2T",periodo:"Q2 2024",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"},
-        {id:"d4b",tipo:"IVA 303",archivo:"1T23.pdf",desc:"Modelo 303 1T 2023 — A compensar",periodo:"Q1 2023",doc:"docs/fiscal/2023/1T23.pdf"},
-        {id:"d4c",tipo:"IVA 303",archivo:"2T23.pdf",desc:"Modelo 303 2T 2023 — Resultado 0",periodo:"Q2 2023",doc:"docs/fiscal/2023/2T23.pdf"},
-        {id:"d4d",tipo:"IVA 303",archivo:"3T23.pdf",desc:"Modelo 303 3T 2023 — Resultado 0",periodo:"Q3 2023",doc:"docs/fiscal/2023/3T23.pdf"},
-        {id:"d4e",tipo:"IVA 303",archivo:"4T23.pdf",desc:"Modelo 303 4T 2023 — A compensar",periodo:"Q4 2023",doc:"docs/fiscal/2023/4T23.pdf"},
-        {id:"d4f",tipo:"IVA 303",archivo:"1T22.pdf",desc:"Modelo 303 1T 2022 — Resultado 0",periodo:"Q1 2022",doc:"docs/fiscal/2022/1T22.pdf"},
-        {id:"d4g",tipo:"IVA 303",archivo:"2T22.pdf",desc:"Modelo 303 2T 2022 — Resultado 0",periodo:"Q2 2022",doc:"docs/fiscal/2022/2T22.pdf"},
-        {id:"d4h",tipo:"IVA 303",archivo:"3T22.pdf",desc:"Modelo 303 3T 2022 — Resultado 0",periodo:"Q3 2022",doc:"docs/fiscal/2022/3T22.pdf"},
-        {id:"d4i",tipo:"IVA 303",archivo:"4T22.pdf",desc:"Modelo 303 4T 2022 — A compensar",periodo:"Q4 2022",doc:"docs/fiscal/2022/4T22.pdf"},
-        {id:"d5",tipo:"IS",archivo:"Justificante_pago_a_cuenta.pdf",desc:"Pago a cuenta IS",periodo:"2024",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
-        {id:"d6",tipo:"IS",archivo:"Liquidacion_pago_cuenta.pdf",desc:"Liquidación IS",periodo:"2024",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
-        {id:"d7",tipo:"AEAT",archivo:"Mod.010 — 248,22€",desc:"Pago Mod.010",periodo:"Ene 2026",doc:"docs/fiscal/2025/082615305105DC5LNA45CZ.pdf"},
-        {id:"d8",tipo:"AEAT",archivo:"Requerimiento_2025.pdf",desc:"Requerimiento AEAT",periodo:"2025",doc:"docs/fiscal/2025/Requerimiento_2025.pdf"},
-        {id:"d9",tipo:"AEAT",archivo:"Recibo contestación",desc:"Contestación requerimiento",periodo:"2025",doc:"docs/fiscal/2025/Eecibo_contestacio_n_requerimiento.pdf"},
-        {id:"d10",tipo:"AEAT",archivo:"174545437Z26.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z26.pdf"},
-        {id:"d11",tipo:"AEAT",archivo:"174545437Z.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z.pdf"},
-        {id:"d12",tipo:"CCAA",archivo:"CERT_CCAA_2022.pdf",desc:"Aprobación CCAA 2022",periodo:"2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
-        {id:"d13",tipo:"CCAA",archivo:"CERT_CCAA_2021.pdf",desc:"Aprobación CCAA 2021",periodo:"2021",doc:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf"},
-        {id:"d14",tipo:"CCAA",archivo:"CERT_CCAA_2020.pdf",desc:"Certificación 2020",periodo:"2020",doc:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf"},
-        {id:"d15",tipo:"CCAA",archivo:"CERT_CCAA_2019.pdf",desc:"Certificación 2019",periodo:"2019",doc:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"},
-        {id:"d16",tipo:"Balance",archivo:"BCE_2022.pdf",desc:"Balance 2022",periodo:"2022",doc:"docs/corporativo/BCE_2022.pdf"},
-        {id:"d17",tipo:"Balance",archivo:"BCE_202214.pdf",desc:"Balance detallado 2022",periodo:"2022",doc:"docs/corporativo/BCE_202214.pdf"},
-        {id:"d18",tipo:"PyG",archivo:"PG_2022.pdf",desc:"PyG 2022",periodo:"2022",doc:"docs/corporativo/PG_2022.pdf"},
-        {id:"d19",tipo:"Contable",archivo:"BSPyG.xlsx",desc:"Balance y PyG (Excel)",periodo:"Histórico",doc:"docs/corporativo/BSPyG.xlsx"},
-        {id:"d20",tipo:"Diario",archivo:"DIARIO_2023.xlsx",desc:"Diario contable 2023",periodo:"2023",doc:"docs/corporativo/DIARIO_2023.xlsx"},
-        {id:"d21",tipo:"Certificado",archivo:"CertFirmaEPDF.pdf",desc:"Certificado firma electrónica",periodo:"",doc:"docs/corporativo/CertFirmaEPDF.pdf"},
-        {id:"d22",tipo:"Constitución",archivo:"2021BTC0523.pdf",desc:"Escritura constitución SLP",periodo:"2021",doc:"docs/corporativo/2021BTC0523.pdf"},
-        {id:"d23",tipo:"Banco",archivo:"Movimientos.xlsx",desc:"Movimientos Bankinter",periodo:"2024-25",doc:"docs/banco/Movimientos_cuenta_corriente_ES1001287610380100000566.xlsx"},
-        {id:"d24",tipo:"Banco",archivo:"Enero 2024.pdf",desc:"Extracto enero",periodo:"Ene 2024",doc:"docs/banco/january_2024.pdf"},
-        {id:"d25",tipo:"Banco",archivo:"Febrero 2024.pdf",desc:"Extracto febrero",periodo:"Feb 2024",doc:"docs/banco/february_2024.pdf"},
-        {id:"d26",tipo:"Banco",archivo:"Marzo 2024.pdf",desc:"Extracto marzo",periodo:"Mar 2024",doc:"docs/banco/march_2024.pdf"},
-        {id:"d27",tipo:"Banco",archivo:"Bankinter Q1.htm",desc:"Movimientos Q1 2024",periodo:"Q1 2024",doc:"docs/banco/movimientos_bankinter_Q1_24.htm"},
-        {id:"d28",tipo:"Vinculada",archivo:"Enrique Aznar 2024",desc:"Factura asesoría vinculada",periodo:"2024",doc:"docs/recibidas/2024/EnriqueAznar_2024.pdf"},
-        {id:"d29",tipo:"Vinculada",archivo:"Enrique Aznar 2025",desc:"Factura asesoría vinculada",periodo:"2025",doc:"docs/recibidas/2025/EnriqueAznar_2025.pdf"},
-        {id:"d30",tipo:"Vinculada",archivo:"Enrique Aznar rect.",desc:"Factura rectificativa",periodo:"2024",doc:"docs/recibidas/2024/EnriqueAznar_rect_2024.pdf"},
-      ]}/>
-    </div>;
     return null;
   };
 
@@ -1147,7 +1108,6 @@ function App() {
           <div style={{height:1,background:"#E4E9F0",margin:"6px 16px"}}/>
           <NavItem icon="⚠" label="Alertas" active={section==="alertas"} onClick={()=>setSection("alertas")} badge={ALERTAS.length}/>
           <NavItem icon="📚" label="Libros y Actas" active={section==="libros"} onClick={()=>setSection("libros")}/>
-          <NavItem icon="🗂" label="Docs Fiscales" active={section==="docs"} onClick={()=>setSection("docs")}/>
         </div>
         <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v4.0 · Motor PGC</div>
       </div>}
