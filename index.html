@@ -41,6 +41,55 @@ const { useState, useEffect, useCallback } = React;
 
 const LOGO_SRC = "data:image/jpeg;base64,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";
 
+// ─── MODELOS 303 — DATOS OFICIALES AEAT ───
+const MODELOS_303 = {
+  2022: [
+    {trimestre:"1T",periodo:"Q1",fecha:"19-04-2022",justificante:"3033012900285",csv:"L7MMP2VU3SVHFGUG",expediente:"202230303860280H",
+     baseImponible21:4412.50,cuotaDevengada:926.62,baseIvaSoportado:2100.34,cuotaDeducible:441.07,
+     resultadoRegimen:485.55,sumaResultados:485.55,atribuibleEstado:485.55,
+     cuotasPendientes:12856.82,cuotasAplicadas:485.55,cuotasPendientesPosterior:12371.27,
+     resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2022/1T22.pdf"},
+    {trimestre:"2T",periodo:"Q2",fecha:"15-07-2022",justificante:"3033091841114",csv:"HJNW7U7GVRHRLEC3",expediente:"202230303860608D",
+     baseImponible21:7092.50,cuotaDevengada:1489.42,baseIvaSoportado:3330.25,cuotaDeducible:686.79,
+     resultadoRegimen:802.63,sumaResultados:802.63,atribuibleEstado:802.63,
+     cuotasPendientes:12371.27,cuotasAplicadas:802.63,cuotasPendientesPosterior:11568.64,
+     resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2022/2T22.pdf"},
+    {trimestre:"3T",periodo:"Q3",fecha:"18-10-2022",justificante:"3033055824784",csv:"XTGSNTQABBFXA3WV",expediente:"202230303860991T",
+     baseImponible21:3998.00,cuotaDevengada:839.58,baseIvaSoportado:1535.81,cuotaDeducible:322.52,
+     resultadoRegimen:517.06,sumaResultados:517.06,atribuibleEstado:517.06,
+     cuotasPendientes:11568.64,cuotasAplicadas:517.06,cuotasPendientesPosterior:11051.58,
+     resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2022/3T22.pdf"},
+    {trimestre:"4T",periodo:"Q4",fecha:"25-01-2023",justificante:"3033000214623",csv:"Z2M6QR66PBZLBP95",expediente:"202230303861366J",
+     baseImponible21:1000.00,cuotaDevengada:210.00,baseIvaSoportado:9210.70,cuotaDeducible:1902.78,
+     resultadoRegimen:-1692.78,sumaResultados:-1692.78,atribuibleEstado:-1692.78,
+     cuotasPendientes:11051.58,cuotasAplicadas:0,cuotasPendientesPosterior:11051.58,
+     resultadoLiquidacion:-1692.78,estado:"A COMPENSAR",importeCompensar:1692.78,doc:"docs/fiscal/2022/4T22.pdf"}
+  ],
+  2023: [
+    {trimestre:"1T",periodo:"Q1",fecha:"18-04-2023",justificante:"3034056947600",csv:"ECBX4XWUT6SQL44S",expediente:"202330303860279M",
+     baseImponible21:0,cuotaDevengada:0,baseIvaSoportado:881.10,cuotaDeducible:164.86,
+     resultadoRegimen:-164.86,sumaResultados:-164.86,atribuibleEstado:-164.86,
+     cuotasPendientes:12744.36,cuotasAplicadas:0,cuotasPendientesPosterior:12744.36,
+     resultadoLiquidacion:-164.86,estado:"A COMPENSAR",importeCompensar:164.86,doc:"docs/fiscal/2023/1T23.pdf"},
+    {trimestre:"2T",periodo:"Q2",fecha:"14-07-2023",justificante:"3034005436603",csv:"7GJ23RJP48CGAXS9",expediente:"202330303860585K",
+     baseImponible21:2363.97,cuotaDevengada:496.43,baseIvaSoportado:999.68,cuotaDeducible:206.97,
+     baseInversion:181.17,cuotaInversion:38.05,
+     resultadoRegimen:289.46,sumaResultados:289.46,atribuibleEstado:289.46,
+     cuotasPendientes:12909.22,cuotasAplicadas:289.46,cuotasPendientesPosterior:12619.76,
+     entregasIntracom:12619.76,resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2023/2T23.pdf"},
+    {trimestre:"3T",periodo:"Q3",fecha:"19-10-2023",justificante:"3034013291583",csv:"4ATMWE6DRBWKL4J8",expediente:"202330303860585K",
+     baseImponible21:9500.00,cuotaDevengada:1995.00,baseIvaSoportado:3295.21,cuotaDeducible:691.99,
+     resultadoRegimen:1303.01,sumaResultados:1303.01,atribuibleEstado:1303.01,
+     cuotasPendientes:11316.75,cuotasAplicadas:1303.01,cuotasPendientesPosterior:11316.75,
+     entregasIntracom:12619.76,resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2023/3T23.pdf"},
+    {trimestre:"4T",periodo:"Q4",fecha:"28-01-2024",justificante:"3034053588221",csv:"UVHEZENXGDBAVU24",expediente:"202330303861428G",
+     baseImponible21:10394.00,cuotaDevengada:2182.74,baseIvaSoportado:10932.92,cuotaDeducible:2264.41,
+     resultadoRegimen:-81.67,sumaResultados:-81.67,atribuibleEstado:-81.67,
+     cuotasPendientes:11316.75,cuotasAplicadas:0,cuotasPendientesPosterior:11316.75,
+     entregasIntracom:11316.75,resultadoLiquidacion:-81.67,estado:"A COMPENSAR",importeCompensar:81.67,doc:"docs/fiscal/2023/4T23.pdf"}
+  ]
+};
+
 // ─── DEFAULT DATA ───
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
@@ -419,6 +468,7 @@ function App() {
   const [sideOpen, setSideOpen] = useState(true);
   const [search, setSearch] = useState("");
   const [libroView, setLibroView] = useState(null);
+  const [expandedIVA, setExpandedIVA] = useState(null);
 
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
@@ -580,10 +630,10 @@ function App() {
 
     const ivaDocsMap = {
       2024: {
-        Q2: [{label:"Borrador IVA 2T",doc:"docs/fiscal/IVA_2T2024.xlsx"}],
-        Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/IVA_Q3_2024.pdf"}],
-        Q4: [{label:"Modelo 303 — 4T",doc:"docs/fiscal/IVA_Q4_2024.pdf"}],
-        anual: [{label:"Modelo 390 — Resumen anual",doc:"docs/fiscal/IVA_resumen_anual_2024.pdf"}],
+        Q2: [{label:"Borrador IVA 2T",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"}],
+        Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/2024/IVA_Q3_2024.pdf"}],
+        Q4: [{label:"Modelo 303 — 4T",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"}],
+        anual: [{label:"Modelo 390 — Resumen anual",doc:"docs/fiscal/2024/IVA_resumen_anual_2024.pdf"}],
       },
       2025: {},
       2023: {},
@@ -591,54 +641,177 @@ function App() {
     const ivaDocs = ivaDocsMap[year]||{};
     const DocLink = ({d}) => <a href={d.doc} target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:4,color:"#2980B9",textDecoration:"none",fontSize:11,padding:"3px 8px",background:"#EAF2F8",borderRadius:4,border:"1px solid #AED6F1"}}>📄 {d.label}</a>;
 
+    const modelos303Year = MODELOS_303[year] || [];
+    const hasModelos303 = modelos303Year.length > 0;
+
     if(section==="iva") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Modelo 303 — Liquidación trimestral IVA {year}</div>
-      {qd.map((q,i)=><div key={i} style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:12}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-          <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>{q.q}</span>
-          <span style={{fontSize:14,fontFamily:"monospace",fontWeight:700,color:q.iR-q.iS>=0?"#C0392B":"#27AE60"}}>{fmt(q.iR-q.iS)}</span>
+
+      {/* ─── TABLA RESUMEN OFICIAL MODELO 303 ─── */}
+      {hasModelos303 && <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden",marginBottom:16}}>
+        <div style={{background:"linear-gradient(135deg,#2E6B3A 0%,#3D7A4A 100%)",padding:"12px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <span style={{color:"#fff",fontSize:13,fontWeight:700,letterSpacing:0.5}}>📋 Declaraciones presentadas — Modelo 303 ({year})</span>
+          <span style={{color:"rgba(255,255,255,0.8)",fontSize:11}}>NIF: B67038695 · AZNAR LEGAL Y COMPLIANCE S L P</span>
         </div>
-        <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50",marginBottom:8}}>
-          <span>Base emitidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bE)}</b></span>
-          <span>IVA repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(q.iR)}</b></span>
-          <span>Base recibidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bR)}</b></span>
-          <span>IVA soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(q.iS)}</b></span>
+        <div style={{overflowX:"auto"}}>
+        <table style={{width:"100%",borderCollapse:"collapse",fontSize:12}}>
+          <thead><tr style={{background:"#F8FAF9"}}>
+            {["Trim.","Presentación","Justificante","Base Imp. 21%","IVA Devengado","Base Soportado","IVA Deducible","Resultado","Compensac.","Estado"].map((h,i)=>
+              <th key={i} style={{padding:"10px 8px",textAlign:i>=3?"right":"left",fontWeight:700,color:"#2E6B3A",borderBottom:"2px solid #E4E9F0",fontSize:11,whiteSpace:"nowrap"}}>{h}</th>)}
+          </tr></thead>
+          <tbody>
+          {modelos303Year.map((m,i)=>{
+            const isExpanded = expandedIVA === m.trimestre;
+            return <React.Fragment key={i}>
+            <tr style={{borderBottom:"1px solid #F0F3F5",cursor:"pointer",background:isExpanded?"#F0FAF3":"transparent",transition:"background 0.15s"}} onClick={()=>setExpandedIVA(isExpanded?null:m.trimestre)}>
+              <td style={{padding:"10px 8px",fontWeight:700,color:"#2E6B3A"}}><span style={{marginRight:6}}>{isExpanded?"▾":"▸"}</span>{m.trimestre}</td>
+              <td style={{padding:"10px 8px",color:"#555"}}>{m.fecha}</td>
+              <td style={{padding:"10px 8px",fontFamily:"monospace",fontSize:10,color:"#7A8DA0"}}>{m.justificante}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace"}}>{fmt(m.baseImponible21)}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",color:"#C0392B",fontWeight:600}}>{fmt(m.cuotaDevengada)}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace"}}>{fmt(m.baseIvaSoportado)}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",color:"#2980B9",fontWeight:600}}>{fmt(m.cuotaDeducible)}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:m.resultadoRegimen>=0?"#C0392B":"#27AE60"}}>{fmt(m.resultadoRegimen)}</td>
+              <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontSize:11,color:"#7A8DA0"}}>{m.cuotasAplicadas?fmt(m.cuotasAplicadas):"—"}</td>
+              <td style={{padding:"10px 8px"}}>
+                <span style={{display:"inline-block",padding:"3px 8px",borderRadius:4,fontSize:10,fontWeight:700,letterSpacing:0.3,
+                  background:m.estado==="A COMPENSAR"?"#FDF2E9":m.estado==="RESULTADO 0"?"#EBF5FB":"#FDEDEC",
+                  color:m.estado==="A COMPENSAR"?"#E67E22":m.estado==="RESULTADO 0"?"#2980B9":"#C0392B"
+                }}>{m.estado}</span>
+              </td>
+            </tr>
+            {isExpanded && <tr><td colSpan={10} style={{padding:0}}>
+              <div style={{background:"#FAFCFB",padding:"16px 20px",borderTop:"1px dashed #C8E6C9",borderBottom:"2px solid #C8E6C9"}}>
+                <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:16,marginBottom:14}}>
+                  <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #E4E9F0"}}>
+                    <div style={{fontSize:10,color:"#7A8DA0",textTransform:"uppercase",fontWeight:700,marginBottom:8}}>IVA Devengado (Casillas 07-09)</div>
+                    <div style={{fontSize:12,lineHeight:2}}>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Base imponible 21%</span><b style={{fontFamily:"monospace"}}>{fmt(m.baseImponible21)}</b></div>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Cuota devengada [27]</span><b style={{fontFamily:"monospace",color:"#C0392B"}}>{fmt(m.cuotaDevengada)}</b></div>
+                    </div>
+                  </div>
+                  <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #E4E9F0"}}>
+                    <div style={{fontSize:10,color:"#7A8DA0",textTransform:"uppercase",fontWeight:700,marginBottom:8}}>IVA Deducible (Casillas 28-45)</div>
+                    <div style={{fontSize:12,lineHeight:2}}>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Op. interiores corrientes [28-29]</span><b style={{fontFamily:"monospace"}}>{fmt(m.baseIvaSoportado)} → {fmt(m.cuotaDeducible - (m.cuotaInversion||0))}</b></div>
+                      {m.baseInversion && <div style={{display:"flex",justifyContent:"space-between"}}><span>Rectif. deducciones [40-41]</span><b style={{fontFamily:"monospace"}}>{fmt(m.baseInversion)} → {fmt(m.cuotaInversion)}</b></div>}
+                      <div style={{display:"flex",justifyContent:"space-between",borderTop:"1px solid #eee",paddingTop:4}}><span>Total deducible [45]</span><b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(m.cuotaDeducible)}</b></div>
+                    </div>
+                  </div>
+                  <div style={{background:"#fff",borderRadius:8,padding:14,border:"1px solid #E4E9F0"}}>
+                    <div style={{fontSize:10,color:"#7A8DA0",textTransform:"uppercase",fontWeight:700,marginBottom:8}}>Resultado y Compensaciones</div>
+                    <div style={{fontSize:12,lineHeight:2}}>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Resultado régimen [46]</span><b style={{fontFamily:"monospace",color:m.resultadoRegimen>=0?"#C0392B":"#27AE60"}}>{fmt(m.resultadoRegimen)}</b></div>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Pendientes ant. [110]</span><b style={{fontFamily:"monospace"}}>{fmt(m.cuotasPendientes)}</b></div>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Aplicadas [78]</span><b style={{fontFamily:"monospace"}}>{m.cuotasAplicadas?fmt(m.cuotasAplicadas):"—"}</b></div>
+                      <div style={{display:"flex",justifyContent:"space-between"}}><span>Pendientes post. [87]</span><b style={{fontFamily:"monospace"}}>{fmt(m.cuotasPendientesPosterior)}</b></div>
+                      <div style={{display:"flex",justifyContent:"space-between",borderTop:"1px solid #eee",paddingTop:4}}><span><b>Liquidación [71]</b></span><b style={{fontFamily:"monospace",fontSize:14,color:m.resultadoLiquidacion>=0?"#C0392B":"#27AE60"}}>{fmt(m.resultadoLiquidacion)}</b></div>
+                    </div>
+                  </div>
+                </div>
+                {m.entregasIntracom && <div style={{fontSize:11,color:"#555",marginBottom:8}}>🌍 Entregas intracomunitarias [59]: <b style={{fontFamily:"monospace"}}>{fmt(m.entregasIntracom)}</b></div>}
+                <div style={{display:"flex",gap:10,alignItems:"center",flexWrap:"wrap"}}>
+                  <a href={m.doc} target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:4,color:"#2980B9",textDecoration:"none",fontSize:11,padding:"4px 10px",background:"#EAF2F8",borderRadius:4,border:"1px solid #AED6F1"}}>📄 Ver PDF Modelo 303 — {m.trimestre} {year}</a>
+                  <span style={{fontSize:10,color:"#AAA"}}>CSV: {m.csv}</span>
+                  <span style={{fontSize:10,color:"#AAA"}}>Exp: {m.expediente}</span>
+                </div>
+              </div>
+            </td></tr>}
+            </React.Fragment>;
+          })}
+          </tbody>
+          <tfoot><tr style={{background:"#F0FAF3",borderTop:"2px solid #3D7A4A"}}>
+            <td colSpan={3} style={{padding:"10px 8px",fontWeight:700,color:"#2E6B3A",fontSize:12}}>TOTAL ANUAL {year}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700}}>{fmt(modelos303Year.reduce((s,m)=>s+m.baseImponible21,0))}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:"#C0392B"}}>{fmt(modelos303Year.reduce((s,m)=>s+m.cuotaDevengada,0))}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700}}>{fmt(modelos303Year.reduce((s,m)=>s+m.baseIvaSoportado,0))}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:"#2980B9"}}>{fmt(modelos303Year.reduce((s,m)=>s+m.cuotaDeducible,0))}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontWeight:700,color:modelos303Year.reduce((s,m)=>s+m.resultadoRegimen,0)>=0?"#C0392B":"#27AE60"}}>{fmt(modelos303Year.reduce((s,m)=>s+m.resultadoRegimen,0))}</td>
+            <td style={{padding:"10px 8px",textAlign:"right",fontFamily:"monospace",fontSize:11}}>{fmt(modelos303Year.reduce((s,m)=>s+(m.cuotasAplicadas||0),0))}</td>
+            <td></td>
+          </tr></tfoot>
+        </table>
         </div>
-        {(ivaDocs[q.q]||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
-          {ivaDocs[q.q].map((d,j)=><DocLink key={j} d={d}/>)}
-        </div>}
-        {!ivaDocs[q.q]&&<div style={{fontSize:11,color:"#ccc",marginTop:4,fontStyle:"italic"}}>Sin declaración presentada</div>}
-      </div>)}
-      <div style={{background:"#fff",borderRadius:10,padding:18,border:"2px solid #3D7A4A",marginBottom:12}}>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
-          <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>TOTAL {year}</span>
-          <span style={{fontSize:16,fontFamily:"monospace",fontWeight:700,color:ivaNet>=0?"#C0392B":"#27AE60"}}>{fmt(ivaNet)}</span>
+      </div>}
+
+      {/* ─── GRÁFICO IVA DEVENGADO vs DEDUCIBLE ─── */}
+      {hasModelos303 && <div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:16}}>
+        <div style={{fontSize:10,color:"#7A8DA0",textTransform:"uppercase",fontWeight:700,letterSpacing:1,marginBottom:14}}>IVA Devengado vs Deducible — Evolución trimestral {year}</div>
+        {(()=>{
+          const maxVal = Math.max(...modelos303Year.map(m=>Math.max(m.cuotaDevengada,m.cuotaDeducible)),1);
+          return <div style={{display:"flex",gap:12,alignItems:"flex-end",height:140}}>
+            {modelos303Year.map((m,i)=><div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+              <div style={{display:"flex",gap:3,alignItems:"flex-end",height:100,width:"100%",justifyContent:"center"}}>
+                <div style={{width:"35%",background:"linear-gradient(180deg,#C0392B,#E74C3C)",borderRadius:"4px 4px 0 0",height:`${Math.max(4,(m.cuotaDevengada/maxVal)*100)}%`,transition:"height 0.3s"}} title={`Devengado: ${fmt(m.cuotaDevengada)}`}/>
+                <div style={{width:"35%",background:"linear-gradient(180deg,#2471A3,#2980B9)",borderRadius:"4px 4px 0 0",height:`${Math.max(4,(m.cuotaDeducible/maxVal)*100)}%`,transition:"height 0.3s"}} title={`Deducible: ${fmt(m.cuotaDeducible)}`}/>
+              </div>
+              <div style={{fontSize:11,fontWeight:700,color:"#2E6B3A"}}>{m.trimestre}</div>
+              <div style={{fontSize:9,color:"#999",fontFamily:"monospace"}}>{fmt(m.resultadoRegimen)}</div>
+            </div>)}
+          </div>;
+        })()}
+        <div style={{display:"flex",gap:16,justifyContent:"center",marginTop:10,fontSize:11}}>
+          <span><span style={{display:"inline-block",width:10,height:10,background:"#C0392B",borderRadius:2,marginRight:4}}/>Devengado</span>
+          <span><span style={{display:"inline-block",width:10,height:10,background:"#2980B9",borderRadius:2,marginRight:4}}/>Deducible</span>
         </div>
-        <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50"}}>
-          <span>Total repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(tIR)}</b></span>
-          <span>Total soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(tGI)}</b></span>
+      </div>}
+
+      {/* ─── DATOS CALCULADOS DESDE FACTURAS (fallback si no hay 303) ─── */}
+      {!hasModelos303 && <React.Fragment>
+        {qd.map((q,i)=><div key={i} style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>{q.q}</span>
+            <span style={{fontSize:14,fontFamily:"monospace",fontWeight:700,color:q.iR-q.iS>=0?"#C0392B":"#27AE60"}}>{fmt(q.iR-q.iS)}</span>
+          </div>
+          <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50",marginBottom:8}}>
+            <span>Base emitidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bE)}</b></span>
+            <span>IVA repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(q.iR)}</b></span>
+            <span>Base recibidas: <b style={{fontFamily:"monospace"}}>{fmt(q.bR)}</b></span>
+            <span>IVA soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(q.iS)}</b></span>
+          </div>
+          {(ivaDocs[q.q]||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}}>
+            {ivaDocs[q.q].map((d,j)=><DocLink key={j} d={d}/>)}
+          </div>}
+          {!ivaDocs[q.q]&&<div style={{fontSize:11,color:"#ccc",marginTop:4,fontStyle:"italic"}}>Sin declaración presentada</div>}
+        </div>)}
+        <div style={{background:"#fff",borderRadius:10,padding:18,border:"2px solid #3D7A4A",marginBottom:12}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+            <span style={{fontSize:14,fontWeight:700,color:"#2E6B3A"}}>TOTAL {year}</span>
+            <span style={{fontSize:16,fontFamily:"monospace",fontWeight:700,color:ivaNet>=0?"#C0392B":"#27AE60"}}>{fmt(ivaNet)}</span>
+          </div>
+          <div style={{display:"flex",gap:20,fontSize:12,color:"#2C3E50"}}>
+            <span>Total repercutido: <b style={{fontFamily:"monospace",color:"#3D7A4A"}}>{fmt(tIR)}</b></span>
+            <span>Total soportado: <b style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(tGI)}</b></span>
+          </div>
+          {(ivaDocs.anual||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>
+            {ivaDocs.anual.map((d,j)=><DocLink key={j} d={d}/>)}
+          </div>}
         </div>
-        {(ivaDocs.anual||[]).length>0&&<div style={{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}}>
-          {ivaDocs.anual.map((d,j)=><DocLink key={j} d={d}/>)}
-        </div>}
-      </div>
+      </React.Fragment>}
+
+      {/* ─── NOTAS IVA ─── */}
       <div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
         <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:8,fontWeight:700}}>Notas IVA</div>
-        <div style={{fontSize:12,color:"#2C3E50",lineHeight:1.8}}>• Crédito IVA acumulado ~11.597€<br/>• Exentas art.20.9/20.1.10º<br/>• Art.69 (Vergara): no sujetas<br/>• USA (Gamma, Logically): inversión sujeto pasivo 12-13<br/>• Faltan meses Movistar</div>
+        <div style={{fontSize:12,color:"#2C3E50",lineHeight:1.8}}>
+          {hasModelos303 && <span>• Presentador: MARIN ASESORES TRIBUTARIOS, S.L. (B86995131)<br/></span>}
+          • Crédito IVA acumulado por compensaciones de ejercicios anteriores<br/>
+          • Exentas art.20.9/20.1.10º<br/>
+          • Art.69 (Vergara): no sujetas · USA (Gamma, Logically): inversión sujeto pasivo 12-13
+        </div>
       </div>
     </div>;
 
     const isDocsMap = {
       2024: [
-        {label:"Justificante pago a cuenta IS",doc:"docs/fiscal/Justificante_pago_a_cuenta_IS_22024.pdf"},
-        {label:"Liquidación pago a cuenta IS",doc:"docs/fiscal/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
-        {label:"Pago Mod.010 — 248,22€",doc:"docs/fiscal/082615305105DC5LNA45CZ.pdf"},
+        {label:"Justificante pago a cuenta IS",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
+        {label:"Liquidación pago a cuenta IS",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
+        {label:"Pago Mod.010 — 248,22€",doc:"docs/fiscal/2025/082615305105DC5LNA45CZ.pdf"},
       ],
       2025: [
-        {label:"Requerimiento AEAT",doc:"docs/fiscal/Requerimiento_2025.pdf"},
-        {label:"Recibo contestación requerimiento",doc:"docs/fiscal/Eecibo_contestacio_n_requerimiento.pdf"},
-        {label:"174545437Z26",doc:"docs/fiscal/174545437Z26.pdf"},
-        {label:"174545437Z",doc:"docs/fiscal/174545437Z.pdf"},
+        {label:"Requerimiento AEAT",doc:"docs/fiscal/2025/Requerimiento_2025.pdf"},
+        {label:"Recibo contestación requerimiento",doc:"docs/fiscal/2025/Eecibo_contestacio_n_requerimiento.pdf"},
+        {label:"174545437Z26",doc:"docs/fiscal/2025/174545437Z26.pdf"},
+        {label:"174545437Z",doc:"docs/fiscal/2025/174545437Z.pdf"},
       ],
       2023: [],
     };
@@ -846,17 +1019,25 @@ function App() {
         {label:"Descripción",key:"desc"},
         {label:"Periodo",key:"periodo",nowrap:true},
       ]} data={[
-        {id:"d1",tipo:"IVA 303",archivo:"IVA_Q3_2024.pdf",desc:"Modelo 303 3T 2024",periodo:"Q3 2024",doc:"docs/fiscal/IVA_Q3_2024.pdf"},
-        {id:"d2",tipo:"IVA 303",archivo:"IVA_Q4_2024.pdf",desc:"Modelo 303 4T 2024",periodo:"Q4 2024",doc:"docs/fiscal/IVA_Q4_2024.pdf"},
-        {id:"d3",tipo:"IVA 390",archivo:"IVA_resumen_anual_2024.pdf",desc:"Resumen anual IVA",periodo:"2024",doc:"docs/fiscal/IVA_resumen_anual_2024.pdf"},
-        {id:"d4",tipo:"IVA",archivo:"IVA_2T2024.xlsx",desc:"Borrador IVA 2T",periodo:"Q2 2024",doc:"docs/fiscal/IVA_2T2024.xlsx"},
-        {id:"d5",tipo:"IS",archivo:"Justificante_pago_a_cuenta.pdf",desc:"Pago a cuenta IS",periodo:"2024",doc:"docs/fiscal/Justificante_pago_a_cuenta_IS_22024.pdf"},
-        {id:"d6",tipo:"IS",archivo:"Liquidacion_pago_cuenta.pdf",desc:"Liquidación IS",periodo:"2024",doc:"docs/fiscal/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
-        {id:"d7",tipo:"AEAT",archivo:"Mod.010 — 248,22€",desc:"Pago Mod.010",periodo:"Ene 2026",doc:"docs/fiscal/082615305105DC5LNA45CZ.pdf"},
-        {id:"d8",tipo:"AEAT",archivo:"Requerimiento_2025.pdf",desc:"Requerimiento AEAT",periodo:"2025",doc:"docs/fiscal/Requerimiento_2025.pdf"},
-        {id:"d9",tipo:"AEAT",archivo:"Recibo contestación",desc:"Contestación requerimiento",periodo:"2025",doc:"docs/fiscal/Eecibo_contestacio_n_requerimiento.pdf"},
-        {id:"d10",tipo:"AEAT",archivo:"174545437Z26.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/174545437Z26.pdf"},
-        {id:"d11",tipo:"AEAT",archivo:"174545437Z.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/174545437Z.pdf"},
+        {id:"d1",tipo:"IVA 303",archivo:"IVA_Q3_2024.pdf",desc:"Modelo 303 3T 2024",periodo:"Q3 2024",doc:"docs/fiscal/2024/IVA_Q3_2024.pdf"},
+        {id:"d2",tipo:"IVA 303",archivo:"IVA_Q4_2024.pdf",desc:"Modelo 303 4T 2024",periodo:"Q4 2024",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"},
+        {id:"d3",tipo:"IVA 390",archivo:"IVA_resumen_anual_2024.pdf",desc:"Resumen anual IVA",periodo:"2024",doc:"docs/fiscal/2024/IVA_resumen_anual_2024.pdf"},
+        {id:"d4",tipo:"IVA",archivo:"IVA_2T2024.xlsx",desc:"Borrador IVA 2T",periodo:"Q2 2024",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"},
+        {id:"d4b",tipo:"IVA 303",archivo:"1T23.pdf",desc:"Modelo 303 1T 2023 — A compensar",periodo:"Q1 2023",doc:"docs/fiscal/2023/1T23.pdf"},
+        {id:"d4c",tipo:"IVA 303",archivo:"2T23.pdf",desc:"Modelo 303 2T 2023 — Resultado 0",periodo:"Q2 2023",doc:"docs/fiscal/2023/2T23.pdf"},
+        {id:"d4d",tipo:"IVA 303",archivo:"3T23.pdf",desc:"Modelo 303 3T 2023 — Resultado 0",periodo:"Q3 2023",doc:"docs/fiscal/2023/3T23.pdf"},
+        {id:"d4e",tipo:"IVA 303",archivo:"4T23.pdf",desc:"Modelo 303 4T 2023 — A compensar",periodo:"Q4 2023",doc:"docs/fiscal/2023/4T23.pdf"},
+        {id:"d4f",tipo:"IVA 303",archivo:"1T22.pdf",desc:"Modelo 303 1T 2022 — Resultado 0",periodo:"Q1 2022",doc:"docs/fiscal/2022/1T22.pdf"},
+        {id:"d4g",tipo:"IVA 303",archivo:"2T22.pdf",desc:"Modelo 303 2T 2022 — Resultado 0",periodo:"Q2 2022",doc:"docs/fiscal/2022/2T22.pdf"},
+        {id:"d4h",tipo:"IVA 303",archivo:"3T22.pdf",desc:"Modelo 303 3T 2022 — Resultado 0",periodo:"Q3 2022",doc:"docs/fiscal/2022/3T22.pdf"},
+        {id:"d4i",tipo:"IVA 303",archivo:"4T22.pdf",desc:"Modelo 303 4T 2022 — A compensar",periodo:"Q4 2022",doc:"docs/fiscal/2022/4T22.pdf"},
+        {id:"d5",tipo:"IS",archivo:"Justificante_pago_a_cuenta.pdf",desc:"Pago a cuenta IS",periodo:"2024",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
+        {id:"d6",tipo:"IS",archivo:"Liquidacion_pago_cuenta.pdf",desc:"Liquidación IS",periodo:"2024",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
+        {id:"d7",tipo:"AEAT",archivo:"Mod.010 — 248,22€",desc:"Pago Mod.010",periodo:"Ene 2026",doc:"docs/fiscal/2025/082615305105DC5LNA45CZ.pdf"},
+        {id:"d8",tipo:"AEAT",archivo:"Requerimiento_2025.pdf",desc:"Requerimiento AEAT",periodo:"2025",doc:"docs/fiscal/2025/Requerimiento_2025.pdf"},
+        {id:"d9",tipo:"AEAT",archivo:"Recibo contestación",desc:"Contestación requerimiento",periodo:"2025",doc:"docs/fiscal/2025/Eecibo_contestacio_n_requerimiento.pdf"},
+        {id:"d10",tipo:"AEAT",archivo:"174545437Z26.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z26.pdf"},
+        {id:"d11",tipo:"AEAT",archivo:"174545437Z.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z.pdf"},
         {id:"d12",tipo:"CCAA",archivo:"CERT_CCAA_2022.pdf",desc:"Aprobación CCAA 2022",periodo:"2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
         {id:"d13",tipo:"CCAA",archivo:"CERT_CCAA_2021.pdf",desc:"Aprobación CCAA 2021",periodo:"2021",doc:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf"},
         {id:"d14",tipo:"CCAA",archivo:"CERT_CCAA_2020.pdf",desc:"Certificación 2020",periodo:"2020",doc:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf"},
