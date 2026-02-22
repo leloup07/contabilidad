@@ -91,6 +91,31 @@ const MODELOS_303 = {
 };
 
 // ─── DEFAULT DATA ───
+const DEFAULT_EMITIDAS_2022 = [
+  { id:"e2022-1", num:"01/2022", fecha:"2022-02-10", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (35% facturación total)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_1_2022.pdf" },
+  { id:"e2022-2", num:"02/2022", fecha:"2022-02-10", cliente:"Amoria Capital, S.L.", nif:"", desc:"Iguala mensual (servicios hasta ene 2022)", base:1000, tipoIva:21, iva:210, total:1210, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_2_2022.pdf" },
+  { id:"e2022-3", num:"03/2022", fecha:"2022-03-24", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (2º pago mensual)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_3_2022.pdf" },
+  { id:"e2022-4", num:"04/2022", fecha:"2022-04-05", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 24/03/2022 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_4_2022.pdf" },
+  { id:"e2022-5", num:"06/2022", fecha:"2022-05-03", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (3er pago mensual)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_6_2022.pdf" },
+  { id:"e2022-6", num:"07/2022", fecha:"2022-05-23", cliente:"Círculo del Liceo", nif:"G08413528", desc:"Implantación Sistema Compliance Penal", base:840, tipoIva:21, iva:176.40, total:1016.40, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_7_2022.pdf" },
+  { id:"e2022-7", num:"09/2022", fecha:"2022-06-20", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (4º y último pago)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_9_2022.pdf" },
+  { id:"e2022-8", num:"12/2022", fecha:"2022-09-23", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (may-ago 2022)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_12_2022.pdf" },
+  { id:"e2022-9", num:"13/2022", fecha:"2022-09-29", cliente:"E.P.E.L. Neàpolis", nif:"Q-08015721", desc:"Curso Blockchain TTT (jun 2022 – 6 horas)", base:318, tipoIva:21, iva:66.78, total:384.78, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_13_2022.pdf" },
+  { id:"e2022-10", num:"14/2022", fecha:"2022-09-29", cliente:"Círculo del Liceo", nif:"G08413528", desc:"Diseño Sistema Compliance Penal (pago 4/4)", base:840, tipoIva:21, iva:176.40, total:1016.40, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_14_2022.pdf" },
+  { id:"e2022-11", num:"15/2022", fecha:"2022-10-19", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 18/10/2022 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_15_2022.pdf" },
+  { id:"e2022-12", num:"17/2022", fecha:"2022-12-19", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (sep-dic 2022)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_17_2022.pdf" },
+  { id:"e2022-13", num:"18/2022", fecha:"2022-12-31", cliente:"Amoria Capital, S.L.", nif:"", desc:"Rectificativa de 02/2022 — cancelación iguala", base:-1000, tipoIva:21, iva:-210, total:-1210, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_18_2022.pdf" },
+];
+const DEFAULT_EMITIDAS_2023 = [
+  { id:"e2023-1", num:"1/2023", fecha:"2023-02-13", cliente:"Asociación ICEA", nif:"G-28646313", desc:"Curso Compliance febrero 2023", base:240, tipoIva:21, iva:50.40, total:290.40, trimestre:"Q1", doc:"docs/emitidas/2023/Factura_1_2023.pdf" },
+  { id:"e2023-2", num:"02/2023", fecha:"2023-05-11", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 11/05/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_2_2023.pdf" },
+  { id:"e2023-3", num:"3/2023", fecha:"2023-05-11", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (ene-abr 2023)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_3_2023.pdf" },
+  { id:"e2023-4", num:"4/2023", fecha:"2023-05-12", cliente:"INMOCRYPTO", nif:"B72739667", desc:"Gastos desplazamiento congreso INMOCRYPTO (22/04/23)", base:209.09, tipoIva:0, iva:0, total:209.09, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_4_2023.pdf" },
+  { id:"e2023-5", num:"5/2023", fecha:"2023-05-31", cliente:"Blockchain Intelligence", nif:"B05490057", desc:"Clase tokenización inmobiliaria (25/05/23)", base:150, tipoIva:0, iva:0, total:150, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_5_2023.pdf" },
+  { id:"e2023-6", num:"06/2023", fecha:"2023-06-21", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Blockchain 20/06/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_6_2023.pdf" },
+  { id:"e2023-7", num:"07/2023", fecha:"2023-08-21", cliente:"Amphion Soft, SL", nif:"B-06903926", desc:"50% honorarios constitución cooperativa Context DAO, SCCL", base:7500, tipoIva:21, iva:1575, total:9075, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_7_2023.pdf" },
+  { id:"e2023-8", num:"08/2023", fecha:"2023-09-01", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — septiembre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_8_2023.pdf" },
+];
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
   { id: "e2024-2", num: "3/2024", fecha: "2024-07-08", cliente: "Rivera del Campo", nif: "", desc: "Provisión de fondos constitución sociedad", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q3", doc: "docs/emitidas/2024/Factura_3_2024.pdf" },
@@ -472,7 +497,7 @@ function App() {
 
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
-  const defaults = {emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
+  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
   const [store, setStore] = useState(()=>{
     const s={};
     YEARS.forEach(y=>{
