@@ -141,6 +141,13 @@ const calcIva = (base,tipo) => Math.round(base*tipo/100*100)/100;
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
+// Auto-reset when version changes (forces new data with doc links)
+const APP_VERSION = "3.0";
+if(localStorage.getItem("app_version") !== APP_VERSION) {
+  localStorage.clear();
+  localStorage.setItem("app_version", APP_VERSION);
+}
+
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
   const rows = data.map(r => cols.map(c => { let v = c.key ? r[c.key] : (c.get ? c.get(r) : ""); if(typeof v==="number") v=v.toString().replace(".",","); return '"'+String(v).replace(/"/g,'""')+'"'; }).join(";"));
