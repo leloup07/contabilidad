@@ -286,20 +286,24 @@ function App() {
   const [search, setSearch] = useState("");
 
   // ─── PERSISTENT DATA ───
+  const [emitidas2023, setEmitidas2023] = useState(()=>loadData("emitidas_2023", []));
   const [emitidas2024, setEmitidas2024] = useState(()=>loadData("emitidas_2024", DEFAULT_EMITIDAS_2024));
   const [emitidas2025, setEmitidas2025] = useState(()=>loadData("emitidas_2025", DEFAULT_EMITIDAS_2025));
+  const [recibidas2023, setRecibidas2023] = useState(()=>loadData("recibidas_2023", []));
   const [recibidas2024, setRecibidas2024] = useState(()=>loadData("recibidas_2024", DEFAULT_RECIBIDAS_2024));
   const [recibidas2025, setRecibidas2025] = useState(()=>loadData("recibidas_2025", DEFAULT_RECIBIDAS_2025));
 
+  useEffect(()=>saveData("emitidas_2023",emitidas2023),[emitidas2023]);
   useEffect(()=>saveData("emitidas_2024",emitidas2024),[emitidas2024]);
   useEffect(()=>saveData("emitidas_2025",emitidas2025),[emitidas2025]);
+  useEffect(()=>saveData("recibidas_2023",recibidas2023),[recibidas2023]);
   useEffect(()=>saveData("recibidas_2024",recibidas2024),[recibidas2024]);
   useEffect(()=>saveData("recibidas_2025",recibidas2025),[recibidas2025]);
 
-  const emitidas = year===2024?emitidas2024:emitidas2025;
-  const setEmitidas = year===2024?setEmitidas2024:setEmitidas2025;
-  const recibidas = year===2024?recibidas2024:recibidas2025;
-  const setRecibidas = year===2024?setRecibidas2024:setRecibidas2025;
+  const emitidas = year===2023?emitidas2023:year===2024?emitidas2024:emitidas2025;
+  const setEmitidas = year===2023?setEmitidas2023:year===2024?setEmitidas2024:setEmitidas2025;
+  const recibidas = year===2023?recibidas2023:year===2024?recibidas2024:recibidas2025;
+  const setRecibidas = year===2023?setRecibidas2023:year===2024?setRecibidas2024:setRecibidas2025;
 
   // ─── MODALS ───
   const [modalEmitida, setModalEmitida] = useState(null); // null=closed, {}=new, {data}=edit
@@ -533,7 +537,7 @@ function App() {
             <span style={{color:"#2E6B3A",fontSize:16,fontWeight:700}}>{sections[section]}</span>
           </div>
           <div style={{display:"flex",gap:4}}>
-            {[2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");}} style={{padding:"6px 16px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
+            {[2023,2024,2025].map(y=><button key={y} onClick={()=>{setYear(y);setSearch("");}} style={{padding:"6px 16px",borderRadius:6,border:year===y?"2px solid #3D7A4A":"1px solid #D5DCE4",background:year===y?"#3D7A4A":"#fff",color:year===y?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:700,fontFamily:"monospace"}}>{y}</button>)}
           </div>
         </div>
         <div style={{flex:1,overflow:"auto",padding:24}}>{renderSection()}</div>
