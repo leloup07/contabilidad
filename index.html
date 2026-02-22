@@ -142,7 +142,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "3.3";
+const APP_VERSION = "3.4";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -346,7 +346,7 @@ function App() {
   const maxC=catS[0]?.[1]||1;
   const cc=["#3D7A4A","#2980B9","#27AE60","#E67E22","#8E44AD","#C0392B","#16A085","#D4AC0D"];
 
-  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",alertas:"Alertas y Gaps",docs:"Documentos Fiscales"};
+  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps",docs:"Documentos Fiscales"};
 
   // ─── FILTER ───
   const filteredEmitidas = emitidas.filter(e => !search || [e.num,e.cliente,e.desc,e.nif].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
@@ -549,6 +549,81 @@ function App() {
       </div>)}
     </div>;
 
+    const librosData = {
+      2025: [
+        {tipo:"Libro Diario",desc:`${emitidas.length+recibidas.length} asientos`,estado:"En progreso",st:"warning"},
+        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"En progreso",st:"warning"},
+        {tipo:"Facturas Emitidas",desc:`${emitidas.length} facturas`,estado:"Actualizado",st:"success",nav:"emitidas"},
+        {tipo:"Facturas Recibidas",desc:`${recibidas.length} facturas`,estado:"Alertas",st:"warning",nav:"recibidas"},
+        {tipo:"Libro de Actas",desc:"CCAA, nombramientos",estado:"Pendiente",st:"info"},
+        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
+        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Preparación",st:"warning"},
+        {tipo:"Modelo 200",desc:"IS 2025",estado:"Pendiente",st:"info",nav:"is"},
+      ],
+      2024: [
+        {tipo:"Libro Diario",desc:`${(year===2024?emitidas:emitidas2024).length+(year===2024?recibidas:recibidas2024).length} asientos`,estado:"En progreso",st:"warning"},
+        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"En progreso",st:"warning"},
+        {tipo:"Facturas Emitidas",desc:`${(year===2024?emitidas:emitidas2024).length} facturas`,estado:"Actualizado",st:"success",nav:"emitidas"},
+        {tipo:"Facturas Recibidas",desc:`${(year===2024?recibidas:recibidas2024).length} facturas`,estado:"Alertas",st:"warning",nav:"recibidas"},
+        {tipo:"Libro de Actas",desc:"CCAA, nombramientos",estado:"Pendiente",st:"info"},
+        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
+        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Preparación",st:"warning"},
+        {tipo:"Modelo 200",desc:"IS 2024",estado:"Pendiente",st:"info",nav:"is"},
+      ],
+      2023: [
+        {tipo:"Libro Diario",desc:"Diario contable 2023",estado:"Completo",st:"success",doc:"docs/corporativo/DIARIO_2023.xlsx"},
+        {tipo:"Libro Mayor",desc:"Cuentas PGC",estado:"Completo",st:"success"},
+        {tipo:"Facturas Emitidas",desc:"Ver facturas",estado:"Completo",st:"success",nav:"emitidas"},
+        {tipo:"Facturas Recibidas",desc:"Ver facturas",estado:"Completo",st:"success",nav:"recibidas"},
+        {tipo:"Libro de Actas",desc:"CCAA aprobadas",estado:"Depositado",st:"success"},
+        {tipo:"Libro de Socios",desc:"Socio único — Enrique Aznar",estado:"OK",st:"success"},
+        {tipo:"Cuentas Anuales",desc:"Balance + PyG + Memoria",estado:"Aprobadas",st:"success"},
+        {tipo:"Modelo 200",desc:"IS 2023",estado:"Presentado",st:"success",nav:"is"},
+      ],
+    };
+    const ccaaDocs = [
+      {year:2022,label:"Certificado aprobación CCAA 2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
+      {year:2021,label:"Certificado aprobación CCAA 2021",doc:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf"},
+      {year:2020,label:"Certificación CCAA 2020",doc:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf"},
+      {year:2019,label:"Certificación CCAA 2019",doc:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"},
+    ];
+    const balanceDocs = [
+      {label:"Balance 2022",doc:"docs/corporativo/BCE_2022.pdf"},
+      {label:"Balance detallado 2022",doc:"docs/corporativo/BCE_202214.pdf"},
+      {label:"PyG 2022",doc:"docs/corporativo/PG_2022.pdf"},
+      {label:"Balance y PyG histórico (Excel)",doc:"docs/corporativo/BSPyG.xlsx"},
+    ];
+    const otrosDocs = [
+      {label:"Escritura constitución SLP (2021)",doc:"docs/corporativo/2021BTC0523.pdf"},
+      {label:"Certificado firma electrónica",doc:"docs/corporativo/CertFirmaEPDF.pdf"},
+      {label:"Diario contable 2023 (Excel)",doc:"docs/corporativo/DIARIO_2023.xlsx"},
+    ];
+
+    if(section==="libros") return <div>
+      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Libros contables — {year}</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(220px,1fr))",gap:12,marginBottom:20}}>
+        {(librosData[year]||[]).map((b,i)=><div key={i} onClick={()=>{if(b.nav)setSection(b.nav);if(b.doc)window.open(b.doc,"_blank")}} style={{background:"#fff",borderRadius:10,padding:16,border:"1px solid #E4E9F0",cursor:b.nav||b.doc?"pointer":"default",transition:"all 0.15s"}} onMouseEnter={e=>{if(b.nav||b.doc){e.currentTarget.style.borderColor="#3D7A4A";e.currentTarget.style.boxShadow="0 2px 8px rgba(61,122,74,0.1)"}}} onMouseLeave={e=>{e.currentTarget.style.borderColor="#E4E9F0";e.currentTarget.style.boxShadow="none"}}>
+          <div style={{fontSize:13,fontWeight:700,color:"#2C3E50",marginBottom:4}}>{b.tipo}</div>
+          <div style={{fontSize:11,color:"#7A8DA0",marginBottom:8}}>{b.desc}</div>
+          <Badge type={b.st}>{b.estado}</Badge>
+          {b.doc&&<span style={{marginLeft:6,fontSize:12}}>📄</span>}
+          {b.nav&&<span style={{marginLeft:6,fontSize:10,color:"#2980B9"}}>→ ver</span>}
+        </div>)}
+      </div>
+      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Cuentas anuales — CCAA depositadas</div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
+        {ccaaDocs.map((d,i)=><DocLink key={i} d={d}/>)}
+      </div>
+      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Balance y Pérdidas y Ganancias</div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
+        {balanceDocs.map((d,i)=><DocLink key={i} d={d}/>)}
+      </div>
+      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Otros documentos corporativos</div>
+      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:20}}>
+        {otrosDocs.map((d,i)=><DocLink key={i} d={d}/>)}
+      </div>
+    </div>;
+
     if(section==="docs") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Documentos fiscales y corporativos</div>
       <DataTable maxH={480} columns={[
@@ -613,6 +688,7 @@ function App() {
           <NavItem icon="§" label="Impuesto Sociedades" active={section==="is"} onClick={()=>setSection("is")}/>
           <div style={{height:1,background:"#E4E9F0",margin:"6px 16px"}}/>
           <NavItem icon="⚠" label="Alertas" active={section==="alertas"} onClick={()=>setSection("alertas")} badge={ALERTAS.length}/>
+          <NavItem icon="📚" label="Libros y Actas" active={section==="libros"} onClick={()=>setSection("libros")}/>
           <NavItem icon="🗂" label="Docs Fiscales" active={section==="docs"} onClick={()=>setSection("docs")}/>
         </div>
         <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v2.0 · Claude AI</div>
