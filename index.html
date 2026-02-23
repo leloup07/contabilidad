@@ -205,10 +205,19 @@ const DEFAULT_EMITIDAS_2023 = [
   { id:"e2023-2", num:"02/2023", fecha:"2023-05-11", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 11/05/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_2_2023.pdf" },
   { id:"e2023-3", num:"3/2023", fecha:"2023-05-11", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (ene-abr 2023)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_3_2023.pdf" },
   { id:"e2023-4", num:"4/2023", fecha:"2023-05-12", cliente:"INMOCRYPTO", nif:"B72739667", desc:"Gastos desplazamiento congreso INMOCRYPTO (22/04/23)", base:209.09, tipoIva:0, iva:0, total:209.09, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_4_2023.pdf" },
-  { id:"e2023-5", num:"5/2023", fecha:"2023-05-31", cliente:"Blockchain Intelligence", nif:"B05490057", desc:"Clase tokenización inmobiliaria (25/05/23)", base:150, tipoIva:0, iva:0, total:150, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_5_2023.pdf" },
+  { id:"e2023-5", num:"5/2023", fecha:"2023-05-31", cliente:"Blockchain Intelligence", nif:"B05490057", desc:"Clase tokenización inmobiliaria (25/05/23)", base:123.97, tipoIva:21, iva:26.03, total:150, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_5_2023.pdf" },
   { id:"e2023-6", num:"06/2023", fecha:"2023-06-21", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Blockchain 20/06/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_6_2023.pdf" },
   { id:"e2023-7", num:"07/2023", fecha:"2023-08-21", cliente:"Amphion Soft, SL", nif:"B-06903926", desc:"50% honorarios constitución cooperativa Context DAO, SCCL", base:7500, tipoIva:21, iva:1575, total:9075, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_7_2023.pdf" },
   { id:"e2023-8", num:"08/2023", fecha:"2023-09-01", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — septiembre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_8_2023.pdf" },
+  { id:"e2023-9", num:"09/2023", fecha:"2023-10-01", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — octubre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"" },
+  { id:"e2023-10", num:"10/2023", fecha:"2023-10-15", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (may-ago 2023)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"" },
+  { id:"e2023-11", num:"11/2023", fecha:"2023-10-20", cliente:"ICAB", nif:"Q0863003-J", desc:"Clases Máster Compliance ICAB (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q4", doc:"" },
+  { id:"e2023-12", num:"12/2023", fecha:"2023-10-25", cliente:"ICAB", nif:"Q0863003-J", desc:"Clases Máster Compliance ICAB", base:150, tipoIva:21, iva:31.50, total:181.50, trimestre:"Q4", doc:"" },
+  { id:"e2023-13", num:"13/2023", fecha:"2023-11-01", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — noviembre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"" },
+  { id:"e2023-14", num:"14/2023", fecha:"2023-11-15", cliente:"Fundación Bancaria Unicaja", nif:"", desc:"Curso/seminario compliance", base:244, tipoIva:21, iva:51.24, total:295.24, trimestre:"Q4", doc:"" },
+  { id:"e2023-15", num:"15/2023", fecha:"2023-12-01", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (sep-dic 2023)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"" },
+  { id:"e2023-16", num:"16/2023", fecha:"2023-12-15", cliente:"ACN Legal Solutions SLP", nif:"", desc:"Servicios jurídicos", base:172.14, tipoIva:0, iva:0, total:172.14, trimestre:"Q4", doc:"" },
+  { id:"e2023-17", num:"17/2023", fecha:"2023-12-20", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — diciembre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"" },
 ];
 const DEFAULT_RECIBIDAS_2023 = [
   { id:"r2023-1", fecha:"2023-03-13", prov:"Vueling", desc:"BCN-ALC-BCN 13/03/23", base:158.60, tipoIva:10, iva:18.64, total:204.98, cat:"Viajes", trimestre:"Q1", doc:"docs/recibidas/2023/Vueling_BCN_ALC_BCN.pdf" },
@@ -219,9 +228,9 @@ const DEFAULT_RECIBIDAS_2023 = [
   { id:"r2023-6", fecha:"2023-08-14", prov:"Intecat iStore", desc:"Apple Watch Ultra 49mm (BMF/6091)", base:722.31, tipoIva:21, iva:151.69, total:874.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6091.pdf" },
   { id:"r2023-7", fecha:"2023-08-29", prov:"Intecat iStore", desc:"Apple Watch S8 45mm (BMF/6206)", base:310.74, tipoIva:21, iva:65.26, total:376.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6206.pdf" },
   { id:"r2023-8", fecha:"2023-09-14", prov:"RunRun Digital", desc:"Asesoramiento marca (F230028)", base:1530.00, tipoIva:21, iva:321.30, total:1851.30, cat:"Marketing", trimestre:"Q3", doc:"docs/recibidas/2023/RunRun_F230028.pdf" },
-  { id:"r2023-9", fecha:"2023-11-17", prov:"Renfe", desc:"Billete tren", base:63.06, tipoIva:21, iva:13.24, total:76.30, cat:"Viajes", trimestre:"Q4", doc:"docs/recibidas/2023/Renfe_VJ7U.pdf" },
+  { id:"r2023-9", fecha:"2023-11-17", prov:"Renfe", desc:"Málaga-Madrid Atocha 11/11/23", base:69.36, tipoIva:10, iva:6.94, total:76.30, cat:"Viajes", trimestre:"Q4", doc:"docs/recibidas/2023/Renfe_VJ7U.pdf" },
   { id:"r2023-10", fecha:"2023-11-29", prov:"GBA (USA)", desc:"Professional Membership ($299)", base:274.00, tipoIva:0, iva:0, total:274.00, cat:"Profesional int.", trimestre:"Q4", doc:"docs/recibidas/2023/GBA_membership.pdf" },
-  { id:"r2023-11", fecha:"2023-12-13", prov:"Movistar", desc:"Telecom (28 Oct-27 Nov)", base:130.00, tipoIva:21, iva:27.30, total:157.30, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2023/Movistar_dic2023.pdf" },
+  { id:"r2023-11", fecha:"2023-12-13", prov:"Movistar", desc:"Telecom (28 Oct-27 Nov)", base:152.39, tipoIva:21, iva:32.00, total:184.39, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2023/Movistar_dic2023.pdf" },
 ];
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
@@ -674,7 +683,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "5.3"; // v5.3: complete 2022 emitidas (05,08,10,13,16) + fix Neàpolis num
+const APP_VERSION = "5.5"; // v5.5: complete 2023 emitidas from Diario (17 facturas = 23539.20€ CCAA)
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
