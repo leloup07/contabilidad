@@ -818,6 +818,67 @@ const DataTable = ({columns,data,maxH,onEdit,onDelete}) => (
 // ═══════════════════════════════════
 // ═══  MAIN APP  ═══════════════════
 // ═══════════════════════════════════
+
+// ─── CCAA Official Rendering Components ───
+const OfficialBalanceView = ({year, fmt}) => {
+  const oc = OFFICIAL_CCAA[year].balance;
+  const BsLine = ({item}) => {
+    const indent = (item.level||0)*16+10;
+    const isAcct = item.level>=2 && /^\d/.test(item.label);
+    return <div style={{display:"flex",justifyContent:"space-between",padding:item.bold?"7px 0":"4px 0",paddingLeft:indent,fontSize:item.bold?12:isAcct?10:11,borderBottom:"1px solid #F0F2F5",background:item.bold?"#FAFBFC":"transparent"}}>
+      <span style={{color:item.bold?"#2C3E50":isAcct?"#999":"#7A8DA0",fontWeight:item.bold?700:item.highlight?600:400,fontStyle:item.highlight?"italic":"normal"}}>{item.label}</span>
+      <span style={{fontFamily:"monospace",fontSize:item.bold?12:11,fontWeight:item.bold?700:400,color:item.val<0?"#C0392B":item.highlight?(item.val>=0?"#27AE60":"#C0392B"):"#2C3E50",paddingRight:10}}>{fmt(item.val)}</span>
+    </div>;
+  };
+  return <div>
+    <div style={{fontSize:10,color:"#999",marginBottom:10,fontStyle:"italic"}}>📋 Fuente: {OFFICIAL_CCAA[year].fuente}</div>
+    <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+      <div style={{flex:1,minWidth:320,background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
+        <div style={{padding:"10px 16px",fontSize:13,fontWeight:700,color:"#2E6B3A",borderBottom:"2px solid #2E6B3A",background:"#FAFBFC"}}>ACTIVO</div>
+        {oc.activo.map((item,i)=><BsLine key={i} item={item}/>)}
+        <div style={{display:"flex",justifyContent:"space-between",padding:"12px 16px",fontSize:14,fontWeight:700,borderTop:"3px solid #2E6B3A",background:"#EAFAF1"}}>
+          <span>TOTAL ACTIVO</span><span style={{fontFamily:"monospace",color:"#2E6B3A"}}>{fmt(oc.totalActivo)}</span>
+        </div>
+      </div>
+      <div style={{flex:1,minWidth:320,background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
+        <div style={{padding:"10px 16px",fontSize:13,fontWeight:700,color:"#2980B9",borderBottom:"2px solid #2980B9",background:"#FAFBFC"}}>PATRIMONIO NETO Y PASIVO</div>
+        {oc.pasivo.map((item,i)=><BsLine key={i} item={item}/>)}
+        <div style={{display:"flex",justifyContent:"space-between",padding:"12px 16px",fontSize:14,fontWeight:700,borderTop:"3px solid #2980B9",background:"#EBF5FB"}}>
+          <span>TOTAL PN + PASIVO</span><span style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(oc.totalPasivo)}</span>
+        </div>
+        {oc.descuadre&&<div style={{padding:"6px 16px",fontSize:10,color:"#E67E22",background:"#FEF9E7"}}>⚠️ Descuadre de ~{oc.descuadre}€ en el Modelo 200 presentado (activo {fmt(oc.totalActivo)} vs PN+P {fmt(oc.totalPasivo)})</div>}
+      </div>
+    </div>
+    {oc.totalActivo===oc.totalPasivo&&<div style={{textAlign:"center",marginTop:8,fontSize:11,color:"#27AE60",fontWeight:600}}>✅ Balance cuadrado: Activo = PN + Pasivo = {fmt(oc.totalActivo)}</div>}
+  </div>;
+};
+
+const OfficialPyGView = ({year, fmt}) => {
+  const lines = OFFICIAL_CCAA[year].pyg;
+  return <div>
+    <div style={{fontSize:10,color:"#999",marginBottom:10,fontStyle:"italic"}}>📋 Fuente: {OFFICIAL_CCAA[year].fuente}</div>
+    <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
+      {lines.map((l,i)=>{
+        const isTotal = l.total||l.final;
+        const isAcct = l.level>=1 && /^\d/.test(l.label);
+        const indent = 20+(l.level||0)*16;
+        return <div key={i} style={{
+          display:"flex",justifyContent:"space-between",
+          padding:isTotal?"12px 20px":("6px 20px 6px "+indent+"px"),
+          fontSize:l.final?15:isTotal?13:isAcct?10:12,
+          fontWeight:(l.bold||isTotal)?700:400,
+          background:l.final?"#F0FFF4":isTotal?"#FAFBFC":"transparent",
+          borderBottom:l.final?"none":isTotal?"2px solid #E4E9F0":"1px solid #F0F2F5",
+          borderTop:l.final?"3px solid #2E6B3A":isTotal?"1px solid #E4E9F0":"none",
+        }}>
+          <span style={{color:isAcct?"#999":l.level===1?"#7A8DA0":"#2C3E50"}}>{l.label}</span>
+          <span style={{fontFamily:"monospace",fontWeight:isTotal?700:400,paddingRight:10,color:l.val>=0?(l.final?"#27AE60":"#2C3E50"):"#C0392B"}}>{fmt(l.val)}</span>
+        </div>;
+      })}
+    </div>
+  </div>;
+};
+
 function App() {
   const [section, setSection] = useState("dashboard");
   const [year, setYear] = useState(2025);
@@ -1371,38 +1432,7 @@ function App() {
 
         {libroView==="balance"&&<div>
           <SectionTitle>Balance de situación — {year}</SectionTitle>
-          {OFFICIAL_CCAA[year] ? (()=>{
-            const oc = OFFICIAL_CCAA[year].balance;
-            const BsLine = ({item}) => {
-              const indent = (item.level||0)*16+10;
-              const isAcct = item.level>=2 && /^\d/.test(item.label);
-              return <div style={{display:"flex",justifyContent:"space-between",padding:item.bold?"7px 0":"4px 0",paddingLeft:indent,fontSize:item.bold?12:isAcct?10:11,borderBottom:"1px solid #F0F2F5",background:item.bold?"#FAFBFC":"transparent"}}>
-                <span style={{color:item.bold?"#2C3E50":isAcct?"#999":"#7A8DA0",fontWeight:item.bold?700:item.highlight?600:400,fontStyle:item.highlight?"italic":"normal"}}>{item.label}</span>
-                <span style={{fontFamily:"monospace",fontSize:item.bold?12:11,fontWeight:item.bold?700:400,color:item.val<0?"#C0392B":item.highlight?(item.val>=0?"#27AE60":"#C0392B"):"#2C3E50",paddingRight:10}}>{fmt(item.val)}</span>
-              </div>;
-            };
-            return <div>
-              <div style={{fontSize:10,color:"#999",marginBottom:10,fontStyle:"italic"}}>📋 Fuente: {OFFICIAL_CCAA[year].fuente}</div>
-              <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
-                <div style={{flex:1,minWidth:320,background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
-                  <div style={{padding:"10px 16px",fontSize:13,fontWeight:700,color:"#2E6B3A",borderBottom:"2px solid #2E6B3A",background:"#FAFBFC"}}>ACTIVO</div>
-                  {oc.activo.map((item,i)=><BsLine key={i} item={item}/>)}
-                  <div style={{display:"flex",justifyContent:"space-between",padding:"12px 16px",fontSize:14,fontWeight:700,borderTop:"3px solid #2E6B3A",background:"#EAFAF1"}}>
-                    <span>TOTAL ACTIVO</span><span style={{fontFamily:"monospace",color:"#2E6B3A"}}>{fmt(oc.totalActivo)}</span>
-                  </div>
-                </div>
-                <div style={{flex:1,minWidth:320,background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
-                  <div style={{padding:"10px 16px",fontSize:13,fontWeight:700,color:"#2980B9",borderBottom:"2px solid #2980B9",background:"#FAFBFC"}}>PATRIMONIO NETO Y PASIVO</div>
-                  {oc.pasivo.map((item,i)=><BsLine key={i} item={item}/>)}
-                  <div style={{display:"flex",justifyContent:"space-between",padding:"12px 16px",fontSize:14,fontWeight:700,borderTop:"3px solid #2980B9",background:"#EBF5FB"}}>
-                    <span>TOTAL PN + PASIVO</span><span style={{fontFamily:"monospace",color:"#2980B9"}}>{fmt(oc.totalPasivo)}</span>
-                  </div>
-                  {oc.descuadre&&<div style={{padding:"6px 16px",fontSize:10,color:"#E67E22",background:"#FEF9E7"}}>⚠️ Descuadre de ~{oc.descuadre}€ en el Modelo 200 presentado (activo {fmt(oc.totalActivo)} vs PN+P {fmt(oc.totalPasivo)})</div>}
-                </div>
-              </div>
-              {oc.totalActivo===oc.totalPasivo&&<div style={{textAlign:"center",marginTop:8,fontSize:11,color:"#27AE60",fontWeight:600}}>✅ Balance cuadrado: Activo = PN + Pasivo = {fmt(oc.totalActivo)}</div>}
-            </div>;
-          })() : <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+          {OFFICIAL_CCAA[year] ? <OfficialBalanceView year={year} fmt={fmt}/> : <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
             <div style={{flex:1,minWidth:300,background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
               <div style={{padding:"4px 0",fontSize:10,color:"#E67E22",marginBottom:8}}>⚠️ Calculado desde facturas — datos posiblemente incompletos</div>
               <div style={{fontSize:13,fontWeight:700,color:"#2E6B3A",marginBottom:12,borderBottom:"2px solid #2E6B3A",paddingBottom:6}}>ACTIVO</div>
@@ -1434,31 +1464,7 @@ function App() {
 
         {libroView==="pyg"&&<div>
           <SectionTitle>Cuenta de pérdidas y ganancias — {year}</SectionTitle>
-          {OFFICIAL_CCAA[year] ? (()=>{
-            const lines = OFFICIAL_CCAA[year].pyg;
-            return <div>
-              <div style={{fontSize:10,color:"#999",marginBottom:10,fontStyle:"italic"}}>📋 Fuente: {OFFICIAL_CCAA[year].fuente}</div>
-              <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
-                {lines.map((l,i)=>{
-                  const isTotal = l.total||l.final;
-                  const isAcct = l.level>=1 && /^\d/.test(l.label);
-                  const indent = 20+(l.level||0)*16;
-                  return <div key={i} style={{
-                    display:"flex",justifyContent:"space-between",
-                    padding:isTotal?"12px 20px":`6px 20px 6px ${indent}px`,
-                    fontSize:l.final?15:isTotal?13:isAcct?10:12,
-                    fontWeight:(l.bold||isTotal)?700:400,
-                    background:l.final?"#F0FFF4":isTotal?"#FAFBFC":"transparent",
-                    borderBottom:l.final?"none":isTotal?"2px solid #E4E9F0":"1px solid #F0F2F5",
-                    borderTop:l.final?"3px solid #2E6B3A":isTotal?"1px solid #E4E9F0":"none",
-                  }}>
-                    <span style={{color:isAcct?"#999":l.level===1?"#7A8DA0":"#2C3E50"}}>{l.label}</span>
-                    <span style={{fontFamily:"monospace",fontWeight:isTotal?700:400,paddingRight:10,color:l.val>=0?(l.final?"#27AE60":"#2C3E50"):"#C0392B"}}>{fmt(l.val)}</span>
-                  </div>;
-                })}
-              </div>
-            </div>;
-          })() : <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
+          {OFFICIAL_CCAA[year] ? <OfficialPyGView year={year} fmt={fmt}/> : <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
             <div style={{padding:"10px 20px",background:"#EAFAF1",fontWeight:700,fontSize:12,color:"#2E6B3A",borderBottom:"1px solid #A9DFBF"}}>A) INGRESOS DE EXPLOTACIÓN</div>
             {pyg.ingresos.map((m,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 20px 6px 36px",fontSize:12,borderBottom:"1px solid #F0F2F5"}}>
               <span style={{color:"#7A8DA0"}}><span style={{fontFamily:"monospace",marginRight:6,fontSize:10}}>{m.cuenta}</span>{PGC[m.cuenta]||""}</span>
@@ -1487,7 +1493,7 @@ function App() {
               <span>RESULTADO DESPUÉS DE IMPUESTOS</span>
               <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(MODELO_200[year]?MODELO_200[year].resultadoEjercicio:(pyg.resultado>0?pyg.resultado*0.75:pyg.resultado))}</span>
             </div>
-          </div>
+          </div>}
         </div>}
 
         {libroView==="docs"&&<div>
