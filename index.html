@@ -116,6 +116,11 @@ const MODELOS_303 = {
      resultadoRegimen:-133.70,sumaResultados:-133.70,atribuibleEstado:-133.70,
      cuotasPendientes:1566.78,cuotasAplicadas:0,cuotasPendientesPosterior:1566.78,
      resultadoLiquidacion:-133.70,estado:"A COMPENSAR",importeCompensar:133.70,doc:"docs/fiscal/2025/1T25.pdf"},
+    {trimestre:"2T",periodo:"Q2",fecha:"18-07-2025",justificante:"3036015277400",csv:"DCQQM9JAMZXH7BRB",expediente:"202530303860648P",
+     baseImponible21:0,baseExenta0:825.00,cuotaDevengada:0,baseIvaSoportado:1338.37,cuotaDeducible:171.48,
+     resultadoRegimen:-171.48,sumaResultados:-171.48,atribuibleEstado:-171.48,
+     cuotasPendientes:1700.48,cuotasAplicadas:0,cuotasPendientesPosterior:1700.48,
+     resultadoLiquidacion:-171.48,estado:"A COMPENSAR",importeCompensar:171.48,doc:"docs/fiscal/2025/2T25.pdf"},
     {trimestre:"3T",periodo:"Q3",fecha:"18-10-2025",justificante:"3036084416391",csv:"XE9AHFUVK557C2B5",expediente:"202530303860982J",
      baseImponible21:3000.00,cuotaDevengada:630.00,baseIvaSoportado:636.67,cuotaDeducible:133.70,
      resultadoRegimen:496.30,sumaResultados:496.30,atribuibleEstado:496.30,
@@ -303,6 +308,40 @@ const ALERTAS = [
 // ─── HELPERS ───
 const fmt = n => n.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const fmtDate = d => { if(!d) return ""; const p=d.split("-"); return p[2]+"/"+p[1]+"/"+p[0]; };
+
+// ─── IMPUESTO DE SOCIEDADES — MODELO 200 (datos oficiales AEAT) ───
+const MODELO_200 = {
+  2022: {
+    cifraNegocios:17703.00, gastosExplotacion:-15281.85, amortizacion:-281.16,
+    resultadoExplotacion:2139.99, resultadoAntesIS:2139.99,
+    gastoIS:535.00, resultadoEjercicio:1604.99,
+    baseImponibleAntesComp:2139.99, compensacionBIN:2139.99,
+    baseImponible:0, tipoGravamen:25, cuotaIntegra:0,
+    liquidoIngresar:0, cuotaCero:true,
+    justificante:"2003018592260", csv:"2PPL2V67TUB2BVHP",
+    expediente:"202220003860082L", fecha:"21-07-2023",
+    doc:"docs/fiscal/2022/IS2022.pdf"
+  },
+  2023: {
+    cifraNegocios:23539.20, gastosExplotacion:-16978.41, amortizacion:-480.81,
+    resultadoExplotacion:6079.98, resultadoAntesIS:6079.98,
+    gastoIS:1519.99, resultadoEjercicio:4559.99,
+    baseImponibleAntesComp:6079.98, compensacionBIN:720.09,
+    baseImponible:5359.89, tipoGravamen:25, cuotaIntegra:1339.97,
+    liquidoIngresar:1339.97, cuotaCero:false,
+    doc:"docs/fiscal/2023/IS2023.pdf"
+  },
+  2024: {
+    cifraNegocios:9300.00, gastosExplotacion:-9241.93, amortizacion:-1696.56,
+    resultadoExplotacion:-1638.49, resultadoAntesIS:-1638.49,
+    gastoIS:0, resultadoEjercicio:-1638.49,
+    baseImponibleAntesComp:-1638.49, compensacionBIN:0,
+    baseImponible:0, tipoGravamen:25, cuotaIntegra:0,
+    liquidoIngresar:-244.28, cuotaCero:false,
+    binGeneradas:1638.49, pagosFraccionados:244.28,
+    doc:"docs/fiscal/2024/IS2024.pdf"
+  }
+};
 const toISO = d => { if(!d||d.includes("-")) return d; const p=d.split("/"); return p[2]+"-"+p[1]+"-"+p[0]; };
 const sum = (arr,key) => arr.reduce((s,r)=>s+(r[key]||0),0);
 const getQ = fecha => { const m=parseInt(fecha.split("-")[1]); if(m<=3) return "Q1"; if(m<=6) return "Q2"; if(m<=9) return "Q3"; return "Q4"; };
@@ -438,7 +477,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "4.3";
+const APP_VERSION = "4.4";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -764,6 +803,7 @@ function App() {
       },
       2025: {
         Q1: [{label:"Modelo 303 — 1T",doc:"docs/fiscal/2025/1T25.pdf"}],
+        Q2: [{label:"Modelo 303 — 2T",doc:"docs/fiscal/2025/2T25.pdf"}],
         Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/2025/3T25.pdf"}],
         Q4: [{label:"Modelo 303 — 4T (rectificativa)",doc:"docs/fiscal/2025/4T25ii.pdf"},{label:"4T original",doc:"docs/fiscal/2025/4T25i.pdf"}],
         anual: [{label:"Modelo 390 — Resumen anual 2025",doc:"docs/fiscal/2025/390_2025.pdf"}],
@@ -987,6 +1027,7 @@ function App() {
 
     const isDocsMap = {
       2024: [
+        {label:"Modelo 200 — IS 2024",doc:"docs/fiscal/2024/IS2024.pdf"},
         {label:"Justificante pago a cuenta IS",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
         {label:"Liquidación pago a cuenta IS",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
         {label:"Pago Mod.010 — 248,22€",doc:"docs/fiscal/2025/082615305105DC5LNA45CZ.pdf"},
@@ -997,24 +1038,46 @@ function App() {
         {label:"174545437Z26",doc:"docs/fiscal/2025/174545437Z26.pdf"},
         {label:"174545437Z",doc:"docs/fiscal/2025/174545437Z.pdf"},
       ],
-      2023: [],
+      2022: [
+        {label:"Modelo 200 — IS 2022",doc:"docs/fiscal/2022/IS2022.pdf"},
+      ],
+      2023: [
+        {label:"Modelo 200 — IS 2023",doc:"docs/fiscal/2023/IS2023.pdf"},
+      ],
     };
     const isDocs = isDocsMap[year]||[];
 
+    const m200 = MODELO_200[year];
     if(section==="is") return <div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Impuesto sobre Sociedades — Estimación {year}</div>
+      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Impuesto sobre Sociedades — {m200?"Modelo 200":"Cálculo desde libros"} {year}</div>
       <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
-        {[
+        {(m200?[
+          {l:"Cifra de negocios (Mod. 200)",v:m200.cifraNegocios,b:true},
+          ...emitidas.reduce((a,e)=>{const x=a.find(i=>i.l===e.cliente);if(x)x.v+=e.base;else a.push({l:e.cliente,v:e.base,i:1});return a;},[]),
+          {l:"Gastos de explotación (Mod. 200)",v:m200.gastosExplotacion,b:true,c:"#C0392B"},
+          ...catS.map(([cat,val])=>({l:cat,v:-val,i:1,c:"#C0392B"})),
+          {l:"Amortización",v:m200.amortizacion,c:"#C0392B"},
+          {l:"RESULTADO DE EXPLOTACIÓN",v:m200.resultadoExplotacion,b:true,c:m200.resultadoExplotacion>=0?"#27AE60":"#C0392B",sep:true},
+          {l:"RESULTADO ANTES DE IMPUESTOS",v:m200.resultadoAntesIS,b:true,c:m200.resultadoAntesIS>=0?"#27AE60":"#C0392B"},
+          {l:"Gasto IS contable (cta. 630)",v:-m200.gastoIS,c:"#C0392B"},
+          {l:"RESULTADO DEL EJERCICIO",v:m200.resultadoEjercicio,b:true,c:m200.resultadoEjercicio>=0?"#27AE60":"#C0392B",sep:true},
+          {l:"Base imponible antes compensación BIN",v:m200.baseImponibleAntesComp},
+          {l:"Compensación BIN periodos anteriores",v:-m200.compensacionBIN,c:"#7A8DA0"},
+          {l:"BASE IMPONIBLE",v:m200.baseImponible,b:true},
+          {l:"Tipo gravamen",v:null,extra:m200.tipoGravamen+"%"},
+          {l:"Cuota íntegra",v:m200.cuotaIntegra,b:true,c:"#3D7A4A"},
+          {l:m200.cuotaCero?"CUOTA CERO":"Líquido a ingresar",v:m200.liquidoIngresar,b:true,c:"#3D7A4A",sep:true},
+        ]:[
           {l:"Ingresos de explotación",v:tIB,b:true},
           ...emitidas.reduce((a,e)=>{const x=a.find(i=>i.l===e.cliente);if(x)x.v+=e.base;else a.push({l:e.cliente,v:e.base,i:1});return a;},[]),
           {l:"Gastos de explotación",v:-tGB,b:true,c:"#C0392B"},
           ...catS.map(([cat,val])=>({l:cat,v:-val,i:1,c:"#C0392B"})),
           {l:"RESULTADO ANTES DE IMPUESTOS",v:resultado,b:true,c:resultado>=0?"#27AE60":"#C0392B",sep:true},
-          {l:"Tipo IS (25%)",v:null},
-          {l:"Cuota IS estimada",v:resultado>0?resultado*0.25:0,b:true,c:"#3D7A4A"},
-        ].map((r,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",paddingLeft:20+(r.i||0)*24,borderTop:r.sep?"2px solid #3D7A4A":i>0?"1px solid #F0F2F5":"none",background:r.b&&!r.i?"#FAFBFC":"#fff"}}>
+          {l:"Tipo IS (est. 25%)",v:null},
+          {l:"Cuota IS",v:resultado>0?resultado*0.25:0,b:true,c:"#3D7A4A"},
+        ]).map((r,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",paddingLeft:20+(r.i||0)*24,borderTop:r.sep?"2px solid #3D7A4A":i>0?"1px solid #F0F2F5":"none",background:r.b&&!r.i?"#FAFBFC":"#fff"}}>
           <span style={{fontSize:12,color:r.b?"#2C3E50":"#7A8DA0",fontWeight:r.b?700:400}}>{r.l}</span>
-          <span style={{fontSize:12,fontFamily:"monospace",color:r.c||"#2C3E50",fontWeight:r.b?700:400}}>{r.v!=null?fmt(Math.abs(r.v)):""}</span>
+          <span style={{fontSize:12,fontFamily:"monospace",color:r.c||"#2C3E50",fontWeight:r.b?700:400}}>{r.extra||(r.v!=null?fmt(Math.abs(r.v)):"")}</span>
         </div>)}
       </div>
       {isDocs.length>0&&<div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginTop:16}}>
@@ -1169,12 +1232,12 @@ function App() {
               <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(pyg.resultado)}</span>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",fontSize:12,background:"#fff",borderTop:"1px solid #E4E9F0"}}>
-              <span style={{color:"#7A8DA0"}}>IS estimado (25%)</span>
-              <span style={{fontFamily:"monospace"}}>{fmt(pyg.resultado>0?pyg.resultado*0.25:0)}</span>
+              <span style={{color:"#7A8DA0"}}>{MODELO_200[year]?"IS (Mod. 200)":"IS (est. 25%)"}</span>
+              <span style={{fontFamily:"monospace"}}>{fmt(MODELO_200[year]?MODELO_200[year].gastoIS:(pyg.resultado>0?pyg.resultado*0.25:0))}</span>
             </div>
             <div style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",fontWeight:700,fontSize:13,background:"#FAFBFC",borderTop:"1px solid #E4E9F0"}}>
               <span>RESULTADO DESPUÉS DE IMPUESTOS</span>
-              <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(pyg.resultado>0?pyg.resultado*0.75:pyg.resultado)}</span>
+              <span style={{fontFamily:"monospace",color:pyg.resultado>=0?"#27AE60":"#C0392B"}}>{fmt(MODELO_200[year]?MODELO_200[year].resultadoEjercicio:(pyg.resultado>0?pyg.resultado*0.75:pyg.resultado))}</span>
             </div>
           </div>
         </div>}
