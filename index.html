@@ -220,11 +220,12 @@ const DEFAULT_RECIBIDAS_2023 = [
 ];
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
-  { id: "e2024-2", num: "3/2024", fecha: "2024-07-08", cliente: "Rivera del Campo", nif: "", desc: "Provisión de fondos constitución sociedad", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q3", doc: "docs/emitidas/2024/Factura_3_2024.pdf" },
-  { id: "e2024-3", num: "4/2024", fecha: "2024-10-15", cliente: "ICAB", nif: "Q0863003-J", desc: "Clase RSC y Gobernanza - Master Compliance", base: 300, tipoIva: 21, iva: 63, total: 363, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_4_2024.pdf" },
-  { id: "e2024-4", num: "5/2024", fecha: "2024-10-15", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (may-sep 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_5_2024.pdf" },
-  { id: "e2024-5", num: "6/2024", fecha: "2024-10-31", cliente: "ASCOM", nif: "G-87034120", desc: "Seminario Alta Dirección 2024 (exento art.20.9)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_6_2024.pdf" },
-  { id: "e2024-6", num: "7/2024", fecha: "2024-12-10", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (sep-dic 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_7_2024.pdf" },
+  { id: "e2024-2", num: "2/2024", fecha: "2024-06-03", cliente: "Blockchain Intelligence", nif: "B05490057", desc: "Clase tokenización (25/5/23)", base: 225, tipoIva: 0, iva: 0, total: 225, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_2_2024.pdf" },
+  { id: "e2024-3", num: "3/2024", fecha: "2024-07-08", cliente: "Rivera del Campo", nif: "", desc: "Provisión de fondos constitución sociedad", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q3", doc: "docs/emitidas/2024/Factura_3_2024.pdf" },
+  { id: "e2024-4", num: "4/2024", fecha: "2024-10-15", cliente: "ICAB", nif: "Q0863003-J", desc: "Clase RSC y Gobernanza - Master Compliance", base: 300, tipoIva: 21, iva: 63, total: 363, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_4_2024.pdf" },
+  { id: "e2024-5", num: "5/2024", fecha: "2024-10-15", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (may-sep 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_5_2024.pdf" },
+  { id: "e2024-6", num: "6/2024", fecha: "2024-10-31", cliente: "ASCOM", nif: "G-87034120", desc: "Seminario Alta Dirección 2024 (exento art.20.9)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_6_2024.pdf" },
+  { id: "e2024-7", num: "7/2024", fecha: "2024-12-10", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (sep-dic 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_7_2024.pdf" },
 ];
 const DEFAULT_EMITIDAS_2025 = [
   { id: "e2025-1", num: "1/2025", fecha: "2025-02-26", cliente: "IEF", nif: "G-59190850", desc: "Curso CESCOM® Sesión 16: Prevención soborno (exento)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q1", doc: "docs/emitidas/2025/Factura_1_2025.pdf" },
@@ -668,7 +669,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "5.0"; // v5.0: CCAA oficiales from IS 2022/2023/2024 PDFs
+const APP_VERSION = "5.2"; // v5.2: add Invoice 2/2024 (Blockchain Intelligence 225€)
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
