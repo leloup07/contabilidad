@@ -89,6 +89,16 @@ const MODELOS_303 = {
      entregasIntracom:11316.75,resultadoLiquidacion:-81.67,estado:"A COMPENSAR",importeCompensar:81.67,doc:"docs/fiscal/2023/4T23.pdf"}
   ],
   2024: [
+    {trimestre:"1T",periodo:"Q1",fecha:"22-04-2024",justificante:"3035085593434",csv:"SYK2ZQ96RH9STCVY",expediente:"202430303860344C",
+     baseImponible21:0,cuotaDevengada:0,baseIvaSoportado:648.14,cuotaDeducible:124.34,
+     resultadoRegimen:-124.34,sumaResultados:-124.34,atribuibleEstado:-124.34,
+     cuotasPendientes:11398.42,cuotasAplicadas:0,cuotasPendientesPosterior:11398.42,
+     resultadoLiquidacion:-124.34,estado:"A COMPENSAR",importeCompensar:124.34,doc:"docs/fiscal/2024/1T24.pdf"},
+    {trimestre:"2T",periodo:"Q2",fecha:"17-07-2024",justificante:"3035036951870",csv:"LWP94KHTYARCX3P3",expediente:"202430303860607W",
+     baseImponible21:3000.00,cuotaDevengada:630.00,baseIvaSoportado:8425.51,cuotaDeducible:1651.51,
+     resultadoRegimen:-1021.51,sumaResultados:-1021.51,atribuibleEstado:-1021.51,
+     cuotasPendientes:11398.00,cuotasAplicadas:0,cuotasPendientesPosterior:11398.00,
+     resultadoLiquidacion:-1021.51,estado:"A COMPENSAR",importeCompensar:1021.51,doc:"docs/fiscal/2024/2T24.pdf"},
     {trimestre:"3T",periodo:"Q3",fecha:"17-10-2024",justificante:"3035048379176",csv:"92T7NFET7TFB6KYH",expediente:"202430303860983R",
      baseImponible21:0,cuotaDevengada:0,baseIvaSoportado:806.00,cuotaDeducible:172.24,
      resultadoRegimen:-172.24,sumaResultados:-172.24,atribuibleEstado:-172.24,
@@ -99,6 +109,24 @@ const MODELOS_303 = {
      resultadoRegimen:98.15,sumaResultados:98.15,atribuibleEstado:98.15,
      cuotasPendientes:11695.00,cuotasAplicadas:98.15,cuotasPendientesPosterior:11596.85,
      resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"}
+  ],
+  2025: [
+    {trimestre:"1T",periodo:"Q1",fecha:"19-04-2025",justificante:"3036004851950",csv:"B7URUHC78EP5489R",expediente:"202530303860304Z",
+     baseImponible21:0,cuotaDevengada:0,baseIvaSoportado:636.67,cuotaDeducible:133.70,
+     resultadoRegimen:-133.70,sumaResultados:-133.70,atribuibleEstado:-133.70,
+     cuotasPendientes:1566.78,cuotasAplicadas:0,cuotasPendientesPosterior:1566.78,
+     resultadoLiquidacion:-133.70,estado:"A COMPENSAR",importeCompensar:133.70,doc:"docs/fiscal/2025/1T25.pdf"},
+    {trimestre:"3T",periodo:"Q3",fecha:"18-10-2025",justificante:"3036084416391",csv:"XE9AHFUVK557C2B5",expediente:"202530303860982J",
+     baseImponible21:3000.00,cuotaDevengada:630.00,baseIvaSoportado:636.67,cuotaDeducible:133.70,
+     resultadoRegimen:496.30,sumaResultados:496.30,atribuibleEstado:496.30,
+     cuotasPendientes:1871.96,cuotasAplicadas:496.30,cuotasPendientesPosterior:1375.66,
+     resultadoLiquidacion:0.00,estado:"RESULTADO 0",doc:"docs/fiscal/2025/3T25.pdf"},
+    {trimestre:"4T",periodo:"Q4",fecha:"28-01-2026",justificante:"3036006574544",csv:"ZTAA3Q75PRDTCGYC",expediente:"202530303861354G",
+     baseImponible21:6300.00,cuotaDevengada:1323.00,baseIvaSoportado:10775.06,cuotaDeducible:2245.13,
+     resultadoRegimen:-922.13,sumaResultados:-922.13,atribuibleEstado:-922.13,
+     cuotasPendientes:1375.66,cuotasAplicadas:0,cuotasPendientesPosterior:1375.66,
+     resultadoLiquidacion:-922.13,estado:"A COMPENSAR",importeCompensar:922.13,
+     rectificativa:true,rectificaJust:"3036035671855",doc:"docs/fiscal/2025/4T25ii.pdf"}
   ]
 };
 
@@ -122,6 +150,69 @@ const MODELOS_390 = {
 };
 
 // ─── DEFAULT DATA ───
+const DEFAULT_EMITIDAS_2022 = [
+  { id:"e2022-1", num:"01/2022", fecha:"2022-02-10", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (35% facturación total)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_1_2022.pdf" },
+  { id:"e2022-2", num:"02/2022", fecha:"2022-02-10", cliente:"Amoria Capital, S.L.", nif:"", desc:"Iguala mensual (servicios hasta ene 2022)", base:1000, tipoIva:21, iva:210, total:1210, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_2_2022.pdf" },
+  { id:"e2022-3", num:"03/2022", fecha:"2022-03-24", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (2º pago mensual)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_3_2022.pdf" },
+  { id:"e2022-4", num:"04/2022", fecha:"2022-04-05", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 24/03/2022 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_4_2022.pdf" },
+  { id:"e2022-5", num:"06/2022", fecha:"2022-05-03", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (3er pago mensual)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_6_2022.pdf" },
+  { id:"e2022-6", num:"07/2022", fecha:"2022-05-23", cliente:"Círculo del Liceo", nif:"G08413528", desc:"Implantación Sistema Compliance Penal", base:840, tipoIva:21, iva:176.40, total:1016.40, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_7_2022.pdf" },
+  { id:"e2022-7", num:"09/2022", fecha:"2022-06-20", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (4º y último pago)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q2", doc:"docs/emitidas/2022/Factura_9_2022.pdf" },
+  { id:"e2022-8", num:"12/2022", fecha:"2022-09-23", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (may-ago 2022)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_12_2022.pdf" },
+  { id:"e2022-9", num:"13/2022", fecha:"2022-09-29", cliente:"E.P.E.L. Neàpolis", nif:"Q-08015721", desc:"Curso Blockchain TTT (jun 2022 – 6 horas)", base:318, tipoIva:21, iva:66.78, total:384.78, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_13_2022.pdf" },
+  { id:"e2022-10", num:"14/2022", fecha:"2022-09-29", cliente:"Círculo del Liceo", nif:"G08413528", desc:"Diseño Sistema Compliance Penal (pago 4/4)", base:840, tipoIva:21, iva:176.40, total:1016.40, trimestre:"Q3", doc:"docs/emitidas/2022/Factura_14_2022.pdf" },
+  { id:"e2022-11", num:"15/2022", fecha:"2022-10-19", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 18/10/2022 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_15_2022.pdf" },
+  { id:"e2022-12", num:"17/2022", fecha:"2022-12-19", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (sep-dic 2022)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_17_2022.pdf" },
+  { id:"e2022-13", num:"18/2022", fecha:"2022-12-31", cliente:"Amoria Capital, S.L.", nif:"", desc:"Rectificativa de 02/2022 — cancelación iguala", base:-1000, tipoIva:21, iva:-210, total:-1210, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_18_2022.pdf" },
+];
+const DEFAULT_RECIBIDAS_2022 = [
+  { id:"r2022-1", fecha:"2022-05-04", prov:"Durán Compliance", desc:"Diseño SGCP Col·legi Procuradors (FRA 22/016)", base:853.13, tipoIva:21, iva:179.16, total:904.32, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_016.pdf" },
+  { id:"r2022-2", fecha:"2022-05-26", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/020)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_020.pdf" },
+  { id:"r2022-3", fecha:"2022-06-28", prov:"Durán Compliance", desc:"Diseño SGCP Col·legi Procuradors 4ª (FRA 22/025)", base:853.13, tipoIva:21, iva:179.16, total:904.32, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_025.pdf" },
+  { id:"r2022-4", fecha:"2022-06-28", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/026)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_026.pdf" },
+  { id:"r2022-5", fecha:"2022-07-27", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/031)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q3", doc:"docs/recibidas/2022/Duran_22_031.pdf" },
+  { id:"r2022-6", fecha:"2022-08-31", prov:"Durán Compliance", desc:"Diseño SGCP Círculo del Liceo (FRA 22/036)", base:420, tipoIva:21, iva:88.20, total:445.20, cat:"Subcontratista", trimestre:"Q3", doc:"docs/recibidas/2022/Duran_22_036.pdf" },
+  { id:"r2022-7", fecha:"2022-04-01", prov:"Soluciones Web On Line", desc:"Hosting Moodle abr 2022 (G-469349)", base:58.29, tipoIva:21, iva:12.24, total:70.53, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G469349.pdf" },
+  { id:"r2022-8", fecha:"2022-05-03", prov:"Soluciones Web On Line", desc:"Hosting Moodle may 2022 (G-476016)", base:58.29, tipoIva:21, iva:12.24, total:70.53, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G476016.pdf" },
+  { id:"r2022-9", fecha:"2022-05-04", prov:"Soluciones Web On Line", desc:"Renovación dominio eleve-edu.com (G-476357)", base:9.85, tipoIva:21, iva:2.07, total:11.92, cat:"Hosting", trimestre:"Q2", doc:"docs/recibidas/2022/SolucionesWeb_G476357.pdf" },
+  { id:"r2022-10", fecha:"2022-08-22", prov:"GoDaddy", desc:"Microsoft 365 Profesional Empresarial", base:179.88, tipoIva:21, iva:37.77, total:217.65, cat:"Software", trimestre:"Q3", doc:"docs/recibidas/2022/GoDaddy_2296339340.pdf" },
+  { id:"r2022-11", fecha:"2022-08-30", prov:"GoDaddy", desc:"Correo Microsoft 365 x2 (renovación)", base:119.76, tipoIva:21, iva:25.15, total:144.91, cat:"Software", trimestre:"Q3", doc:"docs/recibidas/2022/GoDaddy_2304287304.pdf" },
+  { id:"r2022-12", fecha:"2022-09-28", prov:"Apple Retail Spain", desc:"iPad Pro 12,9\" 256GB Wi-Fi", base:1078.67, tipoIva:21, iva:226.52, total:1305.19, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Apple_iPad_Pro.pdf" },
+  { id:"r2022-13", fecha:"2022-09-28", prov:"Apple Retail Spain", desc:"Apple Pencil 2ª generación", base:111.57, tipoIva:21, iva:23.43, total:135.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Apple_Pencil.pdf" },
+  { id:"r2022-14", fecha:"2022-08-31", prov:"Intecat iStore", desc:"EarPods Lightning (BMF/2834)", base:15.70, tipoIva:21, iva:3.30, total:19.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2022/Intecat_BMF2834.pdf" },
+  { id:"r2022-15", fecha:"2022-07-13", prov:"Movistar", desc:"Fusión Selección Plus (28 May-27 Jun)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_jul2022.pdf" },
+  { id:"r2022-16", fecha:"2022-08-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Jun-27 Jul)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_ago2022.pdf" },
+  { id:"r2022-17", fecha:"2022-09-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Jul-27 Ago)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q3", doc:"docs/recibidas/2022/Movistar_sep2022.pdf" },
+  { id:"r2022-18", fecha:"2022-10-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Ago-27 Sep)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2022/Movistar_oct2022.pdf" },
+  { id:"r2022-19", fecha:"2022-11-13", prov:"Movistar", desc:"Fusión Selección Plus (28 Sep-27 Oct)", base:123.97, tipoIva:21, iva:26.03, total:150.00, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2022/Movistar_nov2022.pdf" },
+  { id:"r2022-20", fecha:"2022-12-02", prov:"CryptoPlaza", desc:"Founders Digital Membership dic", base:20.66, tipoIva:21, iva:4.34, total:25.00, cat:"Suscripciones", trimestre:"Q4", doc:"docs/recibidas/2022/SkyMedia_202212.pdf" },
+  { id:"r2022-21", fecha:"2022-12-22", prov:"Twist/RunRun", desc:"Asesoramiento marca Proyecto Leap", base:595.00, tipoIva:21, iva:124.95, total:719.95, cat:"Marketing", trimestre:"Q4", doc:"docs/recibidas/2022/RunRun_2022_150.pdf" },
+  { id:"r2022-22", fecha:"2022-11-19", prov:"SRA UK", desc:"Practising Certificate 2022-23 (£316)", base:365.00, tipoIva:0, iva:0, total:365.00, cat:"Profesional int.", trimestre:"Q4", doc:"docs/recibidas/2022/SRA_UK_2022.pdf" },
+  { id:"r2022-23", fecha:"2022-02-25", prov:"Santiago Hernández", desc:"Servicios jurídicos (Fra 01)", base:200, tipoIva:21, iva:42, total:242, cat:"Servicios prof.", trimestre:"Q1", doc:"docs/recibidas/2022/SHernandez_01.pdf" },
+];
+const DEFAULT_EMITIDAS_2023 = [
+  { id:"e2023-1", num:"1/2023", fecha:"2023-02-13", cliente:"Asociación ICEA", nif:"G-28646313", desc:"Curso Compliance febrero 2023", base:240, tipoIva:21, iva:50.40, total:290.40, trimestre:"Q1", doc:"docs/emitidas/2023/Factura_1_2023.pdf" },
+  { id:"e2023-2", num:"02/2023", fecha:"2023-05-11", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Compliance 11/05/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_2_2023.pdf" },
+  { id:"e2023-3", num:"3/2023", fecha:"2023-05-11", cliente:"Fundación Instituto de Empresa", nif:"G-81711459", desc:"Honorarios Dir. Observatorio IE-Elecnor (ene-abr 2023)", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_3_2023.pdf" },
+  { id:"e2023-4", num:"4/2023", fecha:"2023-05-12", cliente:"INMOCRYPTO", nif:"B72739667", desc:"Gastos desplazamiento congreso INMOCRYPTO (22/04/23)", base:209.09, tipoIva:0, iva:0, total:209.09, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_4_2023.pdf" },
+  { id:"e2023-5", num:"5/2023", fecha:"2023-05-31", cliente:"Blockchain Intelligence", nif:"B05490057", desc:"Clase tokenización inmobiliaria (25/05/23)", base:150, tipoIva:0, iva:0, total:150, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_5_2023.pdf" },
+  { id:"e2023-6", num:"06/2023", fecha:"2023-06-21", cliente:"ASCOM", nif:"G-87034120", desc:"Seminario Blockchain 20/06/2023 (exento art.20.9)", base:300, tipoIva:0, iva:0, total:300, trimestre:"Q2", doc:"docs/emitidas/2023/Factura_6_2023.pdf" },
+  { id:"e2023-7", num:"07/2023", fecha:"2023-08-21", cliente:"Amphion Soft, SL", nif:"B-06903926", desc:"50% honorarios constitución cooperativa Context DAO, SCCL", base:7500, tipoIva:21, iva:1575, total:9075, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_7_2023.pdf" },
+  { id:"e2023-8", num:"08/2023", fecha:"2023-09-01", cliente:"Soccer Tech City Costa Ballena, SL", nif:"B-02903581", desc:"Iguala mensual proyecto Conil — septiembre 2023", base:2000, tipoIva:21, iva:420, total:2420, trimestre:"Q3", doc:"docs/emitidas/2023/Factura_8_2023.pdf" },
+];
+const DEFAULT_RECIBIDAS_2023 = [
+  { id:"r2023-1", fecha:"2023-03-13", prov:"Vueling", desc:"BCN-ALC-BCN 13/03/23", base:158.60, tipoIva:10, iva:18.64, total:204.98, cat:"Viajes", trimestre:"Q1", doc:"docs/recibidas/2023/Vueling_BCN_ALC_BCN.pdf" },
+  { id:"r2023-2", fecha:"2023-04-15", prov:"Vueling", desc:"ALC-BCN 22/04/23", base:98.76, tipoIva:10, iva:9.88, total:142.99, cat:"Viajes", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_ALC_BCN.pdf" },
+  { id:"r2023-3", fecha:"2023-04-15", prov:"Vueling", desc:"BCN-ORY 19/04/23", base:17.57, tipoIva:0, iva:0, total:59.99, cat:"Viajes int.", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_BCN_ORY.pdf" },
+  { id:"r2023-4", fecha:"2023-04-15", prov:"Vueling", desc:"CDG-ALC 20/04/23", base:118.63, tipoIva:0, iva:0, total:169.99, cat:"Viajes int.", trimestre:"Q2", doc:"docs/recibidas/2023/Vueling_CDG_ALC.pdf" },
+  { id:"r2023-5", fecha:"2023-05-09", prov:"Marcial Pons", desc:"Libro Finanzas Descentralizadas", base:17.26, tipoIva:4, iva:0.69, total:17.95, cat:"Libros", trimestre:"Q2", doc:"docs/recibidas/2023/MarcialPons_libro.pdf" },
+  { id:"r2023-6", fecha:"2023-08-14", prov:"Intecat iStore", desc:"Apple Watch Ultra 49mm (BMF/6091)", base:722.31, tipoIva:21, iva:151.69, total:874.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6091.pdf" },
+  { id:"r2023-7", fecha:"2023-08-29", prov:"Intecat iStore", desc:"Apple Watch S8 45mm (BMF/6206)", base:310.74, tipoIva:21, iva:65.26, total:376.00, cat:"Equipos", trimestre:"Q3", doc:"docs/recibidas/2023/Intecat_BMF6206.pdf" },
+  { id:"r2023-8", fecha:"2023-09-14", prov:"RunRun Digital", desc:"Asesoramiento marca (F230028)", base:1530.00, tipoIva:21, iva:321.30, total:1851.30, cat:"Marketing", trimestre:"Q3", doc:"docs/recibidas/2023/RunRun_F230028.pdf" },
+  { id:"r2023-9", fecha:"2023-11-17", prov:"Renfe", desc:"Billete tren", base:63.06, tipoIva:21, iva:13.24, total:76.30, cat:"Viajes", trimestre:"Q4", doc:"docs/recibidas/2023/Renfe_VJ7U.pdf" },
+  { id:"r2023-10", fecha:"2023-11-29", prov:"GBA (USA)", desc:"Professional Membership ($299)", base:274.00, tipoIva:0, iva:0, total:274.00, cat:"Profesional int.", trimestre:"Q4", doc:"docs/recibidas/2023/GBA_membership.pdf" },
+  { id:"r2023-11", fecha:"2023-12-13", prov:"Movistar", desc:"Telecom (28 Oct-27 Nov)", base:130.00, tipoIva:21, iva:27.30, total:157.30, cat:"Telecom", trimestre:"Q4", doc:"docs/recibidas/2023/Movistar_dic2023.pdf" },
+];
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
   { id: "e2024-2", num: "3/2024", fecha: "2024-07-08", cliente: "Rivera del Campo", nif: "", desc: "Provisión de fondos constitución sociedad", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q3", doc: "docs/emitidas/2024/Factura_3_2024.pdf" },
@@ -245,25 +336,24 @@ const CAT_CUENTA = {
 const AMORT_RATE = 0.25; // 25% anual equipos informáticos
 
 function generarAsientos(emitidas, recibidas, year, allRecibidas) {
-  const asientos = [];
-  let n = 1;
+  const preAsientos = [];
   // ─── Facturas emitidas ───
-  [...emitidas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(e => {
+  [...emitidas].forEach(e => {
     const apuntes = [];
     apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:e.total,haber:0});
     apuntes.push({cuenta:"705",nombre:ctaName("705"),debe:0,haber:e.base});
     if(e.iva>0) apuntes.push({cuenta:"477",nombre:ctaName("477"),debe:0,haber:e.iva});
-    asientos.push({n:n++,fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
+    preAsientos.push({fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
   });
   // ─── Facturas recibidas ───
-  [...recibidas].sort((a,b)=>a.fecha.localeCompare(b.fecha)).forEach(r => {
+  [...recibidas].forEach(r => {
     const apuntes = [];
     const esActivo = r.cat==="Equipos" && r.base>300;
     const ctaGasto = esActivo ? "217" : (CAT_CUENTA[r.cat]||"629");
     apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
     if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
     apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
-    asientos.push({n:n++,fecha:r.fecha,tipo:"FR",concepto:`${r.prov} — ${r.desc}`,ref:r.id,apuntes,esActivo});
+    preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
   // ─── Amortizaciones (incluye activos de años anteriores que siguen vivos) ───
   const todosActivos = allRecibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
@@ -289,13 +379,18 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas) {
       });
       if(cuotaTrim > 0) {
         cuotaTrim = Math.round(cuotaTrim*100)/100;
-        asientos.push({n:n++,fecha:fechasTrim[qi],tipo:"AM",concepto:`Amortización EPI ${q} ${year}`,apuntes:[
+        preAsientos.push({fecha:fechasTrim[qi],tipo:"AM",concepto:`Amortización EPI ${q} ${year}`,apuntes:[
           {cuenta:"681",nombre:ctaName("681"),debe:cuotaTrim,haber:0},
           {cuenta:"281",nombre:ctaName("281"),debe:0,haber:cuotaTrim},
         ]});
       }
     });
   }
+  // ─── Sort ALL entries chronologically, then number ───
+  preAsientos.sort((a,b)=>a.fecha.localeCompare(b.fecha));
+  const asientos = [];
+  let n = 1;
+  preAsientos.forEach(a => { asientos.push({...a, n:n++}); });
   return asientos;
 }
 
@@ -343,7 +438,7 @@ function loadData(key, def) { try { const d = localStorage.getItem(key); return 
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "4.1";
+const APP_VERSION = "4.3";
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
@@ -503,7 +598,7 @@ function App() {
 
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025];
-  const defaults = {emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
+  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2022:DEFAULT_RECIBIDAS_2022,recibidas_2023:DEFAULT_RECIBIDAS_2023,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025};
   const [store, setStore] = useState(()=>{
     const s={};
     YEARS.forEach(y=>{
@@ -555,7 +650,7 @@ function App() {
   const maxC=catS[0]?.[1]||1;
   const cc=["#3D7A4A","#2980B9","#27AE60","#E67E22","#8E44AD","#C0392B","#16A085","#D4AC0D"];
 
-  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps",docs:"Documentos Fiscales"};
+  const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps"};
 
   // ─── FILTER ───
   const filteredEmitidas = emitidas.filter(e => !search || [e.num,e.cliente,e.desc,e.nif].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
@@ -661,12 +756,16 @@ function App() {
 
     const ivaDocsMap = {
       2024: {
-        Q2: [{label:"Borrador IVA 2T",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"}],
+        Q1: [{label:"Modelo 303 — 1T",doc:"docs/fiscal/2024/1T24.pdf"}],
+        Q2: [{label:"Modelo 303 — 2T",doc:"docs/fiscal/2024/2T24.pdf"},{label:"Borrador IVA 2T",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"}],
         Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/2024/IVA_Q3_2024.pdf"}],
         Q4: [{label:"Modelo 303 — 4T",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"}],
         anual: [{label:"Modelo 390 — Resumen anual 2024",doc:"docs/fiscal/2024/390_2024.pdf"}],
       },
       2025: {
+        Q1: [{label:"Modelo 303 — 1T",doc:"docs/fiscal/2025/1T25.pdf"}],
+        Q3: [{label:"Modelo 303 — 3T",doc:"docs/fiscal/2025/3T25.pdf"}],
+        Q4: [{label:"Modelo 303 — 4T (rectificativa)",doc:"docs/fiscal/2025/4T25ii.pdf"},{label:"4T original",doc:"docs/fiscal/2025/4T25i.pdf"}],
         anual: [{label:"Modelo 390 — Resumen anual 2025",doc:"docs/fiscal/2025/390_2025.pdf"}],
       },
       2023: {
@@ -1096,57 +1195,6 @@ function App() {
       </div>;
     }
 
-    if(section==="docs") return <div>
-      <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Documentos fiscales y corporativos</div>
-      <DataTable maxH={480} columns={[
-        {label:"Tipo",key:"tipo",bold:true},
-        {label:"Archivo",render:r=>r.doc?<a href={r.doc} target="_blank" rel="noopener" style={{color:"#2980B9",fontSize:11,textDecoration:"none"}}>{r.archivo} 📄</a>:<span style={{color:"#999",fontSize:11}}>{r.archivo}</span>},
-        {label:"Descripción",key:"desc"},
-        {label:"Periodo",key:"periodo",nowrap:true},
-      ]} data={[
-        {id:"d1",tipo:"IVA 303",archivo:"IVA_Q3_2024.pdf",desc:"Modelo 303 3T 2024",periodo:"Q3 2024",doc:"docs/fiscal/2024/IVA_Q3_2024.pdf"},
-        {id:"d2",tipo:"IVA 303",archivo:"IVA_Q4_2024.pdf",desc:"Modelo 303 4T 2024",periodo:"Q4 2024",doc:"docs/fiscal/2024/IVA_Q4_2024.pdf"},
-        {id:"d3",tipo:"IVA 390",archivo:"390_2024.pdf",desc:"Resumen anual IVA 2024 — A compensar -1.219,94€",periodo:"2024",doc:"docs/fiscal/2024/390_2024.pdf"},
-        {id:"d3b",tipo:"IVA 390",archivo:"390_2025.pdf",desc:"Resumen anual IVA 2025 — A compensar -731,01€",periodo:"2025",doc:"docs/fiscal/2025/390_2025.pdf"},
-        {id:"d3c",tipo:"IVA 390",archivo:"390_2023.pdf",desc:"Resumen anual IVA 2023 — A compensar -246,53€",periodo:"2023",doc:"docs/fiscal/2023/390_2023.pdf"},
-        {id:"d3d",tipo:"IVA 390",archivo:"390_2022.pdf",desc:"Resumen anual IVA 2022 — A compensar -1.692,78€",periodo:"2022",doc:"docs/fiscal/2022/390_2022.pdf"},
-        {id:"d4",tipo:"IVA",archivo:"IVA_2T2024.xlsx",desc:"Borrador IVA 2T",periodo:"Q2 2024",doc:"docs/fiscal/2024/IVA_2T2024.xlsx"},
-        {id:"d4b",tipo:"IVA 303",archivo:"1T23.pdf",desc:"Modelo 303 1T 2023 — A compensar",periodo:"Q1 2023",doc:"docs/fiscal/2023/1T23.pdf"},
-        {id:"d4c",tipo:"IVA 303",archivo:"2T23.pdf",desc:"Modelo 303 2T 2023 — Resultado 0",periodo:"Q2 2023",doc:"docs/fiscal/2023/2T23.pdf"},
-        {id:"d4d",tipo:"IVA 303",archivo:"3T23.pdf",desc:"Modelo 303 3T 2023 — Resultado 0",periodo:"Q3 2023",doc:"docs/fiscal/2023/3T23.pdf"},
-        {id:"d4e",tipo:"IVA 303",archivo:"4T23.pdf",desc:"Modelo 303 4T 2023 — A compensar",periodo:"Q4 2023",doc:"docs/fiscal/2023/4T23.pdf"},
-        {id:"d4f",tipo:"IVA 303",archivo:"1T22.pdf",desc:"Modelo 303 1T 2022 — Resultado 0",periodo:"Q1 2022",doc:"docs/fiscal/2022/1T22.pdf"},
-        {id:"d4g",tipo:"IVA 303",archivo:"2T22.pdf",desc:"Modelo 303 2T 2022 — Resultado 0",periodo:"Q2 2022",doc:"docs/fiscal/2022/2T22.pdf"},
-        {id:"d4h",tipo:"IVA 303",archivo:"3T22.pdf",desc:"Modelo 303 3T 2022 — Resultado 0",periodo:"Q3 2022",doc:"docs/fiscal/2022/3T22.pdf"},
-        {id:"d4i",tipo:"IVA 303",archivo:"4T22.pdf",desc:"Modelo 303 4T 2022 — A compensar",periodo:"Q4 2022",doc:"docs/fiscal/2022/4T22.pdf"},
-        {id:"d5",tipo:"IS",archivo:"Justificante_pago_a_cuenta.pdf",desc:"Pago a cuenta IS",periodo:"2024",doc:"docs/fiscal/2024/Justificante_pago_a_cuenta_IS_22024.pdf"},
-        {id:"d6",tipo:"IS",archivo:"Liquidacion_pago_cuenta.pdf",desc:"Liquidación IS",periodo:"2024",doc:"docs/fiscal/2024/Liquidacio_n_Pago_a_cuenta_IS_2024.pdf"},
-        {id:"d7",tipo:"AEAT",archivo:"Mod.010 — 248,22€",desc:"Pago Mod.010",periodo:"Ene 2026",doc:"docs/fiscal/2025/082615305105DC5LNA45CZ.pdf"},
-        {id:"d8",tipo:"AEAT",archivo:"Requerimiento_2025.pdf",desc:"Requerimiento AEAT",periodo:"2025",doc:"docs/fiscal/2025/Requerimiento_2025.pdf"},
-        {id:"d9",tipo:"AEAT",archivo:"Recibo contestación",desc:"Contestación requerimiento",periodo:"2025",doc:"docs/fiscal/2025/Eecibo_contestacio_n_requerimiento.pdf"},
-        {id:"d10",tipo:"AEAT",archivo:"174545437Z26.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z26.pdf"},
-        {id:"d11",tipo:"AEAT",archivo:"174545437Z.pdf",desc:"Documento fiscal AEAT",periodo:"2025",doc:"docs/fiscal/2025/174545437Z.pdf"},
-        {id:"d12",tipo:"CCAA",archivo:"CERT_CCAA_2022.pdf",desc:"Aprobación CCAA 2022",periodo:"2022",doc:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf"},
-        {id:"d13",tipo:"CCAA",archivo:"CERT_CCAA_2021.pdf",desc:"Aprobación CCAA 2021",periodo:"2021",doc:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf"},
-        {id:"d14",tipo:"CCAA",archivo:"CERT_CCAA_2020.pdf",desc:"Certificación 2020",periodo:"2020",doc:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf"},
-        {id:"d15",tipo:"CCAA",archivo:"CERT_CCAA_2019.pdf",desc:"Certificación 2019",periodo:"2019",doc:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"},
-        {id:"d16",tipo:"Balance",archivo:"BCE_2022.pdf",desc:"Balance 2022",periodo:"2022",doc:"docs/corporativo/BCE_2022.pdf"},
-        {id:"d17",tipo:"Balance",archivo:"BCE_202214.pdf",desc:"Balance detallado 2022",periodo:"2022",doc:"docs/corporativo/BCE_202214.pdf"},
-        {id:"d18",tipo:"PyG",archivo:"PG_2022.pdf",desc:"PyG 2022",periodo:"2022",doc:"docs/corporativo/PG_2022.pdf"},
-        {id:"d19",tipo:"Contable",archivo:"BSPyG.xlsx",desc:"Balance y PyG (Excel)",periodo:"Histórico",doc:"docs/corporativo/BSPyG.xlsx"},
-        {id:"d20",tipo:"Diario",archivo:"DIARIO_2023.xlsx",desc:"Diario contable 2023",periodo:"2023",doc:"docs/corporativo/DIARIO_2023.xlsx"},
-        {id:"d21",tipo:"Certificado",archivo:"CertFirmaEPDF.pdf",desc:"Certificado firma electrónica",periodo:"",doc:"docs/corporativo/CertFirmaEPDF.pdf"},
-        {id:"d22",tipo:"Constitución",archivo:"2021BTC0523.pdf",desc:"Escritura constitución SLP",periodo:"2021",doc:"docs/corporativo/2021BTC0523.pdf"},
-        {id:"d23",tipo:"Banco",archivo:"Movimientos.xlsx",desc:"Movimientos Bankinter",periodo:"2024-25",doc:"docs/banco/Movimientos_cuenta_corriente_ES1001287610380100000566.xlsx"},
-        {id:"d24",tipo:"Banco",archivo:"Enero 2024.pdf",desc:"Extracto enero",periodo:"Ene 2024",doc:"docs/banco/january_2024.pdf"},
-        {id:"d25",tipo:"Banco",archivo:"Febrero 2024.pdf",desc:"Extracto febrero",periodo:"Feb 2024",doc:"docs/banco/february_2024.pdf"},
-        {id:"d26",tipo:"Banco",archivo:"Marzo 2024.pdf",desc:"Extracto marzo",periodo:"Mar 2024",doc:"docs/banco/march_2024.pdf"},
-        {id:"d27",tipo:"Banco",archivo:"Bankinter Q1.htm",desc:"Movimientos Q1 2024",periodo:"Q1 2024",doc:"docs/banco/movimientos_bankinter_Q1_24.htm"},
-        {id:"d28",tipo:"Vinculada",archivo:"Enrique Aznar 2024",desc:"Factura asesoría vinculada",periodo:"2024",doc:"docs/recibidas/2024/EnriqueAznar_2024.pdf"},
-        {id:"d29",tipo:"Vinculada",archivo:"Enrique Aznar 2025",desc:"Factura asesoría vinculada",periodo:"2025",doc:"docs/recibidas/2025/EnriqueAznar_2025.pdf"},
-        {id:"d30",tipo:"Vinculada",archivo:"Enrique Aznar rect.",desc:"Factura rectificativa",periodo:"2024",doc:"docs/recibidas/2024/EnriqueAznar_rect_2024.pdf"},
-      ]}/>
-    </div>;
     return null;
   };
 
@@ -1172,7 +1220,6 @@ function App() {
           <div style={{height:1,background:"#E4E9F0",margin:"6px 16px"}}/>
           <NavItem icon="⚠" label="Alertas" active={section==="alertas"} onClick={()=>setSection("alertas")} badge={ALERTAS.length}/>
           <NavItem icon="📚" label="Libros y Actas" active={section==="libros"} onClick={()=>setSection("libros")}/>
-          <NavItem icon="🗂" label="Docs Fiscales" active={section==="docs"} onClick={()=>setSection("docs")}/>
         </div>
         <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v4.0 · Motor PGC</div>
       </div>}
