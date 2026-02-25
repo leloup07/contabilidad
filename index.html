@@ -38,9 +38,7 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useEffect, useCallback } = React;
-
-const LOGO_SRC = "data:image/jpeg;base64,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";
-
+const LOGO_SRC = "data:image/jpeg;base64,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";base64," + btoa(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 80"><rect width="400" height="80" fill="white"/><g transform="translate(10,10)"><rect x="0" y="0" width="60" height="60" rx="8" fill="#1B3A2D"/><text x="30" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="32" font-weight="bold" fill="white">A</text><text x="30" y="56" text-anchor="middle" font-family="system-ui,sans-serif" font-size="8" fill="#8BAF7E" letter-spacing="3">L&amp;C</text></g><g transform="translate(80,12)"><text y="24" font-family="Georgia,serif" font-size="24" font-weight="bold" fill="#1B3A2D" letter-spacing="1">AZNAR LEGAL</text><text y="44" font-family="system-ui,sans-serif" font-size="13" fill="#5A7A5E" letter-spacing="4">&amp; COMPLIANCE SLP</text></g></svg>`);
 // ─── MODELOS 303 — DATOS OFICIALES AEAT ───
 const MODELOS_303 = {
   2022: [
@@ -134,7 +132,6 @@ const MODELOS_303 = {
      rectificativa:true,rectificaJust:"3036035671855",doc:"docs/fiscal/2025/4T25ii.pdf"}
   ]
 };
-
 const MODELOS_390 = {
   2022: {fecha:"30-01-2023",justificante:"3903095453503",totalOperaciones:17703.00,
     baseImponible21:16503.00,baseExenta:1200.00,ivaDevengado:3465.62,ivaSoportado:3353.16,
@@ -153,7 +150,6 @@ const MODELOS_390 = {
     resultadoRegimen:-731.01,compensacionesAnteriores:0,resultadoFinal:-731.01,
     estado:"A COMPENSAR",doc:"docs/fiscal/2025/390_2025.pdf"},
 };
-
 // ─── DEFAULT DATA ───
 const DEFAULT_EMITIDAS_2022 = [
   { id:"e2022-1", num:"01/2022", fecha:"2022-02-10", cliente:"Col·legi de Procuradors de Barcelona", nif:"", desc:"Diseño Sistema Compliance Penal (35% facturación total)", base:1706.25, tipoIva:21, iva:358.31, total:2064.56, trimestre:"Q1", doc:"docs/emitidas/2022/Factura_1_2022.pdf" },
@@ -298,7 +294,6 @@ const DEFAULT_RECIBIDAS_2023 = [
 const DEFAULT_EMITIDAS_2024 = [
   { id: "e2024-1", num: "1/2024", fecha: "2024-06-03", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (ene-abr 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_1_2024.pdf" },
   { id: "e2024-2", num: "2/2024", fecha: "2024-06-03", cliente: "Blockchain Intelligence", nif: "B05490057", desc: "Clase tokenización (25/5/23)", base: 225, tipoIva: 0, iva: 0, total: 225, trimestre: "Q2", doc: "docs/emitidas/2024/Factura_2_2024.pdf" },
-  { id: "e2024-3", num: "3/2024", fecha: "2024-07-08", cliente: "Rivera del Campo", nif: "", desc: "Provisión de fondos constitución sociedad", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q3", doc: "docs/emitidas/2024/Factura_3_2024.pdf" },
   { id: "e2024-4", num: "4/2024", fecha: "2024-10-15", cliente: "ICAB", nif: "Q0863003-J", desc: "Clase RSC y Gobernanza - Master Compliance", base: 300, tipoIva: 21, iva: 63, total: 363, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_4_2024.pdf" },
   { id: "e2024-5", num: "5/2024", fecha: "2024-10-15", cliente: "Fundación Instituto de Empresa", nif: "G-81711459", desc: "Honorarios Dirección Observatorio IE-Elecnor (may-sep 2024)", base: 3000, tipoIva: 21, iva: 630, total: 3630, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_5_2024.pdf" },
   { id: "e2024-6", num: "6/2024", fecha: "2024-10-31", cliente: "ASCOM", nif: "G-87034120", desc: "Seminario Alta Dirección 2024 (exento art.20.9)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q4", doc: "docs/emitidas/2024/Factura_6_2024.pdf" },
@@ -321,6 +316,12 @@ const DEFAULT_RECIBIDAS_2024 = [
   { id: "r2024-1", fecha: "2024-01-13", prov: "Movistar", desc: "Telecom (28 Nov-27 Dic)", base: 185.33, tipoIva: 21, iva: 38.92, total: 224.25, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2024/Movistar_ene_2024.pdf" },
   { id: "r2024-2", fecha: "2024-02-13", prov: "Movistar", desc: "Telecom (28 Dic-27 Ene)", base: 153.43, tipoIva: 21, iva: 32.22, total: 185.65, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2024/Movistar_feb_2024.pdf" },
   { id: "r2024-3", fecha: "2024-03-13", prov: "Movistar", desc: "Telecom (28 Ene-27 Feb)", base: 154.87, tipoIva: 21, iva: 32.52, total: 187.39, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2024/Movistar_mar_2024.pdf" },
+  { id: "r2024-23", fecha: "2024-04-13", prov: "Movistar", desc: "Telecom (28 Feb-27 Mar)", base: 154.87, tipoIva: 21, iva: 32.52, total: 187.39, cat: "Telecom", trimestre: "Q2", doc: "docs/recibidas/2024/Movistar_abr_2024.pdf" },
+  { id: "r2024-24", fecha: "2024-05-13", prov: "Movistar", desc: "Telecom (28 Mar-27 Abr)", base: 155.24, tipoIva: 21, iva: 32.60, total: 187.84, cat: "Telecom", trimestre: "Q2", doc: "docs/recibidas/2024/Movistar_may_2024.pdf" },
+  { id: "r2024-25", fecha: "2024-06-13", prov: "Movistar", desc: "Telecom (28 Abr-27 May)", base: 164.17, tipoIva: 21, iva: 34.48, total: 198.65, cat: "Telecom", trimestre: "Q2", doc: "docs/recibidas/2024/Movistar_jun_2024.pdf" },
+  { id: "r2024-26", fecha: "2024-07-13", prov: "Movistar", desc: "Telecom (28 May-27 Jun)", base: 155.53, tipoIva: 21, iva: 32.66, total: 188.19, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2024/Movistar_jul_2024.pdf" },
+  { id: "r2024-27", fecha: "2024-08-13", prov: "Movistar", desc: "Telecom (28 Jun-27 Jul)", base: 155.78, tipoIva: 21, iva: 32.71, total: 188.49, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2024/Movistar_ago_2024.pdf" },
+  { id: "r2024-28", fecha: "2024-09-13", prov: "Movistar", desc: "Telecom (28 Jul-27 Ago)", base: 173.65, tipoIva: 21, iva: 36.47, total: 210.12, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2024/Movistar_sep_2024.pdf" },
   { id: "r2024-4", fecha: "2024-01-30", prov: "iryo", desc: "Billete tren", base: 53.77, tipoIva: 10, iva: 5.38, total: 59.15, cat: "Transporte", trimestre: "Q1", doc: "docs/recibidas/2024/iryo_ene_2024.pdf" },
   { id: "r2024-5", fecha: "2024-03-07", prov: "Marcial Pons", desc: "The VC Field Guide", base: 34.46, tipoIva: 4, iva: 1.38, total: 35.84, cat: "Libros", trimestre: "Q1", doc: "docs/recibidas/2024/MarcialPons_mar_2024.pdf" },
   { id: "r2024-6", fecha: "2024-05-10", prov: "Apple Store", desc: "MacBook Pro 14\" + AppleCare + Mouse", base: 2151.24, tipoIva: 21, iva: 451.76, total: 2872.00, cat: "Equipos", trimestre: "Q2", doc: "docs/recibidas/2024/Apple_MacBook_may_2024.pdf" },
@@ -356,37 +357,36 @@ const DEFAULT_RECIBIDAS_2025 = [
   { id: "r2025-12", fecha: "2025-06-03", prov: "Gamma (USA)", desc: "Gamma App jun", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software int.", trimestre: "Q2", doc: "docs/recibidas/2025/Gamma_jun_2025.pdf" },
   { id: "r2025-13", fecha: "2025-06-13", prov: "Movistar", desc: "Telecom (28 Abr-27 May)", base: 161.56, tipoIva: 21, iva: 33.93, total: 195.49, cat: "Telecom", trimestre: "Q2", doc: "docs/recibidas/2025/Movistar_jun_2025.pdf" },
   { id: "r2025-14", fecha: "2025-06-29", prov: "Anthropic (USA)", desc: "Claude Pro", base: 18.00, tipoIva: 21, iva: 3.78, total: 21.78, cat: "Software", trimestre: "Q2", doc: "docs/recibidas/2025/Anthropic_jun_2025.pdf" },
+  { id: "r2025-31", fecha: "2025-07-13", prov: "Movistar", desc: "Telecom (28 May-27 Jun)", base: 168.12, tipoIva: 21, iva: 35.30, total: 203.42, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2025/Movistar_jul_2025.pdf" },
+  { id: "r2025-32", fecha: "2025-08-13", prov: "Movistar", desc: "Telecom (28 Jun-27 Jul)", base: 161.98, tipoIva: 21, iva: 34.01, total: 195.99, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2025/Movistar_ago_2025.pdf" },
+  { id: "r2025-33", fecha: "2025-09-13", prov: "Movistar", desc: "Telecom (28 Jul-27 Ago)", base: 161.56, tipoIva: 21, iva: 33.93, total: 195.49, cat: "Telecom", trimestre: "Q3", doc: "docs/recibidas/2025/Movistar_sep_2025.pdf" },
+  { id: "r2025-34", fecha: "2025-10-13", prov: "Movistar", desc: "Telecom (28 Ago-27 Sep)", base: 161.88, tipoIva: 21, iva: 34.00, total: 195.88, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_oct_2025.pdf" },
+  { id: "r2025-35", fecha: "2025-10-13", prov: "Movistar", desc: "AirPods dispositivo (28 Ago-27 Sep)", base: 0.27, tipoIva: 21, iva: 0.06, total: 0.33, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_oct_2025_airpods.pdf" },
   { id: "r2025-15", fecha: "2025-07-07", prov: "Logically (USA)", desc: "Unlimited Plan $10", base: 9.20, tipoIva: 0, iva: 0, total: 9.20, cat: "Software int.", trimestre: "Q3", doc: "docs/recibidas/2025/Logically_jul_2025.pdf" },
   { id: "r2025-16", fecha: "2025-08-07", prov: "Logically (USA)", desc: "Unlimited Plan $10", base: 9.20, tipoIva: 0, iva: 0, total: 9.20, cat: "Software int.", trimestre: "Q3", doc: "docs/recibidas/2025/Logically_ago_2025.pdf" },
   { id: "r2025-17", fecha: "2025-09-07", prov: "Logically (USA)", desc: "Unlimited Plan $10", base: 9.20, tipoIva: 0, iva: 0, total: 9.20, cat: "Software int.", trimestre: "Q3" },
-  { id: "r2025-18", fecha: "2025-09-20", prov: "WizzAir", desc: "Vuelo MAD-BUD/BUD-MAD", base: 145.97, tipoIva: 0, iva: 0, total: 145.97, cat: "Transporte", trimestre: "Q3", doc: "docs/recibidas/2025/WizzAir_sep_2025.pdf" },
   { id: "r2025-19", fecha: "2025-09-30", prov: "Parking Naranja", desc: "Parking Barajas", base: 22.31, tipoIva: 21, iva: 4.68, total: 26.99, cat: "Transporte", trimestre: "Q3", doc: "docs/recibidas/2025/Parking_sep_2025.pdf" },
   { id: "r2025-20", fecha: "2025-10-02", prov: "CryptoPlaza", desc: "Membership oct", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Suscripciones", trimestre: "Q4", doc: "docs/recibidas/2025/CryptoPlaza_oct_2025.pdf" },
   { id: "r2025-21", fecha: "2025-10-05", prov: "Intermodalidad Levante", desc: "Billete tren", base: 62.08, tipoIva: 10, iva: 6.21, total: 68.29, cat: "Transporte", trimestre: "Q4", doc: "docs/recibidas/2025/Intermodalidad_oct_2025.pdf" },
   { id: "r2025-22", fecha: "2025-10-07", prov: "Logically (USA)", desc: "Unlimited Plan $10", base: 9.20, tipoIva: 0, iva: 0, total: 9.20, cat: "Software int.", trimestre: "Q4" },
   { id: "r2025-23", fecha: "2025-11-04", prov: "CryptoPlaza", desc: "Membership nov", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Suscripciones", trimestre: "Q4", doc: "docs/recibidas/2025/CryptoPlaza_nov_2025.pdf" },
-  { id: "r2025-24", fecha: "2025-11-13", prov: "Movistar", desc: "Telecom (28 Sep-27 Oct)", base: 315.13, tipoIva: 21, iva: 66.18, total: 381.31, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_nov_2025.pdf" },
+  { id: "r2025-24", fecha: "2025-11-13", prov: "Movistar", desc: "Telecom (28 Sep-27 Oct) incl. penalización iPhone 13 Pro", base: 315.13, tipoIva: 21, iva: 66.18, total: 381.31, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_nov_2025.pdf" },
   { id: "r2025-25", fecha: "2025-11-16", prov: "Intermodalidad Levante", desc: "Billete tren", base: 41.28, tipoIva: 10, iva: 4.13, total: 45.41, cat: "Transporte", trimestre: "Q4", doc: "docs/recibidas/2025/Intermodalidad_nov_2025.pdf" },
   { id: "r2025-26", fecha: "2025-12-02", prov: "CryptoPlaza", desc: "Membership dic", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Suscripciones", trimestre: "Q4", doc: "docs/recibidas/2025/CryptoPlaza_dic_2025.pdf" },
   { id: "r2025-27", fecha: "2025-12-04", prov: "Intermodalidad Levante", desc: "Billete tren", base: 56.85, tipoIva: 10, iva: 5.68, total: 62.53, cat: "Transporte", trimestre: "Q4", doc: "docs/recibidas/2025/Intermodalidad_dic_2025.pdf" },
   { id: "r2025-28", fecha: "2025-12-11", prov: "Ambar Partners", desc: "Community Builder anual", base: 288.00, tipoIva: 21, iva: 60.48, total: 348.48, cat: "Suscripciones", trimestre: "Q4", doc: "docs/recibidas/2025/AmbarPartners_dic_2025.pdf" },
-  { id: "r2025-29", fecha: "2025-12-13", prov: "Movistar", desc: "Telecom (28 Oct-27 Nov)", base: 164.69, tipoIva: 21, iva: 34.58, total: 199.27, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_dic_2025.pdf" },
+  { id: "r2025-29", fecha: "2025-12-13", prov: "Movistar", desc: "Telecom (28 Oct-27 Nov) incl. -1,24 compensación", base: 164.69, tipoIva: 21, iva: 34.58, total: 198.03, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2025/Movistar_dic_2025.pdf" },
   { id: "r2025-30", fecha: "2025-12-31", prov: "Enrique Aznar", desc: "Servicios asesoría 2025 (art.18 LIS)", base: 9620.00, tipoIva: 21, iva: 2020.20, total: 10197.20, cat: "Vinculada", trimestre: "Q4", doc: "docs/recibidas/2025/EnriqueAznar_2025.pdf" },
 ];
 const ALERTAS = [
-  { tipo: "warning", msg: "Faltan facturas Movistar: Abr-Sep 2024 y Ene, Jul-Oct 2025", accion: "Descargar de Mi Movistar" },
   { tipo: "warning", msg: "CryptoPlaza: faltan Feb, Mar, Jul, Ago, Sep 2025", accion: "Solicitar a Sky Media Group" },
-  { tipo: "error", msg: "Invoice 2/2024 y 3/2024 duplicadas (Rivera del Campo)", accion: "Confirmar si son 1 o 2 facturas" },
-  { tipo: "error", msg: "WizzAir: factura a Sunblock Urban Token, no Aznar Legal", accion: "No deducible salvo refacturación" },
   { tipo: "info", msg: "Logically en USD: pendiente tipo de cambio BCE", accion: "Aplicar TC oficial" },
   { tipo: "info", msg: "Gamma/Logically/Anthropic: posible inversión sujeto pasivo", accion: "Autorrepercutir IVA en Mod.303" },
   { tipo: "warning", msg: "Restaurante: factura proforma, no válida para IVA", accion: "Solicitar factura completa" },
 ];
-
 // ─── HELPERS ───
 const fmt = n => n.toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})+" €";
 const fmtDate = d => { if(!d) return ""; const p=d.split("-"); return p[2]+"/"+p[1]+"/"+p[0]; };
-
 // ─── IMPUESTO DE SOCIEDADES — MODELO 200 (datos oficiales AEAT) ───
 const MODELO_200 = {
   2022: {
@@ -448,6 +448,7 @@ const DEFAULT_RECIBIDAS_2026 = [
   { id: "r2026-17", fecha: "2026-02-12", proveedor: "Editorial (La Era de la Revancha)", nif: "ES", desc: "Libro", base: 5.77, tipoIva: 0, iva: 0, total: 5.77, cat: "Libros", trimestre: "Q1" },
   { id: "r2026-18", fecha: "2026-02-15", proveedor: "Railway", nif: "USA", desc: "Hosting/deploy febrero (10,38 USD)", base: 8.94, tipoIva: 0, iva: 0, total: 8.94, cat: "Software", trimestre: "Q1" },
   { id: "r2026-19", fecha: "2026-02-19", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 12.15, tipoIva: 0, iva: 0, total: 12.15, cat: "Transporte", trimestre: "Q1" },
+  { id: "r2026-20", fecha: "2026-01-13", proveedor: "Movistar", nif: "A-82018474", desc: "Telecom (28 Nov-27 Dic)", base: 165.06, tipoIva: 21, iva: 34.66, total: 199.72, cat: "Telecom", trimestre: "Q1", doc: "docs/recibidas/2026/Movistar_ene_2026.pdf" },
 ];
 const OFFICIAL_CCAA = {
   2022: {
@@ -531,7 +532,7 @@ const OFFICIAL_CCAA = {
         {label:"II. Deudores comerciales y otras cuentas a cobrar",val:27415.56,level:1},
         {label:"1. Clientes por ventas y prestación de servicios",val:14022.14,level:2},
         {label:"430 Clientes",val:14022.14,level:3},
-        {label:"3. Otros deudores",val:13393.42,level:2},
+        {label:"3. Otros deudores",val:13594.86,level:2},
         {label:"470 Hacienda Pública, deudora",val:12701.43,level:3},
         {label:"472 Hacienda Pública, IVA soportado",val:691.99,level:3},
         {label:"VI. Efectivo y otros activos líquidos equivalentes",val:31510.40,level:1},
@@ -589,7 +590,7 @@ const OFFICIAL_CCAA = {
   },
   2024: {
     sustitutiva: true,
-    fuente: "CCAA Sustitutivas 2024 — Bankinter+Qonto verificados, vinculada+551 reconstituidas",
+    fuente: "CCAA Sustitutivas 2024 — Bankinter+Qonto verificados, Movistar completo, vinculada+551 reconstituidas",
     balance: {
       activo: [
         {label:"A) ACTIVO NO CORRIENTE",val:8544.63,level:0,bold:true},
@@ -599,49 +600,49 @@ const OFFICIAL_CCAA = {
         {label:"281 Amortización acumulada del inmovilizado",val:-1696.56,level:2},
         {label:"VI. Activos por impuesto diferido",val:263.22,level:1},
         {label:"474 Activos por impuesto diferido",val:263.22,level:2},
-        {label:"B) ACTIVO CORRIENTE",val:52372.68,level:0,bold:true},
-        {label:"II. Deudores comerciales y otras cuentas a cobrar",val:13393.42,level:1},
-        {label:"3. Otros deudores",val:13393.42,level:2},
-        {label:"470 Hacienda Pública, deudora",val:13393.42,level:3},
+        {label:"B) ACTIVO CORRIENTE",val:52574.12,level:0,bold:true},
+        {label:"II. Deudores comerciales y otras cuentas a cobrar",val:13594.86,level:1},
+        {label:"3. Otros deudores",val:13594.86,level:2},
+        {label:"470 Hacienda Pública, deudora",val:13594.86,level:3},
         {label:"VI. Efectivo y otros activos líquidos equivalentes",val:38979.26,level:1},
         {label:"5720 Bankinter",val:17156.80,level:2},
         {label:"5721 Qonto",val:21822.46,level:2},
       ],
-      totalActivo: 60917.31,
+      totalActivo: 61118.75,
       pasivo: [
-        {label:"A) PATRIMONIO NETO",val:22827.89,level:0,bold:true},
-        {label:"A-1) Fondos propios",val:22827.89,level:1},
+        {label:"A) PATRIMONIO NETO",val:21868.65,level:0,bold:true},
+        {label:"A-1) Fondos propios",val:21868.65,level:1},
         {label:"I. Capital",val:3000.00,level:2},
         {label:"100 Capital social",val:3000.00,level:3},
         {label:"III. Reservas",val:16906.39,level:2},
         {label:"V. Resultados de ejercicios anteriores",val:4559.99,level:2},
-        {label:"VII. Resultado del ejercicio",val:-1638.49,level:2,highlight:true},
-        {label:"C) PASIVO CORRIENTE",val:38089.42,level:0,bold:true},
-        {label:"II. Deudas a corto plazo",val:32758.22,level:1},
-        {label:"3. Otras deudas a corto plazo",val:32758.22,level:2},
-        {label:"551 Cuenta corriente con socios y administradores",val:32758.22,level:3},
+        {label:"VII. Resultado del ejercicio",val:-2597.73,level:2,highlight:true},
+        {label:"C) PASIVO CORRIENTE",val:39250.10,level:0,bold:true},
+        {label:"II. Deudas a corto plazo",val:33918.90,level:1},
+        {label:"3. Otras deudas a corto plazo",val:33918.90,level:2},
+        {label:"551 Cuenta corriente con socios y administradores",val:33918.90,level:3},
         {label:"IV. Acreedores comerciales y otras cuentas a pagar",val:5331.20,level:1},
         {label:"2. Otros acreedores",val:5331.20,level:2},
         {label:"410 Acreedores por prestaciones de servicios",val:4743.20,level:3},
         {label:"475 Hacienda Pública, acreedora (IRPF)",val:588.00,level:3},
       ],
-      totalPasivo: 60917.31,
+      totalPasivo: 61118.75,
     },
     pyg: [
       {label:"1. Importe neto de la cifra de negocios",val:9300.00,level:0,bold:true},
       {label:"705 Prestaciones de servicios",val:9300.00,level:1},
-      {label:"7. Otros gastos de explotación",val:-9172.09,level:0,bold:true},
+      {label:"7. Otros gastos de explotación",val:-10131.33,level:0,bold:true},
       {label:"8. Amortización de inmovilizado",val:-1696.56,level:0,bold:true},
       {label:"681 Amortización del inmovilizado material",val:-1696.56,level:1},
       {label:"11. Otros resultados",val:-69.84,level:0},
-      {label:"A) RESULTADO DE EXPLOTACIÓN",val:-1638.49,level:0,bold:true,total:true},
-      {label:"C) RESULTADO ANTES DE IMPUESTOS",val:-1638.49,level:0,bold:true,total:true},
+      {label:"A) RESULTADO DE EXPLOTACIÓN",val:-2597.73,level:0,bold:true,total:true},
+      {label:"C) RESULTADO ANTES DE IMPUESTOS",val:-2597.73,level:0,bold:true,total:true},
       {label:"19. Impuestos sobre beneficios",val:0,level:0},
-      {label:"D) RESULTADO DEL EJERCICIO",val:-1638.49,level:0,bold:true,total:true,final:true},
+      {label:"D) RESULTADO DEL EJERCICIO",val:-2597.73,level:0,bold:true,total:true,final:true},
     ]
   },
   2025: {
-    fuente: "Cierre 2025 — Bankinter+Qonto verificados, 551 como ajuste, IVA acum. ~11.596€",
+    fuente: "Cierre 2025 — Bankinter+Qonto verificados, 551 como ajuste, Movistar completo, IVA acum. ~11.733€",
     balance: {
       activo: [
         {label:"A) ACTIVO NO CORRIENTE",val:6086.95,level:0,bold:true},
@@ -651,57 +652,55 @@ const OFFICIAL_CCAA = {
         {label:"281 Amortización acumulada del inmovilizado",val:-4154.24,level:2},
         {label:"VI. Activos por impuesto diferido",val:263.22,level:1},
         {label:"474 Activos por impuesto diferido",val:263.22,level:2},
-        {label:"B) ACTIVO CORRIENTE",val:59768.88,level:0,bold:true},
-        {label:"II. Deudores comerciales y otras cuentas a cobrar",val:11596.00,level:1},
-        {label:"3. Otros deudores",val:11596.00,level:2},
-        {label:"470 Hacienda Pública, deudora (IVA acumulado)",val:11596.00,level:3},
+        {label:"B) ACTIVO CORRIENTE",val:59906.18,level:0,bold:true},
+        {label:"II. Deudores comerciales y otras cuentas a cobrar",val:11733.30,level:1},
+        {label:"3. Otros deudores",val:11733.30,level:2},
+        {label:"470 Hacienda Pública, deudora (IVA acumulado)",val:11733.30,level:3},
         {label:"VI. Efectivo y otros activos líquidos equivalentes",val:48172.88,level:1},
         {label:"5720 Bankinter",val:13120.28,level:2},
         {label:"5721 Qonto",val:35052.60,level:2},
       ],
-      totalActivo: 65855.83,
+      totalActivo: 65993.13,
       pasivo: [
-        {label:"A) PATRIMONIO NETO",val:20666.07,level:0,bold:true},
-        {label:"A-1) Fondos propios",val:20666.07,level:1},
+        {label:"A) PATRIMONIO NETO",val:19198.99,level:0,bold:true},
+        {label:"A-1) Fondos propios",val:19198.99,level:1},
         {label:"I. Capital",val:3000.00,level:2},
         {label:"100 Capital social",val:3000.00,level:3},
         {label:"III. Reservas",val:16906.39,level:2},
-        {label:"V. Resultados de ejercicios anteriores",val:2921.50,level:2},
-        {label:"VII. Resultado del ejercicio",val:-2161.82,level:2,highlight:true},
-        {label:"C) PASIVO CORRIENTE",val:45189.76,level:0,bold:true},
-        {label:"II. Deudas a corto plazo",val:28294.57,level:1},
-        {label:"3. Otras deudas a corto plazo",val:28294.57,level:2},
-        {label:"551 Cuenta corriente con socios y administradores",val:28294.57,level:3},
+        {label:"V. Resultados de ejercicios anteriores",val:1962.26,level:2},
+        {label:"VII. Resultado del ejercicio",val:-2669.66,level:2,highlight:true},
+        {label:"C) PASIVO CORRIENTE",val:46794.14,level:0,bold:true},
+        {label:"II. Deudas a corto plazo",val:29898.95,level:1},
+        {label:"3. Otras deudas a corto plazo",val:29898.95,level:2},
+        {label:"551 Cuenta corriente con socios y administradores",val:29898.95,level:3},
         {label:"IV. Acreedores comerciales y otras cuentas a pagar",val:16895.19,level:1},
         {label:"2. Otros acreedores",val:16895.19,level:2},
         {label:"410 Acreedores por prestaciones de servicios (vinculadas)",val:14864.19,level:3},
         {label:"475 Hacienda Pública, acreedora (IRPF)",val:2031.00,level:3},
       ],
-      totalPasivo: 65855.83,
+      totalPasivo: 65993.13,
     },
     pyg: [
       {label:"1. Importe neto de la cifra de negocios",val:12100.00,level:0,bold:true},
       {label:"705 Prestaciones de servicios",val:12100.00,level:1},
-      {label:"7. Otros gastos de explotación",val:-11804.15,level:0,bold:true},
+      {label:"7. Otros gastos de explotación",val:-12311.99,level:0,bold:true},
       {label:"623 Servicios de profesionales independientes (vinculada)",val:-9620.00,level:1},
-      {label:"628 Suministros (telecomunicaciones)",val:-1299.00,level:1},
-      {label:"629 Otros servicios",val:-885.15,level:1},
+      {label:"628 Suministros (telecomunicaciones)",val:-1952.85,level:1},
+      {label:"629 Otros servicios",val:-739.14,level:1},
       {label:"8. Amortización de inmovilizado",val:-2457.67,level:0,bold:true},
       {label:"681 Amortización del inmovilizado material",val:-2457.67,level:1},
-      {label:"A) RESULTADO DE EXPLOTACIÓN",val:-2161.82,level:0,bold:true,total:true},
-      {label:"C) RESULTADO ANTES DE IMPUESTOS",val:-2161.82,level:0,bold:true,total:true},
+      {label:"A) RESULTADO DE EXPLOTACIÓN",val:-2669.66,level:0,bold:true,total:true},
+      {label:"C) RESULTADO ANTES DE IMPUESTOS",val:-2669.66,level:0,bold:true,total:true},
       {label:"19. Impuestos sobre beneficios",val:0,level:0},
-      {label:"D) RESULTADO DEL EJERCICIO",val:-2161.82,level:0,bold:true,total:true,final:true},
+      {label:"D) RESULTADO DEL EJERCICIO",val:-2669.66,level:0,bold:true,total:true,final:true},
     ]
   }
 };
-
 const toISO = d => { if(!d||d.includes("-")) return d; const p=d.split("/"); return p[2]+"-"+p[1]+"-"+p[0]; };
 const sum = (arr,key) => arr.reduce((s,r)=>s+(r[key]||0),0);
 const getQ = fecha => { const m=parseInt(fecha.split("-")[1]); if(m<=3) return "Q1"; if(m<=6) return "Q2"; if(m<=9) return "Q3"; return "Q4"; };
 const genId = () => "id-"+Date.now()+"-"+Math.random().toString(36).substr(2,5);
 const calcIva = (base,tipo) => Math.round(base*tipo/100*100)/100;
-
 // ═══════════════════════════════════
 // ═══  MOTOR CONTABLE PGC  ═════════
 // ═══════════════════════════════════
@@ -720,7 +719,6 @@ const PGC = {
   "705":"Prestaciones de servicios",
 };
 const ctaName = c => PGC[c] ? `${c} ${PGC[c]}` : c;
-
 const CAT_CUENTA = {
   "Telecom":"628","Software":"629","Software int.":"629","Suscripciones":"629",
   "Libros":"629","Transporte":"624","Restauración":"627","Vinculada":"623","Otros":"629",
@@ -729,7 +727,6 @@ const CAT_CUENTA = {
 };
 // Equipos: >300€ base → 217 (activo amortizable), ≤300€ → 629 (gasto directo)
 const AMORT_RATE = 0.25; // 25% anual equipos informáticos
-
 function generarAsientos(emitidas, recibidas, year, allRecibidas) {
   const preAsientos = [];
   // ─── Facturas emitidas ───
@@ -748,7 +745,7 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas) {
     apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
     if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
     apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
-    preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov} — ${r.desc}`,ref:r.id,apuntes,esActivo});
+    preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
   // ─── Amortizaciones (incluye activos de años anteriores que siguen vivos) ───
   const todosActivos = allRecibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
@@ -788,7 +785,6 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas) {
   preAsientos.forEach(a => { asientos.push({...a, n:n++}); });
   return asientos;
 }
-
 function generarMayor(asientos) {
   const cuentas = {};
   asientos.forEach(a => {
@@ -801,7 +797,6 @@ function generarMayor(asientos) {
   });
   return Object.values(cuentas).sort((a,b)=>a.cuenta.localeCompare(b.cuenta)).map(c=>({...c,saldo:c.debe-c.haber}));
 }
-
 function generarBalance(mayor) {
   // Activo: cuentas grupo 2 (inmov.), 4 deudoras (430,472,4700), 5 (tesorería) con saldo deudor
   // Pasivo: cuentas grupo 1 (fondos propios), 4 acreedoras (410,477,4750,4752) con saldo acreedor
@@ -820,7 +815,6 @@ function generarBalance(mayor) {
   });
   return {activo,pasivo,tActivo:activo.reduce((s,m)=>s+m.saldo,0),tPasivo:pasivo.reduce((s,m)=>s+Math.abs(m.saldo),0)};
 }
-
 function generarPyG(mayor) {
   const ingresos = mayor.filter(m=>m.cuenta.startsWith("7"));
   const gastos = mayor.filter(m=>m.cuenta.startsWith("6"));
@@ -828,17 +822,14 @@ function generarPyG(mayor) {
   const tGastos = gastos.reduce((s,m)=>s+m.debe-m.haber,0);
   return {ingresos,gastos,tIngresos,tGastos,resultado:tIngresos-tGastos};
 }
-
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
-
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "8.0"; // v8.0: CCAA sustitutivas 2023+2024, cierre 2025, 551 reconstituida
+const APP_VERSION = "9.2"; // v9.2: logo JPEG restaurado, CCAA 2025 actualizado (Movistar completo)
 if(localStorage.getItem("app_version") !== APP_VERSION) {
   localStorage.clear();
   localStorage.setItem("app_version", APP_VERSION);
 }
-
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
   const rows = data.map(r => cols.map(c => { let v = c.key ? r[c.key] : (c.get ? c.get(r) : ""); if(typeof v==="number") v=v.toString().replace(".",","); return '"'+String(v).replace(/"/g,'""')+'"'; }).join(";"));
@@ -848,7 +839,6 @@ function exportCSV(data, filename, cols) {
   const a = document.createElement("a"); a.href=url; a.download=filename; a.click();
   URL.revokeObjectURL(url);
 }
-
 // ─── SHARED COMPONENTS ───
 const Badge = ({type,children}) => {
   const c = {warning:{bg:"#FEF9E7",text:"#7D6608",b:"#F9E79F"},error:{bg:"#FDEDEC",text:"#922B21",b:"#F5B7B1"},info:{bg:"#EAF2F8",text:"#1A5276",b:"#AED6F1"},success:{bg:"#EAFAF1",text:"#1E8449",b:"#A9DFBF"}}[type]||{bg:"#EAF2F8",text:"#1A5276",b:"#AED6F1"};
@@ -868,7 +858,6 @@ const NavItem = ({icon,label,active,onClick,badge}) => (
     {badge!=null&&<span style={{background:"#3D7A4A",color:"#fff",borderRadius:10,padding:"1px 7px",fontSize:10,fontWeight:700}}>{badge}</span>}
   </button>
 );
-
 // ─── MODAL FORM: EMITIDA ───
 function ModalEmitida({item, onSave, onClose}) {
   const [f, setF] = useState(item || {num:"",fecha:"",cliente:"",nif:"",desc:"",base:0,tipoIva:21});
@@ -909,7 +898,6 @@ function ModalEmitida({item, onSave, onClose}) {
     </div>
   </div></div>;
 }
-
 // ─── MODAL FORM: RECIBIDA ───
 function ModalRecibida({item, onSave, onClose}) {
   const cats = ["Telecom","Equipos","Software","Software int.","Suscripciones","Libros","Transporte","Restauración","Vinculada","Otros"];
@@ -927,7 +915,7 @@ function ModalRecibida({item, onSave, onClose}) {
     <h3>{item?"Editar":"Nueva"} Factura Recibida</h3>
     <div className="form-row">
       <div className="form-group"><label>Fecha</label><input type="date" value={f.fecha} onChange={e=>upd("fecha",e.target.value)}/></div>
-      <div className="form-group"><label>Proveedor</label><input value={f.prov} onChange={e=>upd("prov",e.target.value)}/></div>
+      <div className="form-group"><label>Proveedor</label><input value={f.prov||f.proveedor} onChange={e=>upd("prov",e.target.value)}/></div>
       <div className="form-group"><label>Categoría</label><select value={f.cat} onChange={e=>upd("cat",e.target.value)}>{cats.map(c=><option key={c} value={c}>{c}</option>)}</select></div>
     </div>
     <div className="form-row">
@@ -948,7 +936,6 @@ function ModalRecibida({item, onSave, onClose}) {
     </div>
   </div></div>;
 }
-
 // ─── CONFIRM DIALOG ───
 function ConfirmDialog({msg, onYes, onNo}) {
   return <div className="modal-overlay" onClick={onNo}><div className="modal" onClick={e=>e.stopPropagation()} style={{maxWidth:400}}>
@@ -960,7 +947,6 @@ function ConfirmDialog({msg, onYes, onNo}) {
     </div>
   </div></div>;
 }
-
 // ─── DATA TABLE ───
 const DataTable = ({columns,data,maxH,onEdit,onDelete}) => (
   <div style={{overflowX:"auto",overflowY:maxH?"auto":"visible",maxHeight:maxH,borderRadius:8,border:"1px solid #E4E9F0",background:"#fff"}}>
@@ -979,11 +965,9 @@ const DataTable = ({columns,data,maxH,onEdit,onDelete}) => (
     </table>
   </div>
 );
-
 // ═══════════════════════════════════
 // ═══  MAIN APP  ═══════════════════
 // ═══════════════════════════════════
-
 // ─── CCAA Official Rendering Components ───
 const OfficialBalanceView = ({year, fmt}) => {
   const oc = OFFICIAL_CCAA[year].balance;
@@ -1017,7 +1001,6 @@ const OfficialBalanceView = ({year, fmt}) => {
     {oc.totalActivo===oc.totalPasivo&&<div style={{textAlign:"center",marginTop:8,fontSize:11,color:"#27AE60",fontWeight:600}}>✅ Balance cuadrado: Activo = PN + Pasivo = {fmt(oc.totalActivo)}</div>}
   </div>;
 };
-
 const OfficialPyGView = ({year, fmt}) => {
   const lines = OFFICIAL_CCAA[year].pyg;
   return <div>
@@ -1043,7 +1026,6 @@ const OfficialPyGView = ({year, fmt}) => {
     </div>
   </div>;
 };
-
 function App() {
   const [section, setSection] = useState("dashboard");
   const [year, setYear] = useState(2025);
@@ -1051,7 +1033,6 @@ function App() {
   const [search, setSearch] = useState("");
   const [libroView, setLibroView] = useState(null);
   const [expandedIVA, setExpandedIVA] = useState(null);
-
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
   const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2022:DEFAULT_RECIBIDAS_2022,recibidas_2023:DEFAULT_RECIBIDAS_2023,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025,emitidas_2026:DEFAULT_EMITIDAS_2026,recibidas_2026:DEFAULT_RECIBIDAS_2026};
@@ -1066,7 +1047,6 @@ function App() {
   const updateStore = useCallback((key,val)=>{
     setStore(prev=>{const n={...prev,[key]:val};saveData(key,val);return n;});
   },[]);
-
   const emitidas = store[`emitidas_${year}`]||[];
   const setEmitidas = useCallback(fn=>{
     const key=`emitidas_${year}`;
@@ -1077,26 +1057,22 @@ function App() {
     const key=`recibidas_${year}`;
     setStore(prev=>{const cur=prev[key]||[];const nv=typeof fn==="function"?fn(cur):fn;saveData(key,nv);return {...prev,[key]:nv};});
   },[year]);
-
   // ─── MODALS ───
   const [modalEmitida, setModalEmitida] = useState(null); // null=closed, {}=new, {data}=edit
   const [modalRecibida, setModalRecibida] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null); // {type,item}
-
   // ─── CRUD EMITIDAS ───
   const saveEmitida = (item) => {
     setEmitidas(prev => { const idx=prev.findIndex(x=>x.id===item.id); if(idx>=0){ const n=[...prev]; n[idx]=item; return n; } return [...prev,item]; });
     setModalEmitida(null);
   };
   const deleteEmitida = (item) => { setEmitidas(prev=>prev.filter(x=>x.id!==item.id)); setConfirmDelete(null); };
-
   // ─── CRUD RECIBIDAS ───
   const saveRecibida = (item) => {
     setRecibidas(prev => { const idx=prev.findIndex(x=>x.id===item.id); if(idx>=0){ const n=[...prev]; n[idx]=item; return n; } return [...prev,item]; });
     setModalRecibida(null);
   };
   const deleteRecibida = (item) => { setRecibidas(prev=>prev.filter(x=>x.id!==item.id)); setConfirmDelete(null); };
-
   // ─── AGGREGATES ───
   const tIB=sum(emitidas,"base"), tIR=sum(emitidas,"iva");
   const tGB=sum(recibidas,"base"), tGI=sum(recibidas,"iva");
@@ -1105,21 +1081,17 @@ function App() {
   const catD={}; recibidas.forEach(r=>{catD[r.cat]=(catD[r.cat]||0)+r.base;}); const catS=Object.entries(catD).sort((a,b)=>b[1]-a[1]);
   const maxC=catS[0]?.[1]||1;
   const cc=["#3D7A4A","#2980B9","#27AE60","#E67E22","#8E44AD","#C0392B","#16A085","#D4AC0D"];
-
   const sections = {dashboard:"Panel de Control",emitidas:"Facturas Emitidas",recibidas:"Facturas Recibidas",iva:"IVA — Modelo 303",is:"Impuesto sobre Sociedades",libros:"Libros y Actas",alertas:"Alertas y Gaps"};
-
   // ─── FILTER ───
   const filteredEmitidas = emitidas.filter(e => !search || [e.num,e.cliente,e.desc,e.nif].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
-  const filteredRecibidas = recibidas.filter(r => !search || [r.prov,r.desc,r.cat].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
-
+  const filteredRecibidas = recibidas.filter(r => !search || [r.prov||r.proveedor,r.desc,r.cat].some(s=>(s||"").toLowerCase().includes(search.toLowerCase())));
   // ─── EXPORT ───
   const exportEmitidas = () => exportCSV(emitidas, `emitidas_${year}.csv`, [
     {label:"Nº",key:"num"},{label:"Fecha",key:"fecha",get:r=>fmtDate(r.fecha)},{label:"Cliente",key:"cliente"},{label:"NIF",key:"nif"},{label:"Descripción",key:"desc"},{label:"Base",key:"base"},{label:"Tipo IVA",key:"tipoIva"},{label:"IVA",key:"iva"},{label:"Total",key:"total"},{label:"Trimestre",key:"trimestre"}
   ]);
   const exportRecibidas = () => exportCSV(recibidas, `recibidas_${year}.csv`, [
-    {label:"Fecha",key:"fecha",get:r=>fmtDate(r.fecha)},{label:"Proveedor",key:"prov"},{label:"Descripción",key:"desc"},{label:"Base",key:"base"},{label:"Tipo IVA",key:"tipoIva"},{label:"IVA",key:"iva"},{label:"Total",key:"total"},{label:"Categoría",key:"cat"},{label:"Trimestre",key:"trimestre"}
+    {label:"Fecha",key:"fecha",get:r=>fmtDate(r.fecha)},{label:"Proveedor",get:r=>r.prov||r.proveedor},{label:"Descripción",key:"desc"},{label:"Base",key:"base"},{label:"Tipo IVA",key:"tipoIva"},{label:"IVA",key:"iva"},{label:"Total",key:"total"},{label:"Categoría",key:"cat"},{label:"Trimestre",key:"trimestre"}
   ]);
-
   // ─── RENDER SECTIONS ───
   const renderSection = () => {
     if(section==="dashboard") return <div style={{display:"flex",flexDirection:"column",gap:18}}>
@@ -1157,7 +1129,6 @@ function App() {
         {ALERTAS.length>3&&<div style={{fontSize:11,color:"#7A8DA0",marginTop:6}}>+{ALERTAS.length-3} más...</div>}
       </div>
     </div>;
-
     if(section==="emitidas") return <div>
       <div style={{display:"flex",gap:14,marginBottom:18,flexWrap:"wrap"}}>
         <KPI label="Total facturado" value={fmt(tIB)} sub={`${emitidas.length} facturas`}/>
@@ -1183,7 +1154,6 @@ function App() {
         {label:"PDF",align:"center",render:r=>r.doc?<a href={r.doc} target="_blank" rel="noopener" style={{color:"#2980B9",textDecoration:"none",fontWeight:700,fontSize:14}} title="Ver factura">📄</a>:<span style={{color:"#ccc"}}>—</span>},
       ]} data={filteredEmitidas} onEdit={item=>setModalEmitida(item)} onDelete={item=>setConfirmDelete({type:"emitida",item})}/>
     </div>;
-
     if(section==="recibidas") return <div>
       <div style={{display:"flex",gap:14,marginBottom:18,flexWrap:"wrap"}}>
         <KPI label="Total gastos" value={fmt(tGB)} sub={`${recibidas.length} facturas`} color="#C0392B"/>
@@ -1198,7 +1168,7 @@ function App() {
       </div>
       <DataTable maxH={420} columns={[
         {label:"Fecha",render:r=>fmtDate(r.fecha),nowrap:true},
-        {label:"Proveedor",key:"prov"},
+        {label:"Proveedor",render:r=>r.prov||r.proveedor},
         {label:"Descripción",key:"desc"},
         {label:"Base",align:"right",mono:true,render:r=>fmt(r.base)},
         {label:"IVA%",align:"center",render:r=>r.tipoIva?`${r.tipoIva}%`:"—"},
@@ -1209,7 +1179,6 @@ function App() {
         {label:"PDF",align:"center",render:r=>r.doc?<a href={r.doc} target="_blank" rel="noopener" style={{color:"#2980B9",textDecoration:"none",fontWeight:700,fontSize:14}} title="Ver factura">📄</a>:<span style={{color:"#ccc"}}>—</span>},
       ]} data={filteredRecibidas} onEdit={item=>setModalRecibida(item)} onDelete={item=>setConfirmDelete({type:"recibida",item})}/>
     </div>;
-
     const ivaDocsMap = {
       2024: {
         Q1: [{label:"Modelo 303 — 1T",doc:"docs/fiscal/2024/1T24.pdf"}],
@@ -1234,13 +1203,10 @@ function App() {
     };
     const ivaDocs = ivaDocsMap[year]||{};
     const DocLink = ({d}) => <a href={d.doc} target="_blank" rel="noopener" style={{display:"inline-flex",alignItems:"center",gap:4,color:"#2980B9",textDecoration:"none",fontSize:11,padding:"3px 8px",background:"#EAF2F8",borderRadius:4,border:"1px solid #AED6F1"}}>📄 {d.label}</a>;
-
     const modelos303Year = MODELOS_303[year] || [];
     const hasModelos303 = modelos303Year.length > 0;
-
     if(section==="iva") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Modelo 303 — Liquidación trimestral IVA {year}</div>
-
       {/* ─── TABLA RESUMEN OFICIAL MODELO 303 ─── */}
       {hasModelos303 && <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden",marginBottom:16}}>
         <div style={{background:"linear-gradient(135deg,#2E6B3A 0%,#3D7A4A 100%)",padding:"12px 18px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
@@ -1327,7 +1293,6 @@ function App() {
         </table>
         </div>
       </div>}
-
       {/* ─── GRÁFICO IVA DEVENGADO vs DEDUCIBLE ─── */}
       {hasModelos303 && <div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:16}}>
         <div style={{fontSize:10,color:"#7A8DA0",textTransform:"uppercase",fontWeight:700,letterSpacing:1,marginBottom:14}}>IVA Devengado vs Deducible — Evolución trimestral {year}</div>
@@ -1349,7 +1314,6 @@ function App() {
           <span><span style={{display:"inline-block",width:10,height:10,background:"#2980B9",borderRadius:2,marginRight:4}}/>Deducible</span>
         </div>
       </div>}
-
       {/* ─── DATOS CALCULADOS DESDE FACTURAS (fallback si no hay 303) ─── */}
       {!hasModelos303 && <React.Fragment>
         {qd.map((q,i)=><div key={i} style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0",marginBottom:12}}>
@@ -1382,7 +1346,6 @@ function App() {
           </div>}
         </div>
       </React.Fragment>}
-
       {/* ─── NOTAS IVA ─── */}
       <div style={{background:"#fff",borderRadius:10,padding:18,border:"1px solid #E4E9F0"}}>
         <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:8,fontWeight:700}}>Notas IVA</div>
@@ -1393,7 +1356,6 @@ function App() {
           • Art.69 (Vergara): no sujetas · USA (Gamma, Logically): inversión sujeto pasivo 12-13
         </div>
       </div>
-
       {/* ─── MODELO 390 — RESUMEN ANUAL ─── */}
       {MODELOS_390[year] && (()=>{
         const m390 = MODELOS_390[year];
@@ -1441,7 +1403,6 @@ function App() {
         </div>;
       })()}
     </div>;
-
     const isDocsMap = {
       2024: [
         {label:"Modelo 200 — IS 2024",doc:"docs/fiscal/2024/IS2024.pdf"},
@@ -1463,7 +1424,6 @@ function App() {
       ],
     };
     const isDocs = isDocsMap[year]||[];
-
     const m200 = MODELO_200[year];
     if(section==="is") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Impuesto sobre Sociedades — {m200?"Modelo 200":"Cálculo desde libros"} {year}</div>
@@ -1504,7 +1464,6 @@ function App() {
         </div>
       </div>}
     </div>;
-
     if(section==="alertas") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Alertas y gaps detectados</div>
       {ALERTAS.map((a,i)=><div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"12px 16px",borderRadius:8,marginBottom:8,background:a.tipo==="error"?"#FDEDEC":a.tipo==="warning"?"#FEF9E7":"#EAF2F8",border:`1px solid ${a.tipo==="error"?"#F5B7B1":a.tipo==="warning"?"#F9E79F":"#AED6F1"}`}}>
@@ -1513,30 +1472,25 @@ function App() {
         <div style={{fontSize:12,color:"#7A8DA0",minWidth:160,textAlign:"right",fontStyle:"italic"}}>{a.accion}</div>
       </div>)}
     </div>;
-
     if(section==="libros") {
       const allRecibidas = YEARS.flatMap(y=>store[`recibidas_${y}`]||[]);
       const asientos = generarAsientos(emitidas, recibidas, year, allRecibidas);
       const mayor = generarMayor(asientos);
       const balance = generarBalance(mayor);
       const pyg = generarPyG(mayor);
-
       const ccaaDoc = {2022:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf",2021:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf",2020:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf",2019:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"};
       const yearDocs = {
         2023:[{label:"Diario 2023 (Excel)",doc:"docs/corporativo/DIARIO_2023.xlsx"}],
         2022:[{label:"Balance 2022",doc:"docs/corporativo/BCE_2022.pdf"},{label:"PyG 2022",doc:"docs/corporativo/PG_2022.pdf"},{label:"CCAA 2022",doc:ccaaDoc[2022]}],
       };
       const SectionTitle = ({children}) => <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,marginTop:20,fontWeight:700}}>{children}</div>;
-
       const tabs = [{id:"diario",label:"Libro Diario"},{id:"mayor",label:"Libro Mayor"},{id:"balance",label:"Balance"},{id:"pyg",label:"PyG"},{id:"docs",label:"Documentos"}];
-
       return <div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {tabs.map(t=><button key={t.id} onClick={()=>setLibroView(libroView===t.id?null:t.id)} style={{padding:"6px 14px",borderRadius:6,border:libroView===t.id?"2px solid #3D7A4A":"1px solid #D5DCE4",background:libroView===t.id?"#3D7A4A":"#fff",color:libroView===t.id?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:600}}>
             {t.label}
           </button>)}
         </div>
-
         {(!libroView||libroView==="diario")&&<div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <SectionTitle>Libro diario — {year} ({asientos.length} asientos)</SectionTitle>
@@ -1567,7 +1521,6 @@ function App() {
             </table>
           </div>
         </div>}
-
         {libroView==="mayor"&&<div>
           <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
             <SectionTitle>Libro mayor — {year} ({mayor.length} cuentas)</SectionTitle>
@@ -1594,7 +1547,6 @@ function App() {
             </div>
           </div>)}
         </div>}
-
         {libroView==="balance"&&<div>
           <SectionTitle>Balance de situación — {year}</SectionTitle>
           {OFFICIAL_CCAA[year] ? <OfficialBalanceView year={year} fmt={fmt}/> : <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
@@ -1626,7 +1578,6 @@ function App() {
             </div>
           </div>}
         </div>}
-
         {libroView==="pyg"&&<div>
           <SectionTitle>Cuenta de pérdidas y ganancias — {year}</SectionTitle>
           {OFFICIAL_CCAA[year] ? <OfficialPyGView year={year} fmt={fmt}/> : <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
@@ -1660,7 +1611,6 @@ function App() {
             </div>
           </div>}
         </div>}
-
         {libroView==="docs"&&<div>
           <SectionTitle>Documentos contables y corporativos — {year}</SectionTitle>
           <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:16}}>
@@ -1676,10 +1626,8 @@ function App() {
         </div>}
       </div>;
     }
-
     return null;
   };
-
   return (
     <div style={{display:"flex",height:"100vh",fontFamily:"system-ui,-apple-system,sans-serif",background:"#F4F6F9",color:"#2C3E50",overflow:"hidden"}}>
       {/* MODALS */}
