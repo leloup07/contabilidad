@@ -498,7 +498,71 @@ function App() {
   ]);
   // ─── RENDER SECTIONS ───
   const renderSection = () => {
-    if(section==="dashboard") return <div style={{display:"flex",flexDirection:"column",gap:18}}>
+    const m200 = MODELO_200[year];
+    const evoRow = EVOLUTION_DATA.find(d=>d.year===year);
+    const hasInvoices = emitidas.length > 0 || recibidas.length > 0;
+    if(section==="dashboard") {
+      if(!hasInvoices && (m200 || evoRow)) {
+        // ─── DASHBOARD OFICIAL (sin facturas, con datos Mod.200) ───
+        const incn = m200 ? m200.cifraNegocios : (evoRow ? evoRow.incn : 0);
+        const rdoEj = m200 ? m200.resultadoEjercicio : (evoRow ? evoRow.resultado : 0);
+        const gastosTot = m200 ? (incn - (m200.resultadoExplotacion||0)) : (evoRow ? (incn - rdoEj) : 0);
+        const rdoExpl = m200 ? m200.resultadoExplotacion : rdoEj;
+        const isGasto = m200 ? Math.abs(m200.gastoIS||0) : 0;
+        return <div style={{display:"flex",flexDirection:"column",gap:18}}>
+          <div style={{background:"#FEF9E7",border:"1px solid #F9E79F",borderRadius:10,padding:"14px 20px",fontSize:12,color:"#7D6608"}}>
+            📋 <b>Datos oficiales del Modelo 200 ({year})</b> — No hay facturas individuales cargadas para este ejercicio. Los importes provienen del Impuesto de Sociedades presentado ante AEAT.
+          </div>
+          <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
+            <KPI label="INCN (Mod.200)" value={fmt(incn)} sub="Cifra de negocios" onClick={()=>setSection("is")}/>
+            <KPI label="Gastos" value={fmt(gastosTot)} sub="Explotación" color="#C0392B" onClick={()=>setSection("is")}/>
+            <KPI label="Resultado" value={fmt(rdoEj)} color={rdoEj>=0?"#27AE60":"#C0392B"} sub={rdoEj>=0?"Beneficio":"Pérdida"} onClick={()=>setSection("is")}/>
+            {isGasto>0 && <KPI label="Imp. Sociedades" value={fmt(isGasto)} color="#8E44AD" sub="Cuota IS"/>}
+          </div>
+          {evoRow && <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            <div style={{flex:1,minWidth:280,background:"#fff",borderRadius:10,padding:20,border:"1px solid #E4E9F0"}}>
+              <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Balance — Modelo 200</div>
+              {[
+                {l:"Total Activo",v:evoRow.totalActivo},
+                {l:"Patrimonio Neto",v:evoRow.pn},
+                {l:"Tesorería (572)",v:evoRow.tesoreria},
+                {l:"Clientes (430)",v:evoRow.clientes},
+                {l:"HP Deudora (4700)",v:evoRow.hpDeudora},
+              ].filter(x=>x.v).map((x,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"6px 0",borderBottom:"1px solid #F0F2F5",fontSize:12}}>
+                <span style={{color:"#2C3E50"}}>{x.l}</span>
+                <span style={{fontFamily:"monospace",fontWeight:600,color:"#3D7A4A"}}>{fmt(x.v)}</span>
+              </div>)}
+            </div>
+            <div style={{flex:1,minWidth:280,background:"#fff",borderRadius:10,padding:20,border:"1px solid #E4E9F0"}}>
+              <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>PyG — Modelo 200</div>
+              {[
+                {l:"Cifra de negocios (INCN)",v:incn,c:"#27AE60"},
+                m200&&m200.aprovisionamientos?{l:"Aprovisionamientos",v:m200.aprovisionamientos,c:"#C0392B"}:null,
+                m200&&m200.gastosPersonal?{l:"Gastos de personal",v:m200.gastosPersonal,c:"#C0392B"}:null,
+                m200?{l:"Otros gastos de explotación",v:m200.gastosExplotacion,c:"#C0392B"}:null,
+                m200&&m200.amortizacion?{l:"Amortización",v:m200.amortizacion,c:"#C0392B"}:null,
+                m200&&m200.otrosResultados?{l:"Otros resultados",v:m200.otrosResultados,c:"#C0392B"}:null,
+                {l:"Resultado explotación",v:rdoExpl,c:rdoExpl>=0?"#27AE60":"#C0392B",bold:true},
+                isGasto!==0?{l:"Impuesto Sociedades",v:m200?-Math.abs(m200.gastoIS):0,c:"#8E44AD"}:null,
+                {l:"RESULTADO DEL EJERCICIO",v:rdoEj,c:rdoEj>=0?"#27AE60":"#C0392B",bold:true},
+              ].filter(Boolean).map((x,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:x.bold?"8px 0":"5px 0",borderBottom:x.bold?"2px solid #2C3E50":"1px solid #F0F2F5",fontSize:x.bold?13:12}}>
+                <span style={{color:"#2C3E50",fontWeight:x.bold?700:400}}>{x.l}</span>
+                <span style={{fontFamily:"monospace",fontWeight:x.bold?700:600,color:x.c}}>{fmt(x.v)}</span>
+              </div>)}
+            </div>
+          </div>}
+          {evoRow && evoRow.cta551>0 && <div style={{background:"#fff",borderRadius:10,padding:20,border:"1px solid #E4E9F0"}}>
+            <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,fontWeight:700}}>Cuenta 551 — Préstamo socio</div>
+            <div style={{display:"flex",justifyContent:"space-between",fontSize:13}}>
+              <span>Saldo c/c con socios</span>
+              <span style={{fontFamily:"monospace",fontWeight:700,color:"#E67E22"}}>{fmt(evoRow.cta551)}</span>
+            </div>
+            <div style={{fontSize:11,color:"#7A8DA0",marginTop:6}}>Deuda a corto plazo (casilla 00237 Mod.200): {fmt(evoRow.pasivoCte)}</div>
+          </div>}
+          <div style={{fontSize:10,color:"#A0AEBB",fontStyle:"italic"}}>Fuente: {evoRow?evoRow.fuente:"Modelo 200 AEAT"}</div>
+        </div>;
+      }
+      return <div style={{display:"flex",flexDirection:"column",gap:18}}>
       <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
         <KPI label="Ingresos" value={fmt(tIB)} sub={`${emitidas.length} facturas`} onClick={()=>setSection("emitidas")}/>
         <KPI label="Gastos" value={fmt(tGB)} sub={`${recibidas.length} facturas`} color="#C0392B" onClick={()=>setSection("recibidas")}/>
@@ -533,6 +597,7 @@ function App() {
         {ALERTAS.length>3&&<div style={{fontSize:11,color:"#7A8DA0",marginTop:6}}>+{ALERTAS.length-3} más...</div>}
       </div>
     </div>;
+    }
     if(section==="emitidas") return <div>
       <div style={{display:"flex",gap:14,marginBottom:18,flexWrap:"wrap"}}>
         <KPI label="Total facturado" value={fmt(tIB)} sub={`${emitidas.length} facturas`}/>
@@ -828,7 +893,8 @@ function App() {
       ],
     };
     const isDocs = isDocsMap[year]||[];
-    const m200 = MODELO_200[year];
+    // m200 already declared above
+    // const m200 = MODELO_200[year];
     if(section==="is") return <div>
       <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:14,fontWeight:700}}>Impuesto sobre Sociedades — {m200?"Modelo 200":"Cálculo desde libros"} {year}</div>
       <div style={{background:"#fff",borderRadius:10,border:"1px solid #E4E9F0",overflow:"hidden"}}>
@@ -840,14 +906,14 @@ function App() {
           {l:"Amortización",v:m200.amortizacion,c:"#C0392B"},
           {l:"RESULTADO DE EXPLOTACIÓN",v:m200.resultadoExplotacion,b:true,c:m200.resultadoExplotacion>=0?"#27AE60":"#C0392B",sep:true},
           {l:"RESULTADO ANTES DE IMPUESTOS",v:m200.resultadoAntesIS,b:true,c:m200.resultadoAntesIS>=0?"#27AE60":"#C0392B"},
-          {l:"Gasto IS contable (cta. 630)",v:-m200.gastoIS,c:"#C0392B"},
+          {l:"Gasto IS contable (cta. 630)",v:m200.gastoIS!=null?-m200.gastoIS:undefined,c:"#C0392B"},
           {l:"RESULTADO DEL EJERCICIO",v:m200.resultadoEjercicio,b:true,c:m200.resultadoEjercicio>=0?"#27AE60":"#C0392B",sep:true},
           {l:"Base imponible antes compensación BIN",v:m200.baseImponibleAntesComp},
-          {l:"Compensación BIN periodos anteriores",v:-m200.compensacionBIN,c:"#7A8DA0"},
+          {l:"Compensación BIN periodos anteriores",v:m200.compensacionBIN!=null?-m200.compensacionBIN:undefined,c:"#7A8DA0"},
           {l:"BASE IMPONIBLE",v:m200.baseImponible,b:true},
-          {l:"Tipo gravamen",v:null,extra:m200.tipoGravamen+"%"},
+          {l:"Tipo gravamen",v:null,extra:m200.tipoGravamen?m200.tipoGravamen+"%":undefined},
           {l:"Cuota íntegra",v:m200.cuotaIntegra,b:true,c:"#3D7A4A"},
-          {l:m200.cuotaCero?"CUOTA CERO":"Líquido a ingresar",v:m200.liquidoIngresar,b:true,c:"#3D7A4A",sep:true},
+          m200.liquidoIngresar!==undefined?{l:m200.cuotaCero?"CUOTA CERO":"Líquido a ingresar",v:m200.liquidoIngresar,b:true,c:"#3D7A4A",sep:true}:null,
         ]:[
           {l:"Ingresos de explotación",v:tIB,b:true},
           ...emitidas.reduce((a,e)=>{const x=a.find(i=>i.l===e.cliente);if(x)x.v+=e.base;else a.push({l:e.cliente,v:e.base,i:1});return a;},[]),
@@ -856,7 +922,7 @@ function App() {
           {l:"RESULTADO ANTES DE IMPUESTOS",v:resultado,b:true,c:resultado>=0?"#27AE60":"#C0392B",sep:true},
           {l:"Tipo IS (est. 25%)",v:null},
           {l:"Cuota IS",v:resultado>0?resultado*0.25:0,b:true,c:"#3D7A4A"},
-        ]).map((r,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",paddingLeft:20+(r.i||0)*24,borderTop:r.sep?"2px solid #3D7A4A":i>0?"1px solid #F0F2F5":"none",background:r.b&&!r.i?"#FAFBFC":"#fff"}}>
+        ]).filter(r=>r&&(r.v!==undefined||r.extra)).map((r,i)=><div key={i} style={{display:"flex",justifyContent:"space-between",padding:"10px 20px",paddingLeft:20+(r.i||0)*24,borderTop:r.sep?"2px solid #3D7A4A":i>0?"1px solid #F0F2F5":"none",background:r.b&&!r.i?"#FAFBFC":"#fff"}}>
           <span style={{fontSize:12,color:r.b?"#2C3E50":"#7A8DA0",fontWeight:r.b?700:400}}>{r.l}</span>
           <span style={{fontSize:12,fontFamily:"monospace",color:r.c||"#2C3E50",fontWeight:r.b?700:400}}>{r.extra||(r.v!=null?fmt(Math.abs(r.v)):"")}</span>
         </div>)}
@@ -1293,7 +1359,7 @@ function App() {
           <NavItem icon="⚠" label="Alertas" active={section==="alertas"} onClick={()=>setSection("alertas")} badge={ALERTAS.length}/>
           <NavItem icon="📚" label="Libros y Actas" active={section==="libros"} onClick={()=>setSection("libros")}/>
         </div>
-        <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v5.0 · Modular · Evolución + Reconciliación</div>
+        <div style={{padding:"12px 20px",borderTop:"1px solid #E4E9F0",fontSize:10,color:"#A0AEBB"}}>Plataforma Contable v5.2 · Dashboard oficial 2017-2025</div>
       </div>}
       {/* MAIN */}
       <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"auto"}}>
