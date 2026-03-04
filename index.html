@@ -559,7 +559,7 @@ const ALERTAS = [
   { tipo: "error", msg: "IVA: 11.596,85€ de crédito acumulado pendiente de devolución. Rectificativa 303-4T-2024 necesaria (cas.73 → devolución). Crédito vivo: cuotas siempre declaradas en 303 originales desde 2019.", accion: "Presentar rectificativa 303-4T-2024 solicitando devolución" },
   { tipo: "error", msg: "IVA: 390-2024 inconsistente — cas.97 (a compensar) debe cambiar a cas.98 (a devolver) tras rectificativa del 4T.", accion: "Rectificativa Mod. 390-2024" },
   { tipo: "warning", msg: "IS 2024: Otros deudores (cas.00159) = 13.393,42€ no refleja saldo real de IVA. Corregir en sustitutiva del Mod.200.", accion: "Sustitutiva Mod.200 2024" },
-  { tipo: "warning", msg: "551 Cta. socios: saldo histórico ~33.919€ a cierre 2025. Analizar prescripción de ejercicios subyacentes para planificar reembolso.", accion: "Revisar origen y prescripción" },
+  { tipo: "warning", msg: "551 Cta. socios: saldo 33.599€ a cierre 2025 (33.422€ de 2024 + 176€ iryo tarjeta personal). Planificar reembolso cuando liquidez lo permita.", accion: "Revisar origen y prescripción" },
   { tipo: "info", msg: "Tesorería ene-2026: Pagos vinculadas a Enrique Aznar (4.666,99+10.197,20=14.864,19€) y cobros Vergara (1.000+1.250=2.250€) registrados.", accion: "Verificar contra extracto Qonto" },
   { tipo: "warning", msg: "CryptoPlaza: faltan Feb, Mar, Jul, Ago, Sep 2025", accion: "Solicitar a Sky Media Group" },
   { tipo: "info", msg: "Logically en USD: pendiente tipo de cambio BCE", accion: "Aplicar TC oficial" },
@@ -578,7 +578,7 @@ const MODELO_200 = {
     baseImponibleAntesComp:13069.61, compensacionBIN:0,
     baseImponible:13069.61, tipoGravamen:25, cuotaIntegra:3267.40,
     liquidoIngresar:3267.40, cuotaCero:false,
-    csv:"NQ5TQ7U3G5YGYJWD", doc:"docs/fiscal/2017/IS_2017.pdf",
+    csv:"NQ5TQ7U3G5YGYJWD", doc:"IS_2017.pdf",
     fecha:"25-07-2018", presentador:"Marín Asesores"
   },
   2018: {
@@ -589,7 +589,7 @@ const MODELO_200 = {
     baseImponible:1587.33, tipoGravamen:25, cuotaIntegra:396.83,
     liquidoIngresar:0, cuotaCero:false,
     solicitudDevolucion:true,
-    csv:"NFAJ83CM7NBJNM8K", doc:"docs/fiscal/2018/IS_2018.pdf",
+    csv:"NFAJ83CM7NBJNM8K", doc:"IS_2018_Mod_200.pdf",
     fecha:"25-07-2019", presentador:"Marín Asesores"
   },
   2019: {
@@ -601,7 +601,7 @@ const MODELO_200 = {
     liquidoIngresar:0, cuotaCero:true,
     binGeneradas:1519.32,
     solicitudDevolucion:true,
-    csv:"ETPYAHFAGABSDRSJ", doc:"docs/fiscal/2019/IS_2019.pdf",
+    csv:"ETPYAHFAGABSDRSJ", doc:"IS_200_2019_.pdf",
     fecha:"25-07-2020", presentador:"Marín Asesores"
   },
   2020: {
@@ -613,7 +613,7 @@ const MODELO_200 = {
     liquidoIngresar:0, cuotaCero:true,
     binGeneradas:2417.47, binPendienteAnterior:1519.32, binPendienteTotal:3936.79,
     solicitudDevolucion:true,
-    csv:"SVUEK8G5UWLX4YF8", doc:"docs/fiscal/2020/IS2020.pdf",
+    csv:"SVUEK8G5UWLX4YF8", doc:"IS2020.pdf",
     fecha:"25-07-2021", presentador:"Marín Asesores"
   },
   2021: {
@@ -625,7 +625,7 @@ const MODELO_200 = {
     baseImponible:-33.47, tipoGravamen:25, cuotaIntegra:0,
     liquidoIngresar:0, cuotaCero:true,
     binGeneradas:33.47, binPendienteAnterior:3936.79, binPendienteTotal:3970.26,
-    csv:"DK7BZVUMKKXM2PW2", doc:"docs/fiscal/2021/IS2021.pdf",
+    csv:"DK7BZVUMKKXM2PW2", doc:"IS2021.pdf",
     fecha:"25-07-2022", presentador:"Marín Asesores"
   },
   2022: {
@@ -1217,8 +1217,9 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
     apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
     if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
     // medioPago="socio" → H:551 (socio financia)
-// medioPago="banco" → H:410 (proveedores); el pago bancario real se registra en Tesorería (D:410 / H:572x)
-const ctaContra = (r.medioPago === "socio") ? "551" : "410";
+// medioPago="banco" → H:572 (pago directo); "socio" → H:551; "pendiente" → H:410
+const ctaContra = (r.medioPago === "socio") ? "551" : (r.medioPago === "pendiente") ? "410" : "572";
+// banco → D:gasto/H:572 (pago inmediato); socio → H:551; pendiente → H:410
 apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
     preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
@@ -1301,50 +1302,7 @@ apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
     });
   }
 
-  // ─── Cierre 2025: ajustar bancos a saldos reales (inspección) ───
-  // Solo para 31/12/2025, sin tocar 2024 ni otros años.
-  if(year === 2025) {
-    const TARGET_QONTO = 35052.50;      // 5721 a 31/12/2025
-    const TARGET_BANKINTER = 13120.28;  // 5720 a 31/12/2025
-    const yaExiste = preAsientos.some(a => a && a.tipo === "AJ_BANCOS_CIERRE_2025");
-    if(!yaExiste) {
-      // Calcula saldo actual de bancos con los asientos generados hasta ahora
-      const mayorTmp = generarMayor(preAsientos);
-      const saldoOf = (cta) => {
-        const m = mayorTmp.find(x => String(x.cuenta) === String(cta));
-        return m ? (m.debe - m.haber) : 0;
-      };
-      const saldo5721 = saldoOf("5721");
-      const saldo5720 = saldoOf("5720");
-      const dif5721 = +(TARGET_QONTO - saldo5721).toFixed(2);
-      const dif5720 = +(TARGET_BANKINTER - saldo5720).toFixed(2);
-
-      const pushAjuste = (ctaBanco, dif) => {
-        if(Math.abs(dif) < 0.01) return;
-        // Queremos que el saldo del banco aumente si dif>0 (D:Banco / H:551)
-        // y disminuya si dif<0 (D:551 / H:Banco)
-        const apuntes = [];
-        if(dif > 0) {
-          apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:dif,haber:0});
-          apuntes.push({cuenta:"551",nombre:ctaName("551"),debe:0,haber:dif});
-        } else {
-          const amt = Math.abs(dif);
-          apuntes.push({cuenta:"551",nombre:ctaName("551"),debe:amt,haber:0});
-          apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:0,haber:amt});
-        }
-        preAsientos.push({
-          fecha:"2025-12-31",
-          tipo:"AJ_BANCOS_CIERRE_2025",
-          concepto:`Regularización conciliación bancaria cierre 2025 (${ctaBanco})`,
-          ref:`AJ_BANCOS_CIERRE_2025_${ctaBanco}`,
-          apuntes
-        });
-      };
-
-      pushAjuste("5721", dif5721);
-      pushAjuste("5720", dif5720);
-    }
-  }
+  // Cierre 2025 synthetic adjustments removed — bank flows via medioPago=banco→572
 
   // ─── Sort ALL entries chronologically, then number ───
   preAsientos.sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -1395,7 +1353,7 @@ function generarPyG(mayor) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "9.16"; // v9.16: Recibidas 2025 completas (Qonto extract), 551=33598.66, PyG/CCAA corregidos
+const APP_VERSION = "9.18"; // v9.18: banco→572 directo (sin 410 intermedia), eliminados ajustes sintéticos tesorería
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
@@ -1594,64 +1552,7 @@ const OfficialPyGView = ({year, fmt}) => {
   </div>;
 };
 
-// ─────────────────────────────────────────────────────────────
-// CIERRE 2025 — AJUSTE BANCOS (SOLO VISTA, NO TOCA STORAGE)
-// Fuerza saldos a 31/12/2025: Qonto(5721)=35052.50, Bankinter(5720)=13120.28
-// mediante movimientos tesorería tipo "ajuste" contra 551.
-// No afecta 2024 ni otros años.
-// ─────────────────────────────────────────────────────────────
-function withClosing2025BankAdjustments(tes2025, store){
-  try{
-    const TARGETS = {"5721": 35052.50, "5720": 13120.28};
-    const existing = Array.isArray(tes2025) ? tes2025.slice() : [];
-    const ids = new Set(existing.map(x=>x && x.id).filter(Boolean));
-    // evitar circularidad: calcula saldo sin los ajustes
-    const baseTes = existing.filter(t => !(t && t.__autoCierre2025));
-    const emit = (store && store["emitidas_2025"]) ? store["emitidas_2025"] : [];
-    const rec  = (store && store["recibidas_2025"]) ? store["recibidas_2025"] : [];
-    const allRec = (typeof YEARS!=="undefined" && store) ? YEARS.flatMap(y=>store[`recibidas_${y}`]||[]) : rec;
-    const as = generarAsientos(emit, rec, 2025, allRec, baseTes);
-    const mayor = generarMayor(as);
-    const saldoCuenta = (cta)=>{
-      const c = mayor[cta];
-      if(!c) return 0;
-      return (Number(c.debe||0) - Number(c.haber||0));
-    };
-    const upsert = (item)=>{
-      const i = existing.findIndex(x=>x && x.id===item.id);
-      if(i>=0) existing[i] = {...existing[i], ...item};
-      else existing.push(item);
-    };
-
-    ["5721","5720"].forEach(cta=>{
-      const target = TARGETS[cta];
-      const current = saldoCuenta(cta);
-      const diff = +(target - current).toFixed(2);
-      const id = (cta==="5721") ? "t2025-cierre-qonto" : "t2025-cierre-bankinter";
-      if(Math.abs(diff) >= 0.01){
-        upsert({
-          id,
-          tipo:(diff>0 ? "cobro" : "pago"),
-          fecha:"2025-12-31",
-          concepto:`Regularización conciliación bancaria cierre 2025 (${cta==="5721"?"Qonto":"Bankinter"})`,
-          importe: Math.abs(diff),
-          banco: cta,
-          dir: diff>0 ? "in" : "out",
-          __autoCierre2025:true
-        });
-      }else{
-        // si ya cuadra, elimina el ajuste auto si existiera
-        const j = existing.findIndex(x=>x && x.id===id);
-        if(j>=0 && existing[j].__autoCierre2025) existing.splice(j,1);
-      }
-    });
-
-    existing.sort((a,b)=>String(a.fecha||"").localeCompare(String(b.fecha||"")));
-    return existing;
-  }catch(e){
-    return tes2025||[];
-  }
-}
+// withClosing2025BankAdjustments removed — bank flows now via recibidas medioPago
 
 function App() {
   const [section, setSection] = useState("dashboard");
@@ -1702,7 +1603,7 @@ function App() {
     setStore(prev=>{const cur=prev[key]||[];const nv=typeof fn==="function"?fn(cur):fn;saveData(key,nv);return {...prev,[key]:nv};});
   },[year]);
   const tesoreriaRaw = store[`tesoreria_${year}`]||[];
-  const tesoreria = (year===2025) ? withClosing2025BankAdjustments(tesoreriaRaw, store) : tesoreriaRaw;
+  const tesoreria = tesoreriaRaw;
   const setTesoreria = useCallback(fn=>{
     const key=`tesoreria_${year}`;
     setStore(prev=>{const cur=prev[key]||[];const nv=typeof fn==="function"?fn(cur):fn;saveData(key,nv);return {...prev,[key]:nv};});
@@ -2102,19 +2003,19 @@ function App() {
         {label:"Modelo 200 — IS 2023",doc:"docs/fiscal/2023/IS2023.pdf"},
       ],
       2021: [
-        {label:"Modelo 200 — IS 2021",doc:"docs/fiscal/2021/IS2021.pdf"},
+        {label:"Modelo 200 — IS 2021",doc:"IS2021.pdf"},
       ],
       2020: [
-        {label:"Modelo 200 — IS 2020",doc:"docs/fiscal/2020/IS2020.pdf"},
+        {label:"Modelo 200 — IS 2020",doc:"IS2020.pdf"},
       ],
       2019: [
-        {label:"Modelo 200 — IS 2019",doc:"docs/fiscal/2019/IS_2019.pdf"},
+        {label:"Modelo 200 — IS 2019",doc:"IS_200_2019_.pdf"},
       ],
       2018: [
-        {label:"Modelo 200 — IS 2018",doc:"docs/fiscal/2018/IS_2018.pdf"},
+        {label:"Modelo 200 — IS 2018",doc:"IS_2018_Mod_200.pdf"},
       ],
       2017: [
-        {label:"Modelo 200 — IS 2017",doc:"docs/fiscal/2017/IS_2017.pdf"},
+        {label:"Modelo 200 — IS 2017",doc:"IS_2017.pdf"},
       ],
     };
     const isDocs = isDocsMap[year]||[];
@@ -2305,8 +2206,8 @@ function App() {
                 </div>
                 <div style={{fontSize:11,color:"#2C3E50",lineHeight:1.7,borderTop:"1px solid #F0F2F5",paddingTop:10}}>
                   <p style={{marginBottom:6}}>• <strong>Origen:</strong> Gastos pagados por el socio con tarjeta personal + aportación de 6.090€ (Bankinter no tenía tarjeta).</p>
-                  <p style={{marginBottom:6}}>• <strong>2023 → 2024:</strong> Sube de 10.474€ a 33.919€ por acumulación de vinculadas sin pago real.</p>
-                  <p style={{marginBottom:6}}>• <strong>2025:</strong> Baja a 29.899€. En ene-2026 se pagaron 14.864€ (vinculadas 2024+2025) desde Qonto.</p>
+                  <p style={{marginBottom:6}}>• <strong>2023 → 2024:</strong> Sube a 33.422€ por equipos y gastos pagados con tarjeta personal del socio.</p>
+                  <p style={{marginBottom:6}}>• <strong>2025:</strong> Sube ligeramente a 33.599€ (+176€ de 3 billetes iryo con tarjeta personal). Sin reembolsos.</p>
                   <p>• <strong>Estrategia:</strong> Analizar prescripción de ejercicios subyacentes para planificar reembolso de la SLP al socio sin riesgo fiscal.</p>
                 </div>
               </div>;
@@ -2317,8 +2218,8 @@ function App() {
             <div style={{fontSize:11,lineHeight:1.7,color:"#2C3E50"}}>
               <p style={{marginBottom:8}}>• <strong>Tesorería crece:</strong> De 27.319€ a 48.173€ (+76%), concentrándose en Qonto (35.053€ en 2025).</p>
               <p style={{marginBottom:8}}>• <strong>IVA acumulado:</strong> ~11.733€ pendientes de compensar. Posibilidad de solicitar devolución via rectificativa 303-4T o en próximo 4T.</p>
-              <p style={{marginBottom:8}}>• <strong>Cuenta 551:</strong> Refleja desfase entre facturación vinculada y pagos al socio. Pico en 2024 (33.919€), se reduce a 29.899€ en 2025.</p>
-              <p>• <strong>PN:</strong> Crece hasta 2024 (21.869€) pero baja en 2025 (19.199€) por acumulación de pérdidas de explotación.</p>
+              <p style={{marginBottom:8}}>• <strong>Cuenta 551:</strong> Refleja anticipos del socio pagando gastos de la SLP con su tarjeta personal. Estable en ~33.599€ desde 2024.</p>
+              <p>• <strong>PN:</strong> Baja a 16.499€ en 2025 por pérdida de explotación (-5.369€) — gastos superan ingresos.</p>
             </div>
           </div>
         </div>
