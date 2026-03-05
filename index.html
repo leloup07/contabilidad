@@ -690,6 +690,30 @@ const DEFAULT_RECIBIDAS_2026 = [
   { id: "r2026-20", fecha: "2026-01-13", proveedor: "Movistar", nif: "A-82018474", desc: "Telecom (28 Nov-27 Dic)", base: 165.06, tipoIva: 21, iva: 34.66, total: 199.72, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/Movistar_ene_2026.pdf" },
 ];
 // ═══ TESORERÍA: Cobros y Pagos ═══
+// ─── TESORERÍA 2024 — Cobros clientes (todos cobrados a 31/12/2024, 430=0) ───
+const DEFAULT_TESORERIA_2024 = [
+  { id:"t2024-c1", tipo:"cobro", fecha:"2024-05-15", concepto:"Cobro fra. 1/2024 Fund. IE", importe:3630.00, banco:"5721", refFactura:"e2024-1", trimestre:"Q2" },
+  { id:"t2024-c2", tipo:"cobro", fecha:"2024-05-20", concepto:"Cobro fra. 2/2024 Blockchain Intelligence", importe:225.00, banco:"5721", refFactura:"e2024-2", trimestre:"Q2" },
+  { id:"t2024-c3", tipo:"cobro", fecha:"2024-10-20", concepto:"Cobro fra. 4/2024 ICAB", importe:363.00, banco:"5721", refFactura:"e2024-4", trimestre:"Q4" },
+  { id:"t2024-c4", tipo:"cobro", fecha:"2024-10-25", concepto:"Cobro fra. 5/2024 Fund. IE", importe:3630.00, banco:"5721", refFactura:"e2024-5", trimestre:"Q4" },
+  { id:"t2024-c5", tipo:"cobro", fecha:"2024-11-05", concepto:"Cobro fra. 6/2024 ASCOM", importe:300.00, banco:"5721", refFactura:"e2024-6", trimestre:"Q4" },
+  { id:"t2024-c6", tipo:"cobro", fecha:"2024-12-10", concepto:"Cobro fra. 7/2024 Fund. IE", importe:3630.00, banco:"5721", refFactura:"e2024-7", trimestre:"Q4" },
+];
+// ─── TESORERÍA 2025 — Cobros reales desde extracto Qonto ───
+const DEFAULT_TESORERIA_2025 = [
+  { id:"t2025-c1", tipo:"cobro", fecha:"2025-01-16", concepto:"Cobro fra. Fund. IE (Qonto)", importe:3630.00, banco:"5721", refFactura:"e2025-1", trimestre:"Q1" },
+  { id:"t2025-c2", tipo:"cobro", fecha:"2025-03-28", concepto:"Cobro fra. FIEFIN (Qonto)", importe:300.00, banco:"5721", refFactura:"e2025-3", trimestre:"Q1" },
+  { id:"t2025-c3", tipo:"cobro", fecha:"2025-04-14", concepto:"Cobro fra. Digital Innovation Hub", importe:225.00, banco:"5721", refFactura:"e2025-2", trimestre:"Q2" },
+  { id:"t2025-c4", tipo:"cobro", fecha:"2025-04-14", concepto:"Cobro fra. FIEFIN (Qonto)", importe:300.00, banco:"5721", refFactura:"e2025-4", trimestre:"Q2" },
+  { id:"t2025-c5", tipo:"cobro", fecha:"2025-06-13", concepto:"Cobro fra. FIEFIN (Qonto)", importe:300.00, banco:"5721", refFactura:"e2025-5", trimestre:"Q2" },
+  { id:"t2025-c6", tipo:"cobro", fecha:"2025-07-24", concepto:"Cobro fra. Fund. IE (Qonto)", importe:3630.00, banco:"5721", refFactura:"e2025-6", trimestre:"Q3" },
+  { id:"t2025-c7", tipo:"devolucion", fecha:"2025-07-31", concepto:"Devolución AEAT pago a cuenta IS 2024", importe:244.28, banco:"5721", ctaContra:"470", trimestre:"Q3" },
+  { id:"t2025-c8", tipo:"cobro", fecha:"2025-10-02", concepto:"Cobro fra. ASCOM (Qonto)", importe:300.00, banco:"5721", refFactura:"e2025-8", trimestre:"Q4" },
+  { id:"t2025-c9", tipo:"cobro", fecha:"2025-10-31", concepto:"Cobro fra. ICAB (Qonto)", importe:363.00, banco:"5721", refFactura:"e2025-7", trimestre:"Q4" },
+  { id:"t2025-c10", tipo:"cobro", fecha:"2025-12-04", concepto:"Cobro fra. Fund. IE (Qonto)", importe:3630.00, banco:"5721", refFactura:"e2025-9", trimestre:"Q4" },
+  { id:"t2025-c11", tipo:"cobro", fecha:"2025-12-18", concepto:"Cobro fra. Fund. IE (Qonto)", importe:3630.00, banco:"5721", refFactura:"e2025-11b", trimestre:"Q4" },
+  { id:"t2025-c12", tipo:"cobro", fecha:"2025-12-19", concepto:"Cobro fra. Vergara dic (Qonto)", importe:375.00, banco:"5721", refFactura:"e2025-10", trimestre:"Q4" },
+];
 const DEFAULT_TESORERIA_2026 = [
   { id:"t2026-1", tipo:"pago", fecha:"2026-01-15", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2024", importe:4666.99, banco:"5721", refFactura:"r2024-22", trimestre:"Q1" },
   { id:"t2026-2", tipo:"pago", fecha:"2026-01-15", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2025", importe:10197.20, banco:"5721", refFactura:"r2025-30", trimestre:"Q1" },
@@ -699,7 +723,7 @@ const DEFAULT_TESORERIA_2026 = [
 
 const EXTRA_TESORERIA_2026 = [];
 // Nota: los pagos de feb (ChatGPT, Claude, Gamma, Logically, Railway, Qonto)
-// ya están contabilizados en recibidas con medioPago="banco" → H:5721 directo.
+// V2: pagos de recibidas banco se generan automáticamente como asientos D:410/H:572x
 // Crear tesorería EXTRA sería doble contabilización.
 
 
@@ -1199,9 +1223,12 @@ const CAT_CUENTA = {
 };
 // Equipos: >300€ base → 217 (activo amortizable), ≤300€ → 629 (gasto directo)
 const AMORT_RATE = 0.25; // 25% anual equipos informáticos
+// ─── ENGINE V2: devengo puro + tesorería separada (2024-2026) ───
+const ENGINE_V2_YEARS = {2024:true, 2025:true, 2026:true};
 function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
+  const isV2 = ENGINE_V2_YEARS[year] || false;
   const preAsientos = [];
-  // ─── Facturas emitidas ───
+  // ─── Facturas emitidas (devengo: D:430 / H:705+477) ───
   [...emitidas].forEach(e => {
     const apuntes = [];
     apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:e.total,haber:0});
@@ -1209,20 +1236,45 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
     if(e.iva>0) apuntes.push({cuenta:"477",nombre:ctaName("477"),debe:0,haber:e.iva});
     preAsientos.push({fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
   });
-  // ─── Facturas recibidas ───
+  // ─── Facturas recibidas (devengo) ───
   [...recibidas].forEach(r => {
     const apuntes = [];
     const esActivo = r.cat==="Equipos" && r.base>300;
     const ctaGasto = esActivo ? "217" : (CAT_CUENTA[r.cat]||"629");
     apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
     if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
-    // medioPago="socio" → H:551 (socio financia)
-// medioPago="banco" → H:572 (pago directo); "socio" → H:551; "pendiente" → H:410
-const ctaContra = (r.medioPago === "socio") ? "551" : (r.medioPago === "pendiente") ? "410" : "572";
-// banco → D:gasto/H:572 (pago inmediato); socio → H:551; pendiente → H:410
-apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
+    if(isV2) {
+      // V2: siempre H:410 (devengo puro). El pago se registra en asiento separado.
+      apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
+    } else {
+      // V1 (2017-2023): contrapartida directa según medioPago
+      const ctaContra = (r.medioPago === "socio") ? "551" : "410";
+      apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
+    }
     preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
+  // ─── V2: Asientos de pago automáticos desde medioPago (cierra 410) ───
+  if(isV2) {
+    [...recibidas].forEach(r => {
+      if(!r.medioPago || r.medioPago === "pendiente") return; // 410 queda abierta
+      const apuntes = [];
+      if(r.medioPago === "banco") {
+        // Pago por banco: D:410 / H:5721 (Qonto por defecto)
+        // TODO: refinar con extracto real para asignar 5720 vs 5721
+        const ctaBanco = "5721"; // Qonto default; Movistar/CryptoPlaza → 5720
+        const esBankinter = (r.proveedor||r.prov||"").match(/Movistar|CryptoPlaza/i);
+        const banco = esBankinter ? "5720" : "5721";
+        apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
+        apuntes.push({cuenta:banco,nombre:ctaName(banco),debe:0,haber:r.total});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago ${r.prov||r.proveedor} (${banco==="5720"?"Bankinter":"Qonto"})`,ref:r.id+"_pago",apuntes});
+      } else if(r.medioPago === "socio") {
+        // Pago personal socio: D:410 / H:551
+        apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
+        apuntes.push({cuenta:"551",nombre:ctaName("551"),debe:0,haber:r.total});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago personal socio — ${r.prov||r.proveedor}`,ref:r.id+"_pago551",apuntes});
+      }
+    });
+  }
   // ─── Amortizaciones (incluye activos de años anteriores que siguen vivos) ───
   const todosActivos = allRecibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
   if(todosActivos.length>0) {
@@ -1283,10 +1335,10 @@ apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
       preAsientos.push({fecha:`${year}-01-01`,tipo:"AP",concepto:`Asiento de apertura ${year}`,ref:"apertura",apuntes:apuntesApertura});
     }
   }
-  // ─── Tesorería: SOLO movimientos reales del extracto bancario ───
+  // ─── Tesorería: movimientos reales del extracto bancario ───
   if(tesoreria && tesoreria.length > 0) {
     tesoreria.forEach(t => {
-      if(t.esSaldoInicial) return; // already in apertura
+      if(t.esSaldoInicial) return;
       const apuntes = [];
       const ctaBanco = t.banco || "5721";
       if(t.tipo === "cobro") {
@@ -1294,15 +1346,22 @@ apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
         apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:t.importe,haber:0});
         apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:0,haber:t.importe});
       } else if(t.tipo === "pago") {
-        // Pago vía banco: D:410 / H:572x (cancela deuda con proveedor)
+        // Pago a proveedor vía banco: D:410 / H:572x
         apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:t.importe,haber:0});
         apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:0,haber:t.importe});
+      } else if(t.tipo === "devolucion") {
+        // Devolución tributaria o similar: D:572x / H:ctaContra
+        const contra = t.ctaContra || "470";
+        apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:t.importe,haber:0});
+        apuntes.push({cuenta:contra,nombre:ctaName(contra),debe:0,haber:t.importe});
       }
-      preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":"CO",concepto:t.concepto,ref:t.id,apuntes});
+      if(apuntes.length > 0) {
+        preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":t.tipo==="devolucion"?"DV":"CO",concepto:t.concepto,ref:t.id,apuntes});
+      }
     });
   }
 
-  // Cierre 2025 synthetic adjustments removed — bank flows via medioPago=banco→572
+// V2: pagos auto-generados desde medioPago en recibidas + cobros en DEFAULT_TESORERIA
 
   // ─── Sort ALL entries chronologically, then number ───
   preAsientos.sort((a,b)=>a.fecha.localeCompare(b.fecha));
@@ -1353,7 +1412,7 @@ function generarPyG(mayor) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "9.18"; // v9.18: banco→572 directo (sin 410 intermedia), eliminados ajustes sintéticos tesorería
+const APP_VERSION = "10.0"; // v10.0: Motor V2 devengo/tesorería separados (2024-2026), FR→siempre H:410, pagos separados
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
@@ -1563,7 +1622,7 @@ function App() {
   const [expandedIVA, setExpandedIVA] = useState(null);
   // ─── PERSISTENT DATA (all years) ───
   const YEARS = [2017,2018,2019,2020,2021,2022,2023,2024,2025,2026];
-  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2022:DEFAULT_RECIBIDAS_2022,recibidas_2023:DEFAULT_RECIBIDAS_2023,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025,emitidas_2026:DEFAULT_EMITIDAS_2026,recibidas_2026:DEFAULT_RECIBIDAS_2026,tesoreria_2026:DEFAULT_TESORERIA_2026};
+  const defaults = {emitidas_2022:DEFAULT_EMITIDAS_2022,emitidas_2023:DEFAULT_EMITIDAS_2023,emitidas_2024:DEFAULT_EMITIDAS_2024,emitidas_2025:DEFAULT_EMITIDAS_2025,recibidas_2022:DEFAULT_RECIBIDAS_2022,recibidas_2023:DEFAULT_RECIBIDAS_2023,recibidas_2024:DEFAULT_RECIBIDAS_2024,recibidas_2025:DEFAULT_RECIBIDAS_2025,emitidas_2026:DEFAULT_EMITIDAS_2026,recibidas_2026:DEFAULT_RECIBIDAS_2026,tesoreria_2024:DEFAULT_TESORERIA_2024,tesoreria_2025:DEFAULT_TESORERIA_2025,tesoreria_2026:DEFAULT_TESORERIA_2026};
   const versionChanged = localStorage.getItem("app_version") !== APP_VERSION;
   const [store, setStore] = useState(()=>{
     const s={};
@@ -2248,7 +2307,7 @@ function App() {
       </div>;
     }
     if(section==="tesoreria") {
-      const totalCobros = tesoreria.filter(t=>t.tipo==="cobro").reduce((s,t)=>s+t.importe,0);
+      const totalCobros = tesoreria.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").reduce((s,t)=>s+t.importe,0);
       const totalPagos = tesoreria.filter(t=>t.tipo==="pago").reduce((s,t)=>s+t.importe,0);
       const sorted = [...tesoreria].sort((a,b)=>a.fecha.localeCompare(b.fecha));
       const defNew = {id:genId(),tipo:"pago",fecha:`${year}-01-01`,concepto:"",importe:0,banco:"5721",refFactura:"",trimestre:"Q1"};
@@ -2268,7 +2327,7 @@ function App() {
       const setForm = (v) => setModalTesoreria(typeof v==="function"?v(modalTesoreria):v);
       return <div>
         <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:18}}>
-          <KPI label="Cobros" value={fmt(totalCobros)} sub={`${tesoreria.filter(t=>t.tipo==="cobro").length} movimientos`} color="#27AE60"/>
+          <KPI label="Cobros" value={fmt(totalCobros)} sub={`${tesoreria.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").length} movimientos`} color="#27AE60"/>
           <KPI label="Pagos" value={fmt(totalPagos)} sub={`${tesoreria.filter(t=>t.tipo==="pago").length} movimientos`} color="#C0392B"/>
           <KPI label="Flujo neto" value={fmt(totalCobros-totalPagos)} color={totalCobros-totalPagos>=0?"#27AE60":"#C0392B"} sub={totalCobros-totalPagos>=0?"Superávit":"Déficit"}/>
         </div>
@@ -2315,11 +2374,11 @@ function App() {
               {sorted.length===0 && <tr><td colSpan={7} style={{padding:24,textAlign:"center",color:"#A0AEBB",fontStyle:"italic"}}>Sin movimientos registrados para {year}</td></tr>}
               {sorted.map(t => <tr key={t.id} style={{borderBottom:"1px solid #F0F2F5"}}>
                 <td style={{padding:"8px 12px",fontFamily:"monospace",fontSize:11}}>{fmtDate(t.fecha)}</td>
-                <td style={{padding:"8px 12px"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:t.tipo==="cobro"?"#E8F5E9":"#FFEBEE",color:t.tipo==="cobro"?"#2E7D32":"#C62828"}}>{t.tipo==="cobro"?"COBRO":"PAGO"}</span></td>
+                <td style={{padding:"8px 12px"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:t.tipo==="cobro"||t.tipo==="devolucion"?"#E8F5E9":"#FFEBEE",color:t.tipo==="cobro"||t.tipo==="devolucion"?"#2E7D32":"#C62828"}}>{t.tipo==="cobro"?"COBRO":t.tipo==="devolucion"?"DEVOL.":"PAGO"}</span></td>
                 <td style={{padding:"8px 12px",fontSize:12}}>{t.concepto}{t.refFactura&&<span style={{fontSize:10,color:"#7A8DA0",marginLeft:6}}>({t.refFactura})</span>}</td>
                 <td style={{padding:"8px 12px",fontSize:11,color:"#7A8DA0"}}>{ctaName(t.banco)}</td>
-                <td style={{padding:"8px 12px",textAlign:"right",fontFamily:"monospace",fontWeight:600,color:t.tipo==="cobro"?"#27AE60":"#C0392B"}}>{t.tipo==="cobro"?"+":"-"}{fmt(t.importe)}</td>
-                <td style={{padding:"8px 12px",textAlign:"center",fontSize:10,color:"#7A8DA0"}}>{t.tipo==="pago"?`D:410 / H:${t.banco}`:`D:${t.banco} / H:430`}</td>
+                <td style={{padding:"8px 12px",textAlign:"right",fontFamily:"monospace",fontWeight:600,color:t.tipo==="pago"?"#C0392B":"#27AE60"}}>{t.tipo==="pago"?"-":"+"}{fmt(t.importe)}</td>
+                <td style={{padding:"8px 12px",textAlign:"center",fontSize:10,color:"#7A8DA0"}}>{t.tipo==="pago"?`D:410 / H:${t.banco}`:t.tipo==="devolucion"?`D:${t.banco} / H:${t.ctaContra||"470"}`:`D:${t.banco} / H:430`}</td>
                 <td style={{padding:"8px 8px",textAlign:"center"}}>
                   <button onClick={()=>openEdit(t)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13,marginRight:4}} title="Editar">✏️</button>
                   <button onClick={()=>deleteTes(t.id)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13}} title="Eliminar">🗑️</button>
@@ -2329,7 +2388,7 @@ function App() {
           </table>
         </div>
         <div style={{marginTop:16,padding:14,background:"#EAF2F8",borderRadius:8,border:"1px solid #AED6F1",fontSize:12,color:"#2C3E50"}}>
-          <strong>ℹ️ Asientos generados automáticamente:</strong> Cada cobro genera <code>D:{"{"}banco{"}"} / H:430</code> y cada pago genera <code>D:410 / H:{"{"}banco{"}"}</code>. Se integran en el Libro Diario (sección Libros).
+          <strong>ℹ️ Motor V2 (2024-2026):</strong> Facturas = devengo puro (D:gasto/H:410). Pagos = asientos separados: banco → D:410/H:572x, socio → D:410/H:551. Cobros de clientes aquí abajo → D:572x/H:430.
         </div>
       </div>;
     }
