@@ -1475,15 +1475,17 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
   const has572gen = mayor.some(m=>m.cuenta==="572" && Math.abs(m.saldo)>0.01);
   results.push({name:"No 572 genérica",pass:!has572gen, msg:has572gen?`FAIL: cuenta 572 tiene saldo ${saldoCta("572").toFixed(2)}`:"OK: solo 5720/5721"});
 
-  // TEST-3: 430 clientes = facturas pendientes de cobro
+  // TEST-3: 430 clientes = emitidas - cobros + apertura pendiente
   if(ENGINE_V2_YEARS[year]) {
     const totalEmitido = emitidas.reduce((s,e)=>s+e.total,0);
     const totalCobrado = normalizeTesoreria(tesoreria).filter(t=>t.tipo==="cobro").reduce((s,t)=>s+t.importe,0);
-    const expected430 = totalEmitido - totalCobrado;
+    // Add apertura 430 if exists
+    const ap430 = (OFFICIAL_CCAA[year]?.apertura && OFFICIAL_CCAA[year]?.balance) ?
+      (OFFICIAL_CCAA[year].balance.activo||[]).filter(i=>(i.label||"").match(/^430\s/)).reduce((s,i)=>s+i.val,0) : 0;
+    const expected430 = ap430 + totalEmitido - totalCobrado;
     const actual430 = saldoCta("430");
-    // 430 from apertura + emitidas - cobros
-    const pass3 = Math.abs(actual430 - expected430) < 1; // 1€ tolerance for rounding
-    results.push({name:`430 clientes (${year})`,pass:pass3, msg:pass3?`OK: pendiente ${actual430.toFixed(2)}€`:`WARN: mayor=${actual430.toFixed(2)}€, esperado≈${expected430.toFixed(2)}€ (apertura puede diferir)`});
+    const pass3 = Math.abs(actual430 - expected430) < 1;
+    results.push({name:`430 clientes (${year})`,pass:pass3, msg:pass3?`OK: pendiente ${actual430.toFixed(2)}€`:`WARN: mayor=${actual430.toFixed(2)}€, esperado≈${expected430.toFixed(2)}€ (ap430=${ap430.toFixed(2)})`});
   }
 
   // TEST-4: Balance cuadra
@@ -1499,7 +1501,7 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.1"; // v10.1: Pipeline normalize→asientos→mayor, regla 551 inviolable, tests motor
+const APP_VERSION = "10.2"; // v10.2: Tesorería muestra pagos auto+cobros, fix test 430 apertura, badges auto/551
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
@@ -2394,9 +2396,16 @@ function App() {
       </div>;
     }
     if(section==="tesoreria") {
-      const totalCobros = tesoreria.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").reduce((s,t)=>s+t.importe,0);
-      const totalPagos = tesoreria.filter(t=>t.tipo==="pago").reduce((s,t)=>s+t.importe,0);
-      const sorted = [...tesoreria].sort((a,b)=>a.fecha.localeCompare(b.fecha));
+      // Build complete view: manual tesoreria + auto-PA from recibidas (V2)
+      const autoPagos = ENGINE_V2_YEARS[year] ? recibidas.filter(r=>r.medioPago==="banco"||r.medioPago==="socio").map(r=>{
+        const esBK = (r.proveedor||r.prov||"").match(/Movistar|CryptoPlaza/i);
+        const banco = r.medioPago==="socio" ? "551" : (esBK ? "5720" : "5721");
+        return {id:r.id+"_pa", tipo:"pago", fecha:r.fecha, concepto:`Pago ${r.prov||r.proveedor}`, importe:r.total, banco, refFactura:r.id, _auto:true, _socio:r.medioPago==="socio"};
+      }) : [];
+      const allTes = [...tesoreria, ...autoPagos];
+      const totalCobros = allTes.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").reduce((s,t)=>s+t.importe,0);
+      const totalPagos = allTes.filter(t=>t.tipo==="pago").reduce((s,t)=>s+t.importe,0);
+      const sorted = [...allTes].sort((a,b)=>a.fecha.localeCompare(b.fecha));
       const defNew = {id:genId(),tipo:"pago",fecha:`${year}-01-01`,concepto:"",importe:0,banco:"5721",refFactura:"",trimestre:"Q1"};
       const openNew = () => setModalTesoreria({...defNew});
       const openEdit = (t) => setModalTesoreria({...t});
@@ -2414,8 +2423,8 @@ function App() {
       const setForm = (v) => setModalTesoreria(typeof v==="function"?v(modalTesoreria):v);
       return <div>
         <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:18}}>
-          <KPI label="Cobros" value={fmt(totalCobros)} sub={`${tesoreria.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").length} movimientos`} color="#27AE60"/>
-          <KPI label="Pagos" value={fmt(totalPagos)} sub={`${tesoreria.filter(t=>t.tipo==="pago").length} movimientos`} color="#C0392B"/>
+          <KPI label="Cobros" value={fmt(totalCobros)} sub={`${allTes.filter(t=>t.tipo==="cobro"||t.tipo==="devolucion").length} movimientos`} color="#27AE60"/>
+          <KPI label="Pagos" value={fmt(totalPagos)} sub={`${allTes.filter(t=>t.tipo==="pago").length} movimientos`} color="#C0392B"/>
           <KPI label="Flujo neto" value={fmt(totalCobros-totalPagos)} color={totalCobros-totalPagos>=0?"#27AE60":"#C0392B"} sub={totalCobros-totalPagos>=0?"Superávit":"Déficit"}/>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
@@ -2461,14 +2470,14 @@ function App() {
               {sorted.length===0 && <tr><td colSpan={7} style={{padding:24,textAlign:"center",color:"#A0AEBB",fontStyle:"italic"}}>Sin movimientos registrados para {year}</td></tr>}
               {sorted.map(t => <tr key={t.id} style={{borderBottom:"1px solid #F0F2F5"}}>
                 <td style={{padding:"8px 12px",fontFamily:"monospace",fontSize:11}}>{fmtDate(t.fecha)}</td>
-                <td style={{padding:"8px 12px"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:t.tipo==="cobro"||t.tipo==="devolucion"?"#E8F5E9":"#FFEBEE",color:t.tipo==="cobro"||t.tipo==="devolucion"?"#2E7D32":"#C62828"}}>{t.tipo==="cobro"?"COBRO":t.tipo==="devolucion"?"DEVOL.":"PAGO"}</span></td>
+                <td style={{padding:"8px 12px"}}><span style={{padding:"2px 8px",borderRadius:4,fontSize:10,fontWeight:700,background:t.tipo==="cobro"||t.tipo==="devolucion"?"#E8F5E9":"#FFEBEE",color:t.tipo==="cobro"||t.tipo==="devolucion"?"#2E7D32":"#C62828"}}>{t.tipo==="cobro"?"COBRO":t.tipo==="devolucion"?"DEVOL.":"PAGO"}</span>{t._auto&&<span style={{fontSize:8,marginLeft:4,padding:"1px 4px",background:"#E3F2FD",color:"#1565C0",borderRadius:2}}>auto</span>}{t._socio&&<span style={{fontSize:8,marginLeft:4,padding:"1px 4px",background:"#FFF3E0",color:"#E65100",borderRadius:2}}>551</span>}</td>
                 <td style={{padding:"8px 12px",fontSize:12}}>{t.concepto}{t.refFactura&&<span style={{fontSize:10,color:"#7A8DA0",marginLeft:6}}>({t.refFactura})</span>}</td>
                 <td style={{padding:"8px 12px",fontSize:11,color:"#7A8DA0"}}>{ctaName(t.banco)}</td>
                 <td style={{padding:"8px 12px",textAlign:"right",fontFamily:"monospace",fontWeight:600,color:t.tipo==="pago"?"#C0392B":"#27AE60"}}>{t.tipo==="pago"?"-":"+"}{fmt(t.importe)}</td>
-                <td style={{padding:"8px 12px",textAlign:"center",fontSize:10,color:"#7A8DA0"}}>{t.tipo==="pago"?`D:410 / H:${t.banco}`:t.tipo==="devolucion"?`D:${t.banco} / H:${t.ctaContra||"470"}`:`D:${t.banco} / H:430`}</td>
+                <td style={{padding:"8px 12px",textAlign:"center",fontSize:10,color:"#7A8DA0"}}>{t.tipo==="pago"?(t._socio?`D:410 / H:551`:`D:410 / H:${t.banco}`):t.tipo==="devolucion"?`D:${t.banco} / H:${t.ctaContra||"470"}`:`D:${t.banco} / H:430`}</td>
                 <td style={{padding:"8px 8px",textAlign:"center"}}>
-                  <button onClick={()=>openEdit(t)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13,marginRight:4}} title="Editar">✏️</button>
-                  <button onClick={()=>deleteTes(t.id)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13}} title="Eliminar">🗑️</button>
+                  {!t._auto&&<><button onClick={()=>openEdit(t)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13,marginRight:4}} title="Editar">✏️</button>
+                  <button onClick={()=>deleteTes(t.id)} style={{background:"none",border:"none",cursor:"pointer",fontSize:13}} title="Eliminar">🗑️</button></>}
                 </td>
               </tr>)}
             </tbody>
@@ -2675,7 +2684,7 @@ function App() {
           <NavItem icon="◈" label="Dashboard" active={section==="dashboard"} onClick={()=>{setSection("dashboard");setSearch("");setLibroView(null);}}/>
           <NavItem icon="↗" label="Facturas Emitidas" active={section==="emitidas"} onClick={()=>{setSection("emitidas");setSearch("");setLibroView(null);}} badge={emitidas.length}/>
           <NavItem icon="↙" label="Facturas Recibidas" active={section==="recibidas"} onClick={()=>{setSection("recibidas");setSearch("");setLibroView(null);}} badge={recibidas.length}/>
-          <NavItem icon="💰" label="Tesorería" active={section==="tesoreria"} onClick={()=>{setSection("tesoreria");setSearch("");setLibroView(null);}} badge={tesoreria.length}/>
+          <NavItem icon="💰" label="Tesorería" active={section==="tesoreria"} onClick={()=>{setSection("tesoreria");setSearch("");setLibroView(null);}} badge={tesoreria.length+(ENGINE_V2_YEARS[year]?recibidas.filter(r=>r.medioPago==="banco"||r.medioPago==="socio").length:0)}/>
           <div style={{height:1,background:"#E4E9F0",margin:"6px 16px"}}/>
           <NavItem icon="%" label="IVA / Mod. 303" active={section==="iva"} onClick={()=>setSection("iva")}/>
           <NavItem icon="§" label="Impuesto Sociedades" active={section==="is"} onClick={()=>setSection("is")}/>
