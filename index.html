@@ -723,7 +723,7 @@ const DEFAULT_TESORERIA_2026 = [
 
 const EXTRA_TESORERIA_2026 = [];
 // Nota: los pagos de feb (ChatGPT, Claude, Gamma, Logically, Railway, Qonto)
-// V2: pagos de recibidas banco se generan automáticamente como asientos D:410/H:572x
+// Motor V2: pagos auto-generados desde medioPago (pipeline)
 // Crear tesorería EXTRA sería doble contabilización.
 
 
@@ -1224,11 +1224,47 @@ const CAT_CUENTA = {
 // Equipos: >300€ base → 217 (activo amortizable), ≤300€ → 629 (gasto directo)
 const AMORT_RATE = 0.25; // 25% anual equipos informáticos
 // ─── ENGINE V2: devengo puro + tesorería separada (2024-2026) ───
+// ═══════════════════════════════════════════════════════════════════
+// MOTOR CONTABLE v10.1 — Pipeline: normalize → asientos → mayor → balance
+// Reglas inviolables:
+//   1. FR (factura recibida) SIEMPRE → H:410 (devengo puro, 2024+)
+//   2. Pago = asiento separado (D:410/H:572x ó D:410/H:551)
+//   3. 572x + 551 NUNCA en el mismo asiento
+//   4. Solo medioPago="socio" puede generar 551
+//   5. 572 genérica PROHIBIDA → siempre 5720 o 5721
+// ═══════════════════════════════════════════════════════════════════
 const ENGINE_V2_YEARS = {2024:true, 2025:true, 2026:true};
+
+// ─── A. normalizeTesoreria ───────────────────────────────────────
+// Limpia/normaliza movimientos: banco, importe, fecha
+function normalizeTesoreria(txs) {
+  if(!txs || !Array.isArray(txs)) return [];
+  return txs.map(t => {
+    if(!t) return null;
+    const tx = {...t};
+    // Banco: nunca "572" genérica
+    const b = String(tx.banco||"").trim();
+    if(!b || b === "572") tx.banco = "5721"; // default Qonto
+    if(b === "5720" || (tx.concepto||"").match(/bankinter/i)) tx.banco = "5720";
+    // Importe: siempre número positivo
+    tx.importe = Math.abs(parseFloat(tx.importe)||0);
+    // Fecha: asegurar ISO
+    if(tx.fecha && tx.fecha.includes("/")) {
+      const p = tx.fecha.split("/");
+      tx.fecha = p[2]+"-"+p[1]+"-"+p[0];
+    }
+    return tx;
+  }).filter(Boolean);
+}
+
+// ─── B. generarAsientos ──────────────────────────────────────────
+// Pipeline principal: FE + FR + auto-PA + amortización + apertura + tesorería
 function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
   const isV2 = ENGINE_V2_YEARS[year] || false;
   const preAsientos = [];
-  // ─── Facturas emitidas (devengo: D:430 / H:705+477) ───
+
+  // ─── FE: Factura emitida (devengo) ───
+  // D:430 / H:705 + H:477
   [...emitidas].forEach(e => {
     const apuntes = [];
     apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:e.total,haber:0});
@@ -1236,67 +1272,66 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
     if(e.iva>0) apuntes.push({cuenta:"477",nombre:ctaName("477"),debe:0,haber:e.iva});
     preAsientos.push({fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
   });
-  // ─── Facturas recibidas (devengo) ───
+
+  // ─── FR: Factura recibida (devengo puro) ───
+  // D:6xx + D:472 / H:410 (V2, 2024+)
+  // D:6xx + D:472 / H:410 o H:551 (V1, ≤2023)
   [...recibidas].forEach(r => {
     const apuntes = [];
     const esActivo = r.cat==="Equipos" && r.base>300;
     const ctaGasto = esActivo ? "217" : (CAT_CUENTA[r.cat]||"629");
     apuntes.push({cuenta:ctaGasto,nombre:ctaName(ctaGasto),debe:r.base,haber:0});
     if(r.iva>0) apuntes.push({cuenta:"472",nombre:ctaName("472"),debe:r.iva,haber:0});
+
     if(isV2) {
-      // V2: siempre H:410 (devengo puro). El pago se registra en asiento separado.
+      // V2: SIEMPRE H:410. El pago se cierra en asiento separado.
       apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:0,haber:r.total});
     } else {
-      // V1 (2017-2023): contrapartida directa según medioPago
+      // V1 (≤2023): socio directo a 551, resto a 410
       const ctaContra = (r.medioPago === "socio") ? "551" : "410";
       apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
     }
     preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo});
   });
-  // ─── V2: Asientos de pago automáticos desde medioPago (cierra 410) ───
+
+  // ─── V2: Asientos de pago automáticos (cierra 410) ───
   if(isV2) {
     [...recibidas].forEach(r => {
-      if(!r.medioPago || r.medioPago === "pendiente") return; // 410 queda abierta
+      if(!r.medioPago || r.medioPago === "pendiente") return;
       const apuntes = [];
       if(r.medioPago === "banco") {
-        // Pago por banco: D:410 / H:5721 (Qonto por defecto)
-        // TODO: refinar con extracto real para asignar 5720 vs 5721
-        const ctaBanco = "5721"; // Qonto default; Movistar/CryptoPlaza → 5720
-        const esBankinter = (r.proveedor||r.prov||"").match(/Movistar|CryptoPlaza/i);
-        const banco = esBankinter ? "5720" : "5721";
+        // Pago bancario: D:410 / H:5720 o 5721
+        const esBK = (r.proveedor||r.prov||"").match(/Movistar|CryptoPlaza/i);
+        const banco = esBK ? "5720" : "5721";
         apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
         apuntes.push({cuenta:banco,nombre:ctaName(banco),debe:0,haber:r.total});
-        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago ${r.prov||r.proveedor} (${banco==="5720"?"Bankinter":"Qonto"})`,ref:r.id+"_pago",apuntes});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago ${r.prov||r.proveedor} (${banco==="5720"?"BK":"QO"})`,ref:r.id+"_pa",apuntes});
       } else if(r.medioPago === "socio") {
-        // Pago personal socio: D:410 / H:551
+        // Pago personal: D:410 / H:551 (NUNCA 572x aquí)
         apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
         apuntes.push({cuenta:"551",nombre:ctaName("551"),debe:0,haber:r.total});
-        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago personal socio — ${r.prov||r.proveedor}`,ref:r.id+"_pago551",apuntes});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago personal socio — ${r.prov||r.proveedor}`,ref:r.id+"_pa551",apuntes});
       }
     });
   }
-  // ─── Amortizaciones (incluye activos de años anteriores que siguen vivos) ───
+
+  // ─── Amortizaciones ───
   const todosActivos = allRecibidas.filter(r=>r.cat==="Equipos"&&r.base>300);
   if(todosActivos.length>0) {
-    const trimestres = ["Q1","Q2","Q3","Q4"];
     const fechasTrim = [`${year}-03-31`,`${year}-06-30`,`${year}-09-30`,`${year}-12-31`];
     const hoy = new Date();
-    trimestres.forEach((q,qi) => {
-      // No dotar amortización de trimestres que aún no han cerrado
+    ["Q1","Q2","Q3","Q4"].forEach((q,qi) => {
       const finTrimDate = new Date(fechasTrim[qi]+"T23:59:59");
       if(finTrimDate > hoy) return;
       let cuotaTrim = 0;
       todosActivos.forEach(a => {
         const yAdq = parseInt(a.fecha.split("-")[0]);
         const mAdq = parseInt(a.fecha.split("-")[1]);
-        // Solo si aún no está totalmente amortizado (4 años al 25%)
         if(year - yAdq > 4) return;
         if(yAdq > year) return;
         if(yAdq === year && mAdq > (qi+1)*3) return;
-        const inicioTrim = qi*3+1;
-        const finTrim = (qi+1)*3;
         let meses = 0;
-        for(let m=inicioTrim;m<=finTrim;m++) {
+        for(let m=qi*3+1;m<=(qi+1)*3;m++) {
           if(yAdq < year || (yAdq===year && mAdq<=m)) meses++;
         }
         cuotaTrim += (a.base * AMORT_RATE / 12) * meses;
@@ -1310,66 +1345,67 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
       }
     });
   }
-  // ─── Asiento de apertura (si OFFICIAL_CCAA tiene apertura para este año) ───
+
+  // ─── Apertura (desde CCAA cierre año anterior) ───
   if(OFFICIAL_CCAA[year] && OFFICIAL_CCAA[year].apertura && OFFICIAL_CCAA[year].balance) {
     const ap = OFFICIAL_CCAA[year].balance;
-    const apuntesApertura = [];
-    const cuentasApertura = {};
-    // Extract account balances from activo
+    const apuntesAp = [];
+    const ctas = {};
     (ap.activo||[]).forEach(item => {
       const m = item.label.match(/^(\d{3,4})\s/);
-      if(m) cuentasApertura[m[1]] = (cuentasApertura[m[1]]||0) + item.val;
+      if(m) ctas[m[1]] = (ctas[m[1]]||0) + item.val;
     });
-    // Extract account balances from pasivo
     (ap.pasivo||[]).forEach(item => {
       const m = item.label.match(/^(\d{3,4})\s/);
-      if(m) cuentasApertura[m[1]] = (cuentasApertura[m[1]]||0) - item.val;
+      if(m) ctas[m[1]] = (ctas[m[1]]||0) - item.val;
     });
-    // Create apertura entry: activos al debe, pasivos al haber
-    Object.entries(cuentasApertura).forEach(([cta, netVal]) => {
-      if(Math.abs(netVal) < 0.005) return;
-      if(netVal > 0) apuntesApertura.push({cuenta:cta,nombre:ctaName(cta),debe:netVal,haber:0});
-      else apuntesApertura.push({cuenta:cta,nombre:ctaName(cta),debe:0,haber:Math.abs(netVal)});
+    Object.entries(ctas).forEach(([cta, nv]) => {
+      if(Math.abs(nv) < 0.005) return;
+      if(nv > 0) apuntesAp.push({cuenta:cta,nombre:ctaName(cta),debe:nv,haber:0});
+      else apuntesAp.push({cuenta:cta,nombre:ctaName(cta),debe:0,haber:Math.abs(nv)});
     });
-    if(apuntesApertura.length > 0) {
-      preAsientos.push({fecha:`${year}-01-01`,tipo:"AP",concepto:`Asiento de apertura ${year}`,ref:"apertura",apuntes:apuntesApertura});
+    if(apuntesAp.length > 0) {
+      preAsientos.push({fecha:`${year}-01-01`,tipo:"AP",concepto:`Asiento de apertura ${year}`,ref:"apertura",apuntes:apuntesAp});
     }
   }
-  // ─── Tesorería: movimientos reales del extracto bancario ───
-  if(tesoreria && tesoreria.length > 0) {
-    tesoreria.forEach(t => {
-      if(t.esSaldoInicial) return;
-      const apuntes = [];
-      const ctaBanco = t.banco || "5721";
-      if(t.tipo === "cobro") {
-        // Cobro de cliente vía banco: D:572x / H:430
-        apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:t.importe,haber:0});
-        apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:0,haber:t.importe});
-      } else if(t.tipo === "pago") {
-        // Pago a proveedor vía banco: D:410 / H:572x
-        apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:t.importe,haber:0});
-        apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:0,haber:t.importe});
-      } else if(t.tipo === "devolucion") {
-        // Devolución tributaria o similar: D:572x / H:ctaContra
-        const contra = t.ctaContra || "470";
-        apuntes.push({cuenta:ctaBanco,nombre:ctaName(ctaBanco),debe:t.importe,haber:0});
-        apuntes.push({cuenta:contra,nombre:ctaName(contra),debe:0,haber:t.importe});
-      }
-      if(apuntes.length > 0) {
-        preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":t.tipo==="devolucion"?"DV":"CO",concepto:t.concepto,ref:t.id,apuntes});
-      }
-    });
-  }
 
-// V2: pagos auto-generados desde medioPago en recibidas + cobros en DEFAULT_TESORERIA
+  // ─── Tesorería: cobros/pagos reales desde extractos ───
+  const normTes = normalizeTesoreria(tesoreria);
+  normTes.forEach(t => {
+    if(t.esSaldoInicial) return;
+    const apuntes = [];
+    if(t.tipo === "cobro") {
+      apuntes.push({cuenta:t.banco,nombre:ctaName(t.banco),debe:t.importe,haber:0});
+      apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:0,haber:t.importe});
+    } else if(t.tipo === "pago") {
+      apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:t.importe,haber:0});
+      apuntes.push({cuenta:t.banco,nombre:ctaName(t.banco),debe:0,haber:t.importe});
+    } else if(t.tipo === "devolucion") {
+      const contra = t.ctaContra || "470";
+      apuntes.push({cuenta:t.banco,nombre:ctaName(t.banco),debe:t.importe,haber:0});
+      apuntes.push({cuenta:contra,nombre:ctaName(contra),debe:0,haber:t.importe});
+    }
+    if(apuntes.length > 0) {
+      preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":t.tipo==="devolucion"?"DV":"CO",concepto:t.concepto,ref:t.id,apuntes});
+    }
+  });
 
-  // ─── Sort ALL entries chronologically, then number ───
+  // ─── VALIDACIÓN: regla inviolable 572x + 551 ───
+  preAsientos.forEach(a => {
+    const ctas = a.apuntes.map(ap=>ap.cuenta);
+    const has572 = ctas.some(c=>c==="5720"||c==="5721");
+    const has551 = ctas.includes("551");
+    if(has572 && has551) {
+      console.error(`⛔ REGLA VIOLADA en asiento "${a.concepto}": 572x y 551 en mismo asiento. Corregir.`);
+    }
+  });
+
+  // ─── Sort + numerar ───
   preAsientos.sort((a,b)=>a.fecha.localeCompare(b.fecha));
-  const asientos = [];
-  let n = 1;
-  preAsientos.forEach(a => { asientos.push({...a, n:n++}); });
-  return asientos;
+  return preAsientos.map((a,i) => ({...a, n:i+1}));
 }
+
+// ─── C. generarMayor ─────────────────────────────────────────────
 function generarMayor(asientos) {
   const cuentas = {};
   asientos.forEach(a => {
@@ -1382,26 +1418,28 @@ function generarMayor(asientos) {
   });
   return Object.values(cuentas).sort((a,b)=>a.cuenta.localeCompare(b.cuenta)).map(c=>({...c,saldo:c.debe-c.haber}));
 }
+
+// ─── D. generarBalance ───────────────────────────────────────────
 function generarBalance(mayor) {
-  // Activo: cuentas grupo 2 (inmov.), 4 deudoras (430,472,4700), 5 (tesorería) con saldo deudor
-  // Pasivo: cuentas grupo 1 (fondos propios), 4 acreedoras (410,477,4750,4752) con saldo acreedor
   const activo = mayor.filter(m => {
     const g = m.cuenta.charAt(0);
-    if(g==="2") return true; // Inmovilizado (incluye 281 con saldo negativo = amort acum)
-    if(m.cuenta==="430"||m.cuenta==="472"||m.cuenta==="4700"||m.cuenta==="470"||m.cuenta==="474") return m.saldo>0;
-    if(m.cuenta==="551") return m.saldo>0; // 551 deudor = socio debe a la sociedad
+    if(g==="2") return true;
+    if(["430","472","4700","470","474"].includes(m.cuenta)) return m.saldo>0;
+    if(m.cuenta==="551") return m.saldo>0;
     if(g==="5" && m.cuenta!=="551") return m.saldo>0;
     return false;
   });
   const pasivo = mayor.filter(m => {
     const g = m.cuenta.charAt(0);
     if(g==="1") return true;
-    if(m.cuenta==="410"||m.cuenta==="477"||m.cuenta==="4750"||m.cuenta==="4752"||m.cuenta==="475") return m.saldo<0;
-    if(m.cuenta==="551") return m.saldo<0; // 551 acreedor = sociedad debe al socio
+    if(["410","477","4750","4752","475"].includes(m.cuenta)) return m.saldo<0;
+    if(m.cuenta==="551") return m.saldo<0;
     return false;
   });
   return {activo,pasivo,tActivo:activo.reduce((s,m)=>s+m.saldo,0),tPasivo:pasivo.reduce((s,m)=>s-m.saldo,0)};
 }
+
+// ─── E. generarPyG ───────────────────────────────────────────────
 function generarPyG(mayor) {
   const ingresos = mayor.filter(m=>m.cuenta.startsWith("7"));
   const gastos = mayor.filter(m=>m.cuenta.startsWith("6"));
@@ -1409,10 +1447,59 @@ function generarPyG(mayor) {
   const tGastos = gastos.reduce((s,m)=>s+m.debe-m.haber,0);
   return {ingresos,gastos,tIngresos,tGastos,resultado:tIngresos-tGastos};
 }
+
+// ─── F. runEngineTests ───────────────────────────────────────────
+// Returns {pass:bool, results:[{name,pass,msg}]}
+function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
+  const results = [];
+  const saldoCta = (cta) => {
+    const m = mayor.find(x => x.cuenta === cta);
+    return m ? m.saldo : 0;
+  };
+
+  // TEST-1: 551 solo cambia por medioPago="socio" (V2 years)
+  if(ENGINE_V2_YEARS[year]) {
+    const socioRecs = recibidas.filter(r=>r.medioPago==="socio");
+    const expected551move = socioRecs.reduce((s,r)=>s+r.total,0);
+    // 551 haber from PA asientos should equal socio total
+    const m551 = mayor.find(x=>x.cuenta==="551");
+    const actual551haber = m551 ? m551.haber : 0;
+    // Filter out apertura haber for 551
+    const apHaber551 = m551 ? m551.movs.filter(m=>m.concepto.includes("apertura")).reduce((s,m)=>s+m.haber,0) : 0;
+    const movHaber551 = actual551haber - apHaber551;
+    const pass = Math.abs(movHaber551 - expected551move) < 0.01;
+    results.push({name:`551 solo socio (${year})`,pass, msg:pass?`OK: ${movHaber551.toFixed(2)}€ = ${socioRecs.length} pagos socio`:`FAIL: 551 movió ${movHaber551.toFixed(2)}€ pero socio=${expected551move.toFixed(2)}€`});
+  }
+
+  // TEST-2: No 572 genérica en mayor
+  const has572gen = mayor.some(m=>m.cuenta==="572" && Math.abs(m.saldo)>0.01);
+  results.push({name:"No 572 genérica",pass:!has572gen, msg:has572gen?`FAIL: cuenta 572 tiene saldo ${saldoCta("572").toFixed(2)}`:"OK: solo 5720/5721"});
+
+  // TEST-3: 430 clientes = facturas pendientes de cobro
+  if(ENGINE_V2_YEARS[year]) {
+    const totalEmitido = emitidas.reduce((s,e)=>s+e.total,0);
+    const totalCobrado = normalizeTesoreria(tesoreria).filter(t=>t.tipo==="cobro").reduce((s,t)=>s+t.importe,0);
+    const expected430 = totalEmitido - totalCobrado;
+    const actual430 = saldoCta("430");
+    // 430 from apertura + emitidas - cobros
+    const pass3 = Math.abs(actual430 - expected430) < 1; // 1€ tolerance for rounding
+    results.push({name:`430 clientes (${year})`,pass:pass3, msg:pass3?`OK: pendiente ${actual430.toFixed(2)}€`:`WARN: mayor=${actual430.toFixed(2)}€, esperado≈${expected430.toFixed(2)}€ (apertura puede diferir)`});
+  }
+
+  // TEST-4: Balance cuadra
+  const balance = generarBalance(mayor);
+  const pyg = generarPyG(mayor);
+  const descuadre = Math.abs(balance.tActivo - (balance.tPasivo + pyg.resultado));
+  const pass4 = descuadre < 0.01;
+  results.push({name:`Balance cuadra (${year})`,pass:pass4, msg:pass4?`OK: A=${balance.tActivo.toFixed(2)} = P+R=${(balance.tPasivo+pyg.resultado).toFixed(2)}`:`FAIL: descuadre ${descuadre.toFixed(2)}€`});
+
+  return {pass:results.every(r=>r.pass), results};
+}
+
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.0"; // v10.0: Motor V2 devengo/tesorería separados (2024-2026), FR→siempre H:410, pagos separados
+const APP_VERSION = "10.1"; // v10.1: Pipeline normalize→asientos→mayor, regla 551 inviolable, tests motor
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
@@ -1611,7 +1698,7 @@ const OfficialPyGView = ({year, fmt}) => {
   </div>;
 };
 
-// withClosing2025BankAdjustments removed — bank flows now via recibidas medioPago
+// Motor V10.1 pipeline: normalize → asientos → mayor → balance
 
 function App() {
   const [section, setSection] = useState("dashboard");
@@ -2406,6 +2493,9 @@ function App() {
       const mayor = generarMayor(asientos);
       const balance = generarBalance(mayor);
       const pyg = generarPyG(mayor);
+      // ─── Engine tests ───
+      const engineTests = runEngineTests(year, mayor, tesoreria, emitidas, recibidas);
+      const fuenteLabel = year <= 2021 ? "Fuente oficial (IS/CCAA)" : "Operativo (mayor + facturas + extractos)";
       const ccaaDoc = {2022:"docs/corporativo/CERT_DE_APROB_CCAA_2022.pdf",2021:"docs/corporativo/AZNAR_LEGALCERTIFICADO_DE_APROBACION_CCAA2021.pdf",2020:"docs/corporativo/CERTIFICACION_AZNAR_SLP_2020_copy.pdf",2019:"docs/corporativo/CERTIF__CCAA__2019__AZANAR_LEGAL_copy.pdf"};
       const yearDocs = {
         2023:[{label:"Diario 2023 (Excel)",doc:"docs/corporativo/DIARIO_2023.xlsx"}],
@@ -2414,6 +2504,18 @@ function App() {
       const SectionTitle = ({children}) => <div style={{color:"#7A8DA0",fontSize:10,textTransform:"uppercase",letterSpacing:1,marginBottom:10,marginTop:20,fontWeight:700}}>{children}</div>;
       const tabs = [{id:"diario",label:"Libro Diario"},{id:"mayor",label:"Libro Mayor"},{id:"balance",label:"Balance"},{id:"pyg",label:"PyG"},{id:"docs",label:"Documentos"}];
       return <div>
+        {/* ─── Engine Tests Badge ─── */}
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+          <div style={{display:"flex",gap:8,alignItems:"center"}}>
+            <span style={{padding:"3px 10px",borderRadius:4,fontSize:10,fontWeight:700,background:engineTests.pass?"#E8F5E9":"#FFEBEE",color:engineTests.pass?"#2E7D32":"#C62828"}}>{engineTests.pass?"✅ MOTOR OK":"⛔ MOTOR FAIL"}</span>
+            <span style={{fontSize:10,color:"#7A8DA0"}}>{fuenteLabel}</span>
+            {ENGINE_V2_YEARS[year]&&<span style={{fontSize:9,padding:"2px 6px",background:"#E3F2FD",color:"#1565C0",borderRadius:3,fontWeight:600}}>V2</span>}
+          </div>
+          <button onClick={()=>{const el=document.getElementById("engine-tests");if(el)el.style.display=el.style.display==="none"?"block":"none"}} style={{fontSize:10,color:"#7A8DA0",background:"none",border:"1px solid #D5DCE4",borderRadius:4,padding:"2px 8px",cursor:"pointer"}}>Tests</button>
+        </div>
+        <div id="engine-tests" style={{display:"none",background:"#fff",border:"1px solid #E4E9F0",borderRadius:8,padding:12,marginBottom:14,fontSize:11}}>
+          {engineTests.results.map((t,i)=><div key={i} style={{padding:"4px 0",display:"flex",gap:8}}><span>{t.pass?"✅":"❌"}</span><span style={{fontWeight:600}}>{t.name}</span><span style={{color:"#7A8DA0"}}>{t.msg}</span></div>)}
+        </div>
         <div style={{display:"flex",gap:6,marginBottom:16,flexWrap:"wrap"}}>
           {tabs.map(t=><button key={t.id} onClick={()=>setLibroView(libroView===t.id?null:t.id)} style={{padding:"6px 14px",borderRadius:6,border:libroView===t.id?"2px solid #3D7A4A":"1px solid #D5DCE4",background:libroView===t.id?"#3D7A4A":"#fff",color:libroView===t.id?"#fff":"#7A8DA0",cursor:"pointer",fontSize:12,fontWeight:600}}>
             {t.label}
@@ -2548,9 +2650,10 @@ function App() {
             <DocLink d={{label:"Escritura constitución",doc:"docs/corporativo/2021BTC0523.pdf"}}/>
             <DocLink d={{label:"Certificado firma",doc:"docs/corporativo/CertFirmaEPDF.pdf"}}/>
           </div>
-          {year<=2022&&<div style={{fontSize:11,color:"#7A8DA0",fontStyle:"italic"}}>Ejercicio cerrado — CCAA aprobadas y depositadas</div>}
-          {year===2023&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio cerrado — CCAA pendientes de depósito (balance según Modelo 200)</div>}
-          {year>=2024&&<div style={{fontSize:11,color:"#E67E22"}}>Ejercicio en curso — contabilidad viva</div>}
+          {year<=2021&&<div style={{fontSize:11,color:"#7A8DA0",fontStyle:"italic"}}>Fuente oficial (IS/CCAA depositadas)</div>}
+          {year===2022&&<div style={{fontSize:11,color:"#7A8DA0",fontStyle:"italic"}}>Operativo (apertura desde CCAA 2021 + facturas + extractos)</div>}
+          {year===2023&&<div style={{fontSize:11,color:"#E67E22"}}>Operativo — CCAA pendientes de depósito</div>}
+          {year>=2024&&<div style={{fontSize:11,color:"#E67E22"}}>Operativo (Motor V2: devengo + tesorería separados)</div>}
         </div>}
       </div>;
     }
