@@ -590,7 +590,7 @@ const ALERTAS = [
   { tipo: "error", msg: "IVA: 390-2024 inconsistente — cas.97 (a compensar) debe cambiar a cas.98 (a devolver) tras rectificativa del 4T.", accion: "Rectificativa Mod. 390-2024" },
   { tipo: "warning", msg: "IS 2024: Otros deudores (cas.00159) = 13.393,42€ no refleja saldo real de IVA. Corregir en sustitutiva del Mod.200.", accion: "Sustitutiva Mod.200 2024" },
   { tipo: "warning", msg: "551 Cta. socios: saldo 33.599€ a cierre 2025 (33.422€ de 2024 + 176€ iryo tarjeta personal). Planificar reembolso cuando liquidez lo permita.", accion: "Revisar origen y prescripción" },
-  { tipo: "info", msg: "303 Q1 2026 PRESENTADO 18/04/2026 (CSV V78538WULLT548AB). Asumido IVA interno fra 1/2026 Vergara (Austria UE B2C): base 1.033,06+IVA 216,94. Devengado 531,94; deducible 156,81; régimen 375,13; aplicado sobre saldo 2024/2T (FIFO); arrastra a Q2 1.922,66€. Resultado 0€. PENDIENTE: ingresar 2.103,42€ del 111 Q1 2026 antes 20/04.", accion: "Verificar contra extracto Qonto" },
+  { tipo: "info", msg: "303 Q1 2026 presentado (CSV V78538WULLT548AB, 0€). 111 Q1 2026 presentado y pagado (CSV 7ELH33ESVUF2ZL5C, 2.103,42€). Requerimientos 111 Q3 2025 y Q4 2025 contestados (CSVs WZCMU2EL2KCUF6VB y GNA2A7FR7HEJN7LB) invocando aviso 50069 AEAT. Liquidación IS 1P 2025 (2025CPA03860297W) pagada 16/01/2026 248,22€ (241,19 cuota + 7,03 intereses). Pendiente: 349 Q1 2026 Qonto intracomunitario 180,22€ antes 20/04; modelo 190 ene 2027 Enrique clave G.", accion: "Verificar contra extracto Qonto" },
   { tipo: "warning", msg: "CryptoPlaza: faltan Feb, Mar, Jul, Ago, Sep 2025", accion: "Solicitar a Sky Media Group" },
   { tipo: "info", msg: "Logically en USD: pendiente tipo de cambio BCE", accion: "Aplicar TC oficial" },
   { tipo: "info", msg: "Gamma/Logically/Anthropic: posible inversión sujeto pasivo", accion: "Autorrepercutir IVA en Mod.303" },
@@ -774,7 +774,7 @@ const DEFAULT_TESORERIA_2025 = [
 ];
 const DEFAULT_TESORERIA_2026 = [
   { id:"t2026-1", tipo:"cobro", fecha:"2026-01-06", concepto:"Cobro fra. 11/2025 Vergara (Bitrise)", importe:1000.00, banco:"5721", refFactura:"e2025-11", trimestre:"Q1" },
-  { id:"t2026-2", tipo:"pago", fecha:"2026-01-16", concepto:"Modelo 010 AEAT liq. 082615305105D — Ingreso fuera de plazo", importe:248.22, banco:"5720", ctaContra:"678", trimestre:"Q1", doc:"docs/recibidas/2026/modelo_010_248_22.pdf" },
+  { id:"t2026-2", tipo:"pago", fecha:"2026-01-16", concepto:"Liquidación AEAT IS 2025/1P (ref 2025CPA03860297W) — pago fraccionado modelo 202 no presentado en plazo", importe:248.22, banco:"5720", ctaContra:"473", trimestre:"Q1", desgloseContable:{"473":241.19,"669":7.03}, doc:"docs/recibidas/2026/IS_1P_2025_liquidacion_248_22.pdf" },
   { id:"t2026-3", tipo:"pago", fecha:"2026-02-11", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2024 (cancela 410)", importe:4666.99, banco:"5721", refFactura:"r2024-22", trimestre:"Q1" },
   { id:"t2026-4", tipo:"pago", fecha:"2026-02-11", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2025 (cancela 410)", importe:10197.20, banco:"5721", refFactura:"r2025-30", trimestre:"Q1" },
   { id:"t2026-5", tipo:"cobro", fecha:"2026-02-02", concepto:"Cobro fra. 1/2026 Vergara (Bitrise)", importe:1250.00, banco:"5721", refFactura:"e2026-1", trimestre:"Q1" },
@@ -1561,7 +1561,7 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.8"; // v10.8: Añadidos doc a r2026-1/18/32 (facturas Qonto ISP art.196), r2026-31 (Indigo), r2026-38 (Aena), r2026-40 (Taxi Málaga), r2024-22 (Enrique 01/2024 ruta), r2025-30 (Enrique 01/2025). NIFs reales proveedores tickets.
+const APP_VERSION = "10.10"; // v10.10: Asiento 248,22€ reclasificado — NO era modelo 010 sino liquidación provisional IS 2025/1P (pago fraccionado modelo 202 no presentado). AEAT dictó liquidación 09/01/2026 ref 2025CPA03860297W (cuota 241,19€ + intereses demora 7,03€). Apunta a 473 HP deudora (241,19) + 669 intereses demora (7,03). Pagado 16/01/2026. Requerimientos 111 Q3 2025 (ref 2025CPA03860314L) y Q4 2025 (ref 2025CPA03860405X) CONTESTADOS 18/04/2026 invocando aviso 50069 AEAT (no procede presentar sin perceptores); CSVs aportación WZCMU2EL2KCUF6VB y GNA2A7FR7HEJN7LB respectivamente.
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
