@@ -183,6 +183,34 @@ const MODELOS_303 = {
      cuotasPendientes:1375.66,cuotasAplicadas:0,cuotasPendientesPosterior:1375.66,
      resultadoLiquidacion:-922.13,estado:"A COMPENSAR",importeCompensar:922.13,
      rectificativa:true,rectificaJust:"3036035671855",doc:"docs/fiscal/2025/4T25ii.pdf"}
+  ],
+  2026: [
+    {trimestre:"1T",periodo:"Q1",fecha:"18-04-2026",horaPresentacion:"12:22:02",
+     justificante:"3037073438490",csv:"V78538WULLT548AB",expediente:"202630303860276H",
+     viaEntrada:"Presentación por Internet",
+     // Emitidas Q1 2026 sujetas al 21%:
+     //   · fra 1/2026 Vergara (Austria UE, B2C): total cobrado 1.250€ asumido IVA incluido → base 1.033,06 + IVA 216,94
+     //   · fra 4/2026 Int'l Crypto Investment: base 1.500 + IVA 315
+     //   Total base 21%: 2.533,06 · cuota devengada: 531,94
+     // Exentas art.20.Uno.10º (NO van en 303, solo en 390 anual): fras 2/2026 DIH 450€ + 3/2026 IEF 300€ = 750€
+     baseImponible21:2533.06,cuotaDevengada:531.94,
+     // Deducible escenario conservador (solo facturas PDF confirmadas): 12 facturas Q1 2026 = 156,81€
+     baseIvaSoportado:769.83,cuotaDeducible:156.81,
+     resultadoRegimen:375.13,sumaResultados:375.13,atribuibleEstado:375.13,
+     // Compensación saldo anterior cas.110 = 2.297,79€ (dato oficial AEAT 18-04-2026):
+     //   · 2024/2T: 898,24€  ← aplicado 375,13 (FIFO), queda 523,11
+     //   · 2024/3T: 172,24€  ← intacto
+     //   · 2025/1T: 133,70€  ← intacto
+     //   · 2025/2T: 171,48€  ← intacto
+     //   · 2025/4T: 922,13€  ← intacto
+     // Aplicado cas.78 = 375,13€ al periodo más antiguo 2024/2T
+     // Saldo posterior cas.87 = 1.922,66€ arrastra a Q2 2026
+     cuotasPendientes:2297.79,cuotasAplicadas:375.13,cuotasPendientesPosterior:1922.66,
+     resultadoLiquidacion:0.00,estado:"COMPENSA A 0",compensaSaldo:2297.79,saldoArrastrado:1922.66,
+     desgloseCompensacion:{"2024/2T":898.24,"2024/3T":172.24,"2025/1T":133.70,"2025/2T":171.48,"2025/4T":922.13},
+     desgloseAplicado:{"2024/2T":375.13,"2024/3T":0.00,"2025/1T":0.00,"2025/2T":0.00,"2025/4T":0.00},
+     doc:"docs/fiscal/2026/1T26.pdf",
+     nota:"Presentado 18/04/2026 12:22. Aplicado FIFO sobre 2024/2T (prescribe 20/07/2028). Queda 1.922,66€ para Q2 2026. Nota: factura 1/2026 reemitida con desglose IVA interno (base 1.033,06+IVA 216,94=1.250) por error inicial IVA no sujeto siendo Vergara residente en Austria-UE B2C."}
   ]
 };
 const MODELOS_390 = {
@@ -232,7 +260,7 @@ const DEFAULT_EMITIDAS_2022 = [
   { id:"e2022-13", num:"18/2022", fecha:"2022-12-31", cliente:"Amoria Capital, S.L.", nif:"", desc:"Rectificativa de 02/2022 — cancelación iguala", base:-1000, tipoIva:21, iva:-210, total:-1210, trimestre:"Q4", doc:"docs/emitidas/2022/Factura_18_2022.pdf" },
 ];
 const DEFAULT_EMITIDAS_2026 = [
-  { id: "e2026-1", num: "1/2026", fecha: "2026-01-28", cliente: "Maximiliano Vergara (Bitrise)", nif: "Chile-F62258086", desc: "2º 50% iguala ene + 1er 50% feb 2026 (no sujeto art.69)", base: 1250, tipoIva: 0, iva: 0, total: 1250, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_1_2026.pdf" },
+  { id: "e2026-1", num: "1/2026", fecha: "2026-01-28", cliente: "Maximiliano Vergara", nif: "Austria-pasaporte-CL-F62258086", desc: "2º 50% iguala ene + 1er 50% feb 2026 (Vergara B2C Austria UE, IVA asumido interno)", base: 1033.06, tipoIva: 21, iva: 216.94, total: 1250, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_1_2026.pdf", notaRectificacion: "Reemitida con desglose IVA interno tras detectar error tratamiento como no-sujeto art.69. Vergara reside en Salzburg, Austria (UE). Total cobrado sin variación." },
   { id: "e2026-2", num: "2/2026", fecha: "2026-02-11", cliente: "Digital Innovation Hub", nif: "B05490057", desc: "Clase tokenización mobiliaria (9/2/26)", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_2_2026.pdf" },
   { id: "e2026-3", num: "3/2026", fecha: "2026-03-26", cliente: "FP Institut d\'Estudis Financers", nif: "G-59190850", desc: "Curso CESCOM 2026 Sesión 6 Mód.5 (exenta art.20.1.10º enseñanza)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_3_2026.pdf" },
   { id: "e2026-4", num: "4/2026", fecha: "2026-03-26", cliente: "International Crypto Investment", nif: "B-16909558", desc: "Iguala mensual marzo 2026", base: 1500, tipoIva: 21, iva: 315, total: 1815, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_4_2026.pdf" },
@@ -402,7 +430,7 @@ const DEFAULT_RECIBIDAS_2024 = [
   { id: "r2024-19", fecha: "2024-11-13", prov: "Movistar", desc: "Telecom (28 Sep-27 Oct)", base: 156.13, tipoIva: 21, iva: 32.79, total: 188.91, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2024/Movistar_nov_2024.pdf" },
   { id: "r2024-20", fecha: "2024-12-13", prov: "Movistar", desc: "Telecom (28 Oct-27 Nov)", base: 160.72, tipoIva: 21, iva: 33.75, total: 194.47, cat: "Telecom", trimestre: "Q4", doc: "docs/recibidas/2024/Movistar_dic_2024.pdf" },
   { id: "r2024-21", fecha: "2024-12-28", prov: "MediaMarkt", desc: "2x Monitor MSI", base: 213.22, tipoIva: 21, iva: 44.78, total: 258.00, cat: "Equipos", trimestre: "Q4", doc: "docs/recibidas/2024/MediaMarkt_dic_2024.pdf" },
-  { id: "r2024-22", fecha: "2024-12-31", prov: "Enrique Aznar", desc: "Servicios asesoría 2024 (art.18 LIS)", base: 4402.82, tipoIva: 21, iva: 924.59, total: 4666.99, cat: "Vinculada", trimestre: "Q4", doc: "docs/recibidas/2024/EnriqueAznar_2024.pdf" },
+  { id: "r2024-22", fecha: "2024-12-31", prov: "Enrique Aznar", desc: "Servicios asesoría 2024 (art.18 LIS) — fra 01/2024 rectificada base 4.402,82 + IVA 924,59 - Ret 660,42 = 4.666,99€", base: 4402.82, tipoIva: 21, iva: 924.59, total: 4666.99, cat: "Vinculada", trimestre: "Q4", doc: "docs/recibidas/2024/enrique_aznar_01-2024rect.pdf" },
 ];
 const DEFAULT_RECIBIDAS_2025 = [
   // ── Bankinter (domiciliaciones Movistar + GoCardless CryptoPlaza) ──
@@ -555,14 +583,14 @@ const DEFAULT_RECIBIDAS_2025 = [
   { id: "r2025-25", fecha: "2025-11-16", proveedor: "Intermodalidad Levante", nif: "B98627858", desc: "Billete iryo", base: 41.28, tipoIva: 10, iva: 4.13, total: 45.41, cat: "Transporte", trimestre: "Q4", medioPago:"socio" },
   { id: "r2025-27", fecha: "2025-12-04", proveedor: "Intermodalidad Levante", nif: "B98627858", desc: "Billete iryo", base: 56.85, tipoIva: 10, iva: 5.68, total: 62.53, cat: "Transporte", trimestre: "Q4", medioPago:"socio" },
   // ── Vinculada (410 — pendiente pago ene-2026) ──
-  { id: "r2025-30", fecha: "2025-12-31", proveedor: "Enrique Aznar", nif: "46225630T", desc: "Servicios asesoría 2025 (art.18 LIS)", base: 9620.00, tipoIva: 21, iva: 2020.20, total: 10197.20, cat: "Vinculada", trimestre: "Q4", medioPago:"pendiente" },
+  { id: "r2025-30", fecha: "2025-12-31", proveedor: "Enrique Aznar", nif: "46225630T", desc: "Servicios asesoría 2025 (art.18 LIS) — fra 01/2025 base 9.620 + IVA 2.020,20 - Ret 1.443 = 10.197,20€", base: 9620.00, tipoIva: 21, iva: 2020.20, total: 10197.20, cat: "Vinculada", trimestre: "Q4", medioPago:"pendiente", doc: "docs/recibidas/2025/enrique_aznar_01-2025.pdf" },
 ];
 const ALERTAS = [
   { tipo: "error", msg: "IVA: 11.596,85€ de crédito acumulado pendiente de devolución. Rectificativa 303-4T-2024 necesaria (cas.73 → devolución). Crédito vivo: cuotas siempre declaradas en 303 originales desde 2019.", accion: "Presentar rectificativa 303-4T-2024 solicitando devolución" },
   { tipo: "error", msg: "IVA: 390-2024 inconsistente — cas.97 (a compensar) debe cambiar a cas.98 (a devolver) tras rectificativa del 4T.", accion: "Rectificativa Mod. 390-2024" },
   { tipo: "warning", msg: "IS 2024: Otros deudores (cas.00159) = 13.393,42€ no refleja saldo real de IVA. Corregir en sustitutiva del Mod.200.", accion: "Sustitutiva Mod.200 2024" },
   { tipo: "warning", msg: "551 Cta. socios: saldo 33.599€ a cierre 2025 (33.422€ de 2024 + 176€ iryo tarjeta personal). Planificar reembolso cuando liquidez lo permita.", accion: "Revisar origen y prescripción" },
-  { tipo: "info", msg: "Q1 2026 completo (v10.3): Pagos vinculadas 11/02/2026 (14.864,19€ cancelan 410), cobros Vergara (1.000€ + 1.250€), DIH (450€), modelo 010 AEAT (248,22€ en 678 — identificar concepto). 42 recibidas Q1 (12 con factura PDF + 30 pdte regularizar en Q2). 303 Q1 2026 conservador = 158,19€ a ingresar.", accion: "Verificar contra extracto Qonto" },
+  { tipo: "info", msg: "303 Q1 2026 PRESENTADO 18/04/2026 (CSV V78538WULLT548AB). Asumido IVA interno fra 1/2026 Vergara (Austria UE B2C): base 1.033,06+IVA 216,94. Devengado 531,94; deducible 156,81; régimen 375,13; aplicado sobre saldo 2024/2T (FIFO); arrastra a Q2 1.922,66€. Resultado 0€. PENDIENTE: ingresar 2.103,42€ del 111 Q1 2026 antes 20/04.", accion: "Verificar contra extracto Qonto" },
   { tipo: "warning", msg: "CryptoPlaza: faltan Feb, Mar, Jul, Ago, Sep 2025", accion: "Solicitar a Sky Media Group" },
   { tipo: "info", msg: "Logically en USD: pendiente tipo de cambio BCE", accion: "Aplicar TC oficial" },
   { tipo: "info", msg: "Gamma/Logically/Anthropic: posible inversión sujeto pasivo", accion: "Autorrepercutir IVA en Mod.303" },
@@ -671,7 +699,7 @@ const MODELO_200 = {
 // ═══════════════════════════════════════════════
 const DEFAULT_RECIBIDAS_2026 = [
   // ───── ENERO 2026 ─────
-  { id: "r2026-1", fecha: "2026-01-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual enero", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-1", fecha: "2026-01-01", proveedor: "Qonto (Olinda SAS)", nif: "FR10819489626", desc: "Suscripción mensual enero (Plan Essential) — ISP art.196 Dir.2006/112/CE; servicio bancario exento art.20.Uno.18º LIVA", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/qonto_ene_01-26-invoice-30530595.pdf" },
   { id: "r2026-2", fecha: "2026-01-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual enero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 al recibir (posible ISP)" },
   { id: "r2026-3", fecha: "2026-01-05", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership enero — fra 06118", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06118.pdf" },
   { id: "r2026-4", fecha: "2026-01-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual enero (30 USD)", base: 25.70, tipoIva: 0, iva: 0, total: 25.70, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
@@ -690,7 +718,7 @@ const DEFAULT_RECIBIDAS_2026 = [
   { id: "r2026-17", fecha: "2026-01-16", proveedor: "Qonto FX fee", nif: "FR", desc: "Comisión divisa", base: 0.06, tipoIva: 0, iva: 0, total: 0.06, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
 
   // ───── FEBRERO 2026 ─────
-  { id: "r2026-18", fecha: "2026-02-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual febrero", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-18", fecha: "2026-02-01", proveedor: "Qonto SA", nif: "FR10819489626", desc: "Suscripción mensual febrero (Plan Essential) — ISP art.196; exento art.20.Uno.18º LIVA", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/qonto_feb_02-26-invoice-31355489.pdf" },
   { id: "r2026-19", fecha: "2026-02-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual febrero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
   { id: "r2026-20", fecha: "2026-02-03", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership febrero — fra 06151", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06151.pdf" },
   { id: "r2026-21", fecha: "2026-02-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual febrero (30 USD)", base: 26.01, tipoIva: 0, iva: 0, total: 26.01, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
@@ -703,18 +731,18 @@ const DEFAULT_RECIBIDAS_2026 = [
   { id: "r2026-28", fecha: "2026-02-15", proveedor: "Railway", nif: "USA", desc: "Hosting febrero (10,38 USD)", base: 8.94, tipoIva: 0, iva: 0, total: 8.94, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
   { id: "r2026-29", fecha: "2026-02-19", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 12.15, tipoIva: 0, iva: 0, total: 12.15, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
   { id: "r2026-30", fecha: "2026-02-26", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 10.00, tipoIva: 0, iva: 0, total: 10.00, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
-  { id: "r2026-31", fecha: "2026-02-27", proveedor: "Indigo (parking)", nif: "ES", desc: "Aparcamiento — justificante Qonto", base: 8.72, tipoIva: 21, iva: 1.83, total: 10.55, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-31", fecha: "2026-02-27", proveedor: "Indigo Park España SA", nif: "A82891730", desc: "Aparcamiento rotación Indigo Caleido Ps Castellana 259E Madrid (recibo 0329895, 3h27min)", base: 8.72, tipoIva: 21, iva: 1.83, total: 10.55, cat: "Transporte", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/indigo_caleido_27feb.pdf" },
 
   // ───── MARZO 2026 ─────
-  { id: "r2026-32", fecha: "2026-03-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual marzo", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-32", fecha: "2026-03-01", proveedor: "Qonto SA", nif: "FR10819489626", desc: "Suscripción mensual marzo (Plan Essential) — ISP art.196; exento art.20.Uno.18º LIVA", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/qonto_mar_03-26-invoice-32185207.pdf" },
   { id: "r2026-33", fecha: "2026-03-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual marzo", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
   { id: "r2026-34", fecha: "2026-03-03", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership marzo — fra 06199", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06199.pdf" },
   { id: "r2026-35", fecha: "2026-03-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual marzo (30 USD)", base: 26.51, tipoIva: 0, iva: 0, total: 26.51, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
   { id: "r2026-36", fecha: "2026-03-08", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual marzo", base: 180.00, tipoIva: 0, iva: 0, total: 180.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
   { id: "r2026-37", fecha: "2026-03-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual marzo (24,20 USD)", base: 21.46, tipoIva: 0, iva: 0, total: 21.46, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
-  { id: "r2026-38", fecha: "2026-03-12", proveedor: "Aena", nif: "A86212420", desc: "Viaje profesional — justificante Qonto", base: 27.48, tipoIva: 21, iva: 5.77, total: 33.25, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-38", fecha: "2026-03-12", proveedor: "Aena S.M.E. S.A.", nif: "A86212420", desc: "Aparcamiento Aeropuerto Adolfo Suárez Madrid-Barajas P2 (ticket 075538, 13h30min)", base: 27.48, tipoIva: 21, iva: 5.77, total: 33.25, cat: "Transporte", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/aena_barajas_12mar.pdf" },
   { id: "r2026-39", fecha: "2026-03-12", proveedor: "Taxi Sergio", nif: "ES", desc: "Transporte profesional", base: 31.00, tipoIva: 0, iva: 0, total: 31.00, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
-  { id: "r2026-40", fecha: "2026-03-12", proveedor: "Taxi Málaga 1233", nif: "ES", desc: "Transporte profesional — justificante Qonto", base: 27.84, tipoIva: 10, iva: 2.78, total: 30.62, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-40", fecha: "2026-03-12", proveedor: "Rodríguez Castillo Natal (Unitaxi Málaga lic.1233)", nif: "74887324Z", desc: "Taxi Aeropuerto Málaga → C. Ramos Carrión 38 (21,9 km, recibo 1482)", base: 27.84, tipoIva: 10, iva: 2.78, total: 30.62, cat: "Transporte", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/taxi_malaga_1233_12mar.pdf" },
   { id: "r2026-41", fecha: "2026-03-13", proveedor: "Telefónica de España (Movistar)", nif: "A82018474", desc: "Factura FMDVACJ001 (28/1-27/2) — fija+fibra+Plus+dispositivo", base: 166.53, tipoIva: 21, iva: 34.97, total: 201.50, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_fija_mar_FMDVACJ001.pdf" },
   { id: "r2026-42", fecha: "2026-03-13", proveedor: "Telefónica Móviles (Movistar)", nif: "A78923125", desc: "Factura MMDVACJ001 (28/1-27/2) — AirPods 4ª gen", base: 2.81, tipoIva: 21, iva: 0.59, total: 3.40, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_movil_mar_MMDVACJ001.pdf" },
   { id: "r2026-43", fecha: "2026-03-15", proveedor: "Railway", nif: "USA", desc: "Hosting marzo (9,19 USD)", base: 8.21, tipoIva: 0, iva: 0, total: 8.21, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
@@ -1302,7 +1330,7 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
     apuntes.push({cuenta:"430",nombre:ctaName("430"),debe:e.total,haber:0});
     apuntes.push({cuenta:"705",nombre:ctaName("705"),debe:0,haber:e.base});
     if(e.iva>0) apuntes.push({cuenta:"477",nombre:ctaName("477"),debe:0,haber:e.iva});
-    preAsientos.push({fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes});
+    preAsientos.push({fecha:e.fecha,tipo:"FE",concepto:`Fra.${e.num} — ${e.cliente}`,ref:e.id,apuntes,doc:e.doc||null});
   });
 
   // ─── FR: Factura recibida (devengo puro) ───
@@ -1323,7 +1351,7 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
       const ctaContra = (r.medioPago === "socio") ? "551" : "410";
       apuntes.push({cuenta:ctaContra,nombre:ctaName(ctaContra),debe:0,haber:r.total});
     }
-    preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo});
+    preAsientos.push({fecha:r.fecha,tipo:"FR",concepto:`${r.prov||r.proveedor} — ${r.desc}`,ref:r.id,apuntes,esActivo,doc:r.doc||null});
   });
 
   // ─── V2: Asientos de pago automáticos (cierra 410) ───
@@ -1337,12 +1365,12 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
         const banco = esBK ? "5720" : "5721";
         apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
         apuntes.push({cuenta:banco,nombre:ctaName(banco),debe:0,haber:r.total});
-        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago ${r.prov||r.proveedor} (${banco==="5720"?"BK":"QO"})`,ref:r.id+"_pa",apuntes});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago ${r.prov||r.proveedor} (${banco==="5720"?"BK":"QO"})`,ref:r.id+"_pa",apuntes,doc:r.doc||null});
       } else if(r.medioPago === "socio") {
         // Pago personal: D:410 / H:551 (NUNCA 572x aquí)
         apuntes.push({cuenta:"410",nombre:ctaName("410"),debe:r.total,haber:0});
         apuntes.push({cuenta:"551",nombre:ctaName("551"),debe:0,haber:r.total});
-        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago personal socio — ${r.prov||r.proveedor}`,ref:r.id+"_pa551",apuntes});
+        preAsientos.push({fecha:r.fecha,tipo:"PA",concepto:`Pago personal socio — ${r.prov||r.proveedor}`,ref:r.id+"_pa551",apuntes,doc:r.doc||null});
       }
     });
   }
@@ -1418,7 +1446,7 @@ function generarAsientos(emitidas, recibidas, year, allRecibidas, tesoreria) {
       apuntes.push({cuenta:contra,nombre:ctaName(contra),debe:0,haber:t.importe});
     }
     if(apuntes.length > 0) {
-      preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":t.tipo==="devolucion"?"DV":"CO",concepto:t.concepto,ref:t.id,apuntes});
+      preAsientos.push({fecha:t.fecha,tipo:t.tipo==="pago"?"PA":t.tipo==="devolucion"?"DV":"CO",concepto:t.concepto,ref:t.id,apuntes,doc:t.doc||null});
     }
   });
 
@@ -1533,7 +1561,7 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.3"; // v10.3: Q1 2026 completo — 4 emitidas, 42 recibidas (12 OK + 30 pdte factura), vinculada cancelada (410->0), modelo 010 AEAT 248,22€, Apple Retail 21% confirmado, Marcial Pons 4% confirmado, 303 Q1 2026=158,19€ conservador
+const APP_VERSION = "10.8"; // v10.8: Añadidos doc a r2026-1/18/32 (facturas Qonto ISP art.196), r2026-31 (Indigo), r2026-38 (Aena), r2026-40 (Taxi Málaga), r2024-22 (Enrique 01/2024 ruta), r2025-30 (Enrique 01/2025). NIFs reales proveedores tickets.
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
@@ -2579,7 +2607,7 @@ function App() {
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontWeight:j===0?600:400,color:"#2C3E50",fontSize:10}}>{j===0?a.n:""}</td>
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",whiteSpace:"nowrap",fontSize:10,color:"#7A8DA0"}}>{j===0?fmtDate(a.fecha):""}</td>
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5"}}>{j===0?<Badge type={a.tipo==="FE"?"success":a.tipo==="FR"?"warning":"info"}>{a.tipo}</Badge>:""}</td>
-                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontSize:10,color:j===0?"#2C3E50":"#999",paddingLeft:j>0?30:10}}>{j===0?a.concepto:""}</td>
+                <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontSize:10,color:j===0?"#2C3E50":"#999",paddingLeft:j>0?30:10}}>{j===0?(<span>{a.concepto}{a.doc&&<a href={a.doc} target="_blank" rel="noopener noreferrer" title={`Ver documento: ${a.doc.split("/").pop()}`} style={{marginLeft:8,textDecoration:"none",color:"#3D7A4A",fontSize:12,cursor:"pointer"}} onClick={e=>e.stopPropagation()}>📎</a>}</span>):""}</td>
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",fontSize:10,color:"#2C3E50",fontWeight:500}}>{ap.nombre}</td>
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",textAlign:"right",fontFamily:"monospace",fontSize:10,color:ap.debe?"#2C3E50":"#ccc"}}>{ap.debe?fmt(ap.debe):""}</td>
                 <td style={{padding:"5px 10px",borderBottom:"1px solid #F0F2F5",textAlign:"right",fontFamily:"monospace",fontSize:10,color:ap.haber?"#2C3E50":"#ccc"}}>{ap.haber?fmt(ap.haber):""}</td>
