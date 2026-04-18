@@ -234,6 +234,8 @@ const DEFAULT_EMITIDAS_2022 = [
 const DEFAULT_EMITIDAS_2026 = [
   { id: "e2026-1", num: "1/2026", fecha: "2026-01-28", cliente: "Maximiliano Vergara (Bitrise)", nif: "Chile-F62258086", desc: "2º 50% iguala ene + 1er 50% feb 2026 (no sujeto art.69)", base: 1250, tipoIva: 0, iva: 0, total: 1250, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_1_2026.pdf" },
   { id: "e2026-2", num: "2/2026", fecha: "2026-02-11", cliente: "Digital Innovation Hub", nif: "B05490057", desc: "Clase tokenización mobiliaria (9/2/26)", base: 450, tipoIva: 0, iva: 0, total: 450, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_2_2026.pdf" },
+  { id: "e2026-3", num: "3/2026", fecha: "2026-03-26", cliente: "FP Institut d\'Estudis Financers", nif: "G-59190850", desc: "Curso CESCOM 2026 Sesión 6 Mód.5 (exenta art.20.1.10º enseñanza)", base: 300, tipoIva: 0, iva: 0, total: 300, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_3_2026.pdf" },
+  { id: "e2026-4", num: "4/2026", fecha: "2026-03-26", cliente: "International Crypto Investment", nif: "B-16909558", desc: "Iguala mensual marzo 2026", base: 1500, tipoIva: 21, iva: 315, total: 1815, trimestre: "Q1", doc: "docs/emitidas/2026/Factura_4_2026.pdf" },
 ];
 const DEFAULT_RECIBIDAS_2022 = [
   { id:"r2022-1", fecha:"2022-05-04", prov:"Durán Compliance", desc:"Diseño SGCP Col·legi Procuradors (FRA 22/016)", base:853.13, tipoIva:21, iva:179.16, total:904.32, cat:"Subcontratista", trimestre:"Q2", doc:"docs/recibidas/2022/Duran_22_016.pdf" },
@@ -560,7 +562,7 @@ const ALERTAS = [
   { tipo: "error", msg: "IVA: 390-2024 inconsistente — cas.97 (a compensar) debe cambiar a cas.98 (a devolver) tras rectificativa del 4T.", accion: "Rectificativa Mod. 390-2024" },
   { tipo: "warning", msg: "IS 2024: Otros deudores (cas.00159) = 13.393,42€ no refleja saldo real de IVA. Corregir en sustitutiva del Mod.200.", accion: "Sustitutiva Mod.200 2024" },
   { tipo: "warning", msg: "551 Cta. socios: saldo 33.599€ a cierre 2025 (33.422€ de 2024 + 176€ iryo tarjeta personal). Planificar reembolso cuando liquidez lo permita.", accion: "Revisar origen y prescripción" },
-  { tipo: "info", msg: "Tesorería ene-2026: Pagos vinculadas a Enrique Aznar (4.666,99+10.197,20=14.864,19€) y cobros Vergara (1.000+1.250=2.250€) registrados.", accion: "Verificar contra extracto Qonto" },
+  { tipo: "info", msg: "Q1 2026 completo (v10.3): Pagos vinculadas 11/02/2026 (14.864,19€ cancelan 410), cobros Vergara (1.000€ + 1.250€), DIH (450€), modelo 010 AEAT (248,22€ en 678 — identificar concepto). 42 recibidas Q1 (12 con factura PDF + 30 pdte regularizar en Q2). 303 Q1 2026 conservador = 158,19€ a ingresar.", accion: "Verificar contra extracto Qonto" },
   { tipo: "warning", msg: "CryptoPlaza: faltan Feb, Mar, Jul, Ago, Sep 2025", accion: "Solicitar a Sky Media Group" },
   { tipo: "info", msg: "Logically en USD: pendiente tipo de cambio BCE", accion: "Aplicar TC oficial" },
   { tipo: "info", msg: "Gamma/Logically/Anthropic: posible inversión sujeto pasivo", accion: "Autorrepercutir IVA en Mod.303" },
@@ -668,26 +670,54 @@ const MODELO_200 = {
 // ═══  CCAA OFICIALES (BCE + PyG + IS)  ════════
 // ═══════════════════════════════════════════════
 const DEFAULT_RECIBIDAS_2026 = [
-  { id: "r2026-1", fecha: "2026-02-10", proveedor: "Associació Tech Barcelona", nif: "G65995573", desc: "Cuota anual miembro 01/01/26-31/12/26", base: 50, tipoIva: 0, iva: 0, total: 50, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/2026TB0213.pdf" },
-  { id: "r2026-2", fecha: "2026-01-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual enero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-3", fecha: "2026-01-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual enero (30 USD)", base: 25.70, tipoIva: 0, iva: 0, total: 25.70, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-4", fecha: "2026-01-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual enero (24,20 USD)", base: 20.83, tipoIva: 0, iva: 0, total: 20.83, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-5", fecha: "2026-01-11", proveedor: "Apple", nif: "IE", desc: "Compra hardware/software", base: 119.00, tipoIva: 0, iva: 0, total: 119.00, cat: "Equipos", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-6", fecha: "2026-01-11", proveedor: "MediaMarkt", nif: "ES", desc: "Compra equipos", base: 207.43, tipoIva: 21, iva: 43.56, total: 250.99, cat: "Equipos", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-7", fecha: "2026-01-11", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual enero", base: 90.00, tipoIva: 0, iva: 0, total: 90.00, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-8", fecha: "2026-01-12", proveedor: "Marcial Pons Librero", nif: "ES", desc: "Libros jurídicos", base: 170.85, tipoIva: 0, iva: 0, total: 170.85, cat: "Libros", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-9", fecha: "2026-01-12", proveedor: "Apple", nif: "IE", desc: "Compra hardware/software", base: 50.00, tipoIva: 0, iva: 0, total: 50.00, cat: "Equipos", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-10", fecha: "2026-01-14", proveedor: "MediaMarkt", nif: "ES", desc: "Compra equipos", base: 165.21, tipoIva: 21, iva: 34.69, total: 199.90, cat: "Equipos", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-11", fecha: "2026-01-15", proveedor: "Railway", nif: "USA", desc: "Hosting/deploy enero (2,97 USD)", base: 2.55, tipoIva: 0, iva: 0, total: 2.55, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-12", fecha: "2026-02-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual febrero", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-13", fecha: "2026-02-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual febrero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-14", fecha: "2026-02-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual febrero (30 USD)", base: 26.01, tipoIva: 0, iva: 0, total: 26.01, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-15", fecha: "2026-02-08", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual febrero", base: 171.54, tipoIva: 0, iva: 0, total: 171.54, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-16", fecha: "2026-02-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual febrero (24,20 USD)", base: 20.91, tipoIva: 0, iva: 0, total: 20.91, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-17", fecha: "2026-02-12", proveedor: "Editorial (La Era de la Revancha)", nif: "ES", desc: "Libro", base: 5.77, tipoIva: 0, iva: 0, total: 5.77, cat: "Libros", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-18", fecha: "2026-02-15", proveedor: "Railway", nif: "USA", desc: "Hosting/deploy febrero (10,38 USD)", base: 8.94, tipoIva: 0, iva: 0, total: 8.94, cat: "Software", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-19", fecha: "2026-02-19", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 12.15, tipoIva: 0, iva: 0, total: 12.15, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
-  { id: "r2026-20", fecha: "2026-01-13", proveedor: "Movistar", nif: "A-82018474", desc: "Telecom (28 Nov-27 Dic)", base: 165.06, tipoIva: 21, iva: 34.66, total: 199.72, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/Movistar_ene_2026.pdf" },
+  // ───── ENERO 2026 ─────
+  { id: "r2026-1", fecha: "2026-01-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual enero", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-2", fecha: "2026-01-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual enero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 al recibir (posible ISP)" },
+  { id: "r2026-3", fecha: "2026-01-05", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership enero — fra 06118", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06118.pdf" },
+  { id: "r2026-4", fecha: "2026-01-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual enero (30 USD)", base: 25.70, tipoIva: 0, iva: 0, total: 25.70, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-5", fecha: "2026-01-08", proveedor: "Qonto FX fee", nif: "FR", desc: "Comisión divisa", base: 0.52, tipoIva: 0, iva: 0, total: 0.52, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-6", fecha: "2026-01-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual enero (24,20 USD)", base: 20.83, tipoIva: 0, iva: 0, total: 20.83, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-7", fecha: "2026-01-11", proveedor: "Qonto FX fee", nif: "FR", desc: "Comisión divisa", base: 0.42, tipoIva: 0, iva: 0, total: 0.42, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-8", fecha: "2026-01-11", proveedor: "Apple Retail Spain", nif: "B65130643", desc: "Magic Keyboard USB-C Esp. (MXCL3Y/A) — Apple Puerta del Sol", base: 98.35, tipoIva: 21, iva: 20.65, total: 119.00, cat: "Equipos", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/apple_retail_sol_11ene.jpeg" },
+  { id: "r2026-9", fecha: "2026-01-11", proveedor: "MediaMarkt", nif: "A28539790", desc: "Equipos / hardware", base: 250.99, tipoIva: 0, iva: 0, total: 250.99, cat: "Equipos", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 21%, base 207,43 + IVA 43,56 al recibir factura" },
+  { id: "r2026-10", fecha: "2026-01-11", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual enero", base: 90.00, tipoIva: 0, iva: 0, total: 90.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-11", fecha: "2026-01-12", proveedor: "Marcial Pons Librero", nif: "B82947326", desc: "4 libros jurídicos — fra 0807141719", base: 164.28, tipoIva: 4, iva: 6.57, total: 170.85, cat: "Libros", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/marcial_pons_0807141719.jpeg" },
+  { id: "r2026-12", fecha: "2026-01-12", proveedor: "Apple", nif: "IE", desc: "Compra App Store / accesorios", base: 50.00, tipoIva: 0, iva: 0, total: 50.00, cat: "Equipos", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — si Apple Retail ES: 21%; si App Store IE: ISP" },
+  { id: "r2026-13", fecha: "2026-01-13", proveedor: "Telefónica de España (Movistar)", nif: "A82018474", desc: "Factura FMDVAAJ003 (28/11-27/12) — fija+fibra+Plus+dispositivo", base: 165.06, tipoIva: 21, iva: 34.66, total: 199.72, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_fija_ene_FMDVAAJ003.pdf" },
+  { id: "r2026-14", fecha: "2026-01-13", proveedor: "Telefónica Móviles (Movistar)", nif: "A78923125", desc: "Factura MMDVAAJ001 (28/11-27/12) — AirPods 4ª gen", base: 2.81, tipoIva: 21, iva: 0.59, total: 3.40, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_movil_ene_MMDVAAJ001.pdf" },
+  { id: "r2026-15", fecha: "2026-01-14", proveedor: "MediaMarkt", nif: "A28539790", desc: "Equipos / hardware", base: 199.90, tipoIva: 0, iva: 0, total: 199.90, cat: "Equipos", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 21%, base 165,21 + IVA 34,69 al recibir factura" },
+  { id: "r2026-16", fecha: "2026-01-15", proveedor: "Railway", nif: "USA", desc: "Hosting enero (2,97 USD)", base: 2.55, tipoIva: 0, iva: 0, total: 2.55, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-17", fecha: "2026-01-16", proveedor: "Qonto FX fee", nif: "FR", desc: "Comisión divisa", base: 0.06, tipoIva: 0, iva: 0, total: 0.06, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+
+  // ───── FEBRERO 2026 ─────
+  { id: "r2026-18", fecha: "2026-02-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual febrero", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-19", fecha: "2026-02-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual febrero", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-20", fecha: "2026-02-03", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership febrero — fra 06151", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06151.pdf" },
+  { id: "r2026-21", fecha: "2026-02-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual febrero (30 USD)", base: 26.01, tipoIva: 0, iva: 0, total: 26.01, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-22", fecha: "2026-02-08", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual febrero", base: 171.54, tipoIva: 0, iva: 0, total: 171.54, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-23", fecha: "2026-02-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual febrero (24,20 USD)", base: 20.91, tipoIva: 0, iva: 0, total: 20.91, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-24", fecha: "2026-02-10", proveedor: "Associació Tech Barcelona", nif: "G65995573", desc: "Cuota anual asociado 2026 (exenta 20.Uno.12º)", base: 50.00, tipoIva: 0, iva: 0, total: 50.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/techbarcelona_2026TB0213.pdf" },
+  { id: "r2026-25", fecha: "2026-02-12", proveedor: "EB*La Era de la Revancha", nif: "ES", desc: "Libro", base: 5.77, tipoIva: 0, iva: 0, total: 5.77, cat: "Libros", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 4%, regularizar Q2" },
+  { id: "r2026-26", fecha: "2026-02-13", proveedor: "Telefónica de España (Movistar)", nif: "A82018474", desc: "Factura FMDVABJ004 (28/12-27/1) — fija+fibra+Plus+dispositivo", base: 165.68, tipoIva: 21, iva: 34.79, total: 200.47, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_fija_feb_FMDVABJ004.pdf" },
+  { id: "r2026-27", fecha: "2026-02-13", proveedor: "Telefónica Móviles (Movistar)", nif: "A78923125", desc: "Factura MMDVABJ002 (28/12-27/1) — AirPods 4ª gen", base: 2.81, tipoIva: 21, iva: 0.59, total: 3.40, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_movil_feb_MMDVABJ002.pdf" },
+  { id: "r2026-28", fecha: "2026-02-15", proveedor: "Railway", nif: "USA", desc: "Hosting febrero (10,38 USD)", base: 8.94, tipoIva: 0, iva: 0, total: 8.94, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-29", fecha: "2026-02-19", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 12.15, tipoIva: 0, iva: 0, total: 12.15, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
+  { id: "r2026-30", fecha: "2026-02-26", proveedor: "Taxi", nif: "ES", desc: "Transporte profesional", base: 10.00, tipoIva: 0, iva: 0, total: 10.00, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
+  { id: "r2026-31", fecha: "2026-02-27", proveedor: "Indigo (parking)", nif: "ES", desc: "Aparcamiento — justificante Qonto", base: 8.72, tipoIva: 21, iva: 1.83, total: 10.55, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+
+  // ───── MARZO 2026 ─────
+  { id: "r2026-32", fecha: "2026-03-01", proveedor: "Qonto", nif: "FR", desc: "Suscripción mensual marzo", base: 59.00, tipoIva: 0, iva: 0, total: 59.00, cat: "Servicios bancarios", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-33", fecha: "2026-03-03", proveedor: "Gamma.app", nif: "USA", desc: "Suscripción mensual marzo", base: 20.00, tipoIva: 0, iva: 0, total: 20.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-34", fecha: "2026-03-03", proveedor: "Sky Media (CryptoPlaza)", nif: "B84591221", desc: "Founders Digital Membership marzo — fra 06199", base: 20.66, tipoIva: 21, iva: 4.34, total: 25.00, cat: "Cuotas", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/cryptoplaza_06199.pdf" },
+  { id: "r2026-35", fecha: "2026-03-07", proveedor: "Logically (Afforai)", nif: "USA", desc: "Suscripción mensual marzo (30 USD)", base: 26.51, tipoIva: 0, iva: 0, total: 26.51, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-36", fecha: "2026-03-08", proveedor: "Anthropic (Claude.ai)", nif: "USA", desc: "Suscripción mensual marzo", base: 180.00, tipoIva: 0, iva: 0, total: 180.00, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-37", fecha: "2026-03-10", proveedor: "OpenAI (ChatGPT)", nif: "USA", desc: "Suscripción mensual marzo (24,20 USD)", base: 21.46, tipoIva: 0, iva: 0, total: 21.46, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
+  { id: "r2026-38", fecha: "2026-03-12", proveedor: "Aena", nif: "A86212420", desc: "Viaje profesional — justificante Qonto", base: 27.48, tipoIva: 21, iva: 5.77, total: 33.25, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-39", fecha: "2026-03-12", proveedor: "Taxi Sergio", nif: "ES", desc: "Transporte profesional", base: 31.00, tipoIva: 0, iva: 0, total: 31.00, cat: "Transporte", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — probable 10%, regularizar Q2" },
+  { id: "r2026-40", fecha: "2026-03-12", proveedor: "Taxi Málaga 1233", nif: "ES", desc: "Transporte profesional — justificante Qonto", base: 27.84, tipoIva: 10, iva: 2.78, total: 30.62, cat: "Transporte", trimestre: "Q1", medioPago:"banco" },
+  { id: "r2026-41", fecha: "2026-03-13", proveedor: "Telefónica de España (Movistar)", nif: "A82018474", desc: "Factura FMDVACJ001 (28/1-27/2) — fija+fibra+Plus+dispositivo", base: 166.53, tipoIva: 21, iva: 34.97, total: 201.50, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_fija_mar_FMDVACJ001.pdf" },
+  { id: "r2026-42", fecha: "2026-03-13", proveedor: "Telefónica Móviles (Movistar)", nif: "A78923125", desc: "Factura MMDVACJ001 (28/1-27/2) — AirPods 4ª gen", base: 2.81, tipoIva: 21, iva: 0.59, total: 3.40, cat: "Telecom", trimestre: "Q1", medioPago:"banco", doc: "docs/recibidas/2026/movistar_movil_mar_MMDVACJ001.pdf" },
+  { id: "r2026-43", fecha: "2026-03-15", proveedor: "Railway", nif: "USA", desc: "Hosting marzo (9,19 USD)", base: 8.21, tipoIva: 0, iva: 0, total: 8.21, cat: "Software", trimestre: "Q1", medioPago:"banco", docPendiente: true, notaPdte: "Pendiente factura — regularizar Q2 (posible ISP)" },
 ];
 // ═══ TESORERÍA: Cobros y Pagos ═══
 // ─── TESORERÍA 2024 — Cobros clientes (todos cobrados a 31/12/2024, 430=0) ───
@@ -715,10 +745,12 @@ const DEFAULT_TESORERIA_2025 = [
   { id:"t2025-c12", tipo:"cobro", fecha:"2025-12-19", concepto:"Cobro fra. Vergara dic (Qonto)", importe:375.00, banco:"5721", refFactura:"e2025-10", trimestre:"Q4" },
 ];
 const DEFAULT_TESORERIA_2026 = [
-  { id:"t2026-1", tipo:"pago", fecha:"2026-01-15", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2024", importe:4666.99, banco:"5721", refFactura:"r2024-22", trimestre:"Q1" },
-  { id:"t2026-2", tipo:"pago", fecha:"2026-01-15", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2025", importe:10197.20, banco:"5721", refFactura:"r2025-30", trimestre:"Q1" },
-  { id:"t2026-3", tipo:"cobro", fecha:"2026-01-20", concepto:"Cobro fra. 11/2025 Vergara (Bitrise)", importe:1000.00, banco:"5721", refFactura:"e2025-11", trimestre:"Q1" },
-  { id:"t2026-4", tipo:"cobro", fecha:"2026-02-02", concepto:"Cobro fra. 1/2026 Vergara (Bitrise)", importe:1250.00, banco:"5721", refFactura:"e2026-1", trimestre:"Q1" },
+  { id:"t2026-1", tipo:"cobro", fecha:"2026-01-06", concepto:"Cobro fra. 11/2025 Vergara (Bitrise)", importe:1000.00, banco:"5721", refFactura:"e2025-11", trimestre:"Q1" },
+  { id:"t2026-2", tipo:"pago", fecha:"2026-01-16", concepto:"Modelo 010 AEAT liq. 082615305105D — Ingreso fuera de plazo", importe:248.22, banco:"5720", ctaContra:"678", trimestre:"Q1", doc:"docs/recibidas/2026/modelo_010_248_22.pdf" },
+  { id:"t2026-3", tipo:"pago", fecha:"2026-02-11", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2024 (cancela 410)", importe:4666.99, banco:"5721", refFactura:"r2024-22", trimestre:"Q1" },
+  { id:"t2026-4", tipo:"pago", fecha:"2026-02-11", concepto:"Pago fra. Enrique Aznar — Servicios asesoría 2025 (cancela 410)", importe:10197.20, banco:"5721", refFactura:"r2025-30", trimestre:"Q1" },
+  { id:"t2026-5", tipo:"cobro", fecha:"2026-02-02", concepto:"Cobro fra. 1/2026 Vergara (Bitrise)", importe:1250.00, banco:"5721", refFactura:"e2026-1", trimestre:"Q1" },
+  { id:"t2026-6", tipo:"cobro", fecha:"2026-03-27", concepto:"Cobro fra. 2/2026 Digital Innovation Hub", importe:450.00, banco:"5721", refFactura:"e2026-2", trimestre:"Q1" },
 ];
 
 const EXTRA_TESORERIA_2026 = [];
@@ -1501,7 +1533,7 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.2"; // v10.2: Tesorería muestra pagos auto+cobros, fix test 430 apertura, badges auto/551
+const APP_VERSION = "10.3"; // v10.3: Q1 2026 completo — 4 emitidas, 42 recibidas (12 OK + 30 pdte factura), vinculada cancelada (410->0), modelo 010 AEAT 248,22€, Apple Retail 21% confirmado, Marcial Pons 4% confirmado, 303 Q1 2026=158,19€ conservador
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
