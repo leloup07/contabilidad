@@ -210,7 +210,20 @@ const MODELOS_303 = {
      desgloseCompensacion:{"2024/2T":898.24,"2024/3T":172.24,"2025/1T":133.70,"2025/2T":171.48,"2025/4T":922.13},
      desgloseAplicado:{"2024/2T":375.13,"2024/3T":0.00,"2025/1T":0.00,"2025/2T":0.00,"2025/4T":0.00},
      doc:"docs/fiscal/2026/1T26.pdf",
-     nota:"Presentado 18/04/2026 12:22. Aplicado FIFO sobre 2024/2T (prescribe 20/07/2028). Queda 1.922,66€ para Q2 2026. Nota: factura 1/2026 reemitida con desglose IVA interno (base 1.033,06+IVA 216,94=1.250) por error inicial IVA no sujeto siendo Vergara residente en Austria-UE B2C."}
+     nota:"Presentado 18/04/2026 12:22. Aplicado FIFO sobre 2024/2T (prescribe 20/07/2028). Queda 1.922,66€ para Q2 2026. Nota: factura 1/2026 reemitida con desglose IVA interno (base 1.033,06+IVA 216,94=1.250) por error inicial IVA no sujeto siendo Vergara residente en Austria-UE B2C."},
+    {trimestre:"2T",periodo:"Q2",fecha:"16-07-2026",horaPresentacion:"13:28:23",
+     justificante:"3036471272642",csv:"VRL7CW2TBRJP5APL",expediente:"202630303860623R",
+     nrc:"3036471272642BN3300ZGY",
+     viaEntrada:"Presentación por Internet",
+     baseImponible21:22115.00,cuotaDevengada:4644.15,
+     modifBasesCuotas:-3750.00,modifCuotasImporte:-787.50,
+     totalCuotaDevengada:3856.65,
+     baseIvaSoportado:572.95,cuotaDeducible:120.33,
+     resultadoRegimen:3736.32,sumaResultados:3736.32,atribuibleEstado:3736.32,
+     cuotasPendientes:1922.66,cuotasAplicadas:0,cuotasPendientesPosterior:1922.66,
+     resultadoLiquidacion:3736.32,estado:"INGRESAR",importeIngresado:3736.32,
+     doc:"docs/fiscal/2026/2T26.pdf",
+     nota:"Presentado 16/07/2026 13:28:23. Resultado a ingresar (NRC 3036471272642BN3300ZGY). Saldo compensable 1.922,66€ de 2024/2T NO aplicado, permanece intacto para trimestres futuros. PENDIENTE: origen del ajuste 'Modificación bases y cuotas' -3.750,00€/-787,50€ (casillas 14/15) sin identificar — verificar con Enrique."}
   ]
 };
 const MODELOS_390 = {
@@ -701,6 +714,20 @@ const MODELO_200 = {
     justificante:"2005041442223", csv:"7FEX5PY5CPAHNAML",
     expediente:"202420003860062E", fecha:"20-07-2025",
     doc:"docs/fiscal/2024/IS2024.pdf"
+  },
+  2025: {
+    cifraNegocios:12100.00, gastosExplotacion:-15568.75, amortizacion:-2457.67,
+    resultadoExplotacion:-5926.42, resultadoAntesIS:-5926.42,
+    gastoIS:0, resultadoEjercicio:-5926.42,
+    baseImponibleAntesComp:-5926.42, compensacionBIN:0,
+    baseImponible:-5926.42, tipoGravamen:21, cuotaIntegra:0,
+    liquidoIngresar:-241.19, cuotaCero:true,
+    binGeneradas:5926.42, binPendienteAnterior:3265.64, binPendienteTotal:9192.06,
+    // BIN pendiente detalle (pág.15 M200): 2020=1.627,15 + 2024=1.638,49 = 3.265,64, intactas (resultado 2025 negativo, sin compensación)
+    solicitudDevolucion:true, devolucionIban:"ES5468880001623802658478",
+    justificante:"2006018675595", csv:"LBVXRS7XUVM32F7F",
+    expediente:"202520003860045C", fecha:"16-07-2026", horaPresentacion:"15:30:48",
+    doc:"docs/fiscal/2025/IS2025.pdf"
   }
 };
 // ═══════════════════════════════════════════════
@@ -1646,7 +1673,7 @@ function runEngineTests(year, mayor, tesoreria, emitidas, recibidas) {
 function loadData(key, def) { try { const d = localStorage.getItem(key); return d ? JSON.parse(d) : def; } catch(e) { return def; } }
 function saveData(key, data) { try { localStorage.setItem(key, JSON.stringify(data)); } catch(e) {} }
 // Auto-reset when version changes (forces new data with doc links)
-const APP_VERSION = "10.15"; // v10.10: Asiento 248,22€ reclasificado — NO era modelo 010 sino liquidación provisional IS 2025/1P (pago fraccionado modelo 202 no presentado). AEAT dictó liquidación 09/01/2026 ref 2025CPA03860297W (cuota 241,19€ + intereses demora 7,03€). Apunta a 473 HP deudora (241,19) + 669 intereses demora (7,03). Pagado 16/01/2026. Requerimientos 111 Q3 2025 (ref 2025CPA03860314L) y Q4 2025 (ref 2025CPA03860405X) CONTESTADOS 18/04/2026 invocando aviso 50069 AEAT (no procede presentar sin perceptores); CSVs aportación WZCMU2EL2KCUF6VB y GNA2A7FR7HEJN7LB respectivamente.
+const APP_VERSION = "10.16"; // v10.16: Añadido Modelo 200 2025 (justificante 2006018675595, presentado 16-07-2026, BI -5.926,42, devolución 241,19€) y Modelo 303 2T-2026 (justificante 3036471272642, ingreso 3.736,32€). // v10.10: Asiento 248,22€ reclasificado — NO era modelo 010 sino liquidación provisional IS 2025/1P (pago fraccionado modelo 202 no presentado). AEAT dictó liquidación 09/01/2026 ref 2025CPA03860297W (cuota 241,19€ + intereses demora 7,03€). Apunta a 473 HP deudora (241,19) + 669 intereses demora (7,03). Pagado 16/01/2026. Requerimientos 111 Q3 2025 (ref 2025CPA03860314L) y Q4 2025 (ref 2025CPA03860405X) CONTESTADOS 18/04/2026 invocando aviso 50069 AEAT (no procede presentar sin perceptores); CSVs aportación WZCMU2EL2KCUF6VB y GNA2A7FR7HEJN7LB respectivamente.
 // Version check moved inside App component (needs access to defaults)
 function exportCSV(data, filename, cols) {
   const header = cols.map(c=>c.label).join(";");
